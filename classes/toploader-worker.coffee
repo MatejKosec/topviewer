@@ -362,6 +362,7 @@ class TopParser
       "4": 3
       "5": 4
 
+    elementsResult = {}
     for elementsType, elementsList of @currentElements.elements
       elementSize = nodesPerElement[elementsType]
       buffer = new Uint32Array elementsList.length * elementSize
@@ -372,7 +373,7 @@ class TopParser
 
       @currentElements.elements[elementsType] = buffer
 
-    elementsResult = {}
+
     elementsResult[@currentElementsName] = @currentElements
 
     postMessage
