@@ -8,3 +8,5 @@
   })();
 
 }).call(this);
+
+//# sourceMappingURL=namespace.js.map

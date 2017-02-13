@@ -242,3 +242,5 @@
   })(TopViewer.UIArea);
 
 }).call(this);
+
+//# sourceMappingURL=filemanager.js.map

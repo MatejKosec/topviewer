@@ -221,3 +221,5 @@
   })(TopViewer.UIArea);
 
 }).call(this);
+
+//# sourceMappingURL=playbackcontrols.js.map

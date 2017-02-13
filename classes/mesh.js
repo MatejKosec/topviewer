@@ -153,3 +153,5 @@
   })(THREE.Mesh);
 
 }).call(this);
+
+//# sourceMappingURL=mesh.js.map

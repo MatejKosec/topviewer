@@ -734,3 +734,5 @@
   })(TopViewer.UIArea);
 
 }).call(this);
+
+//# sourceMappingURL=renderingcontrols.js.map

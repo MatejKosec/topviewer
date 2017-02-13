@@ -502,3 +502,5 @@
   })(THREE.Object3D);
 
 }).call(this);
+
+//# sourceMappingURL=model.js.map

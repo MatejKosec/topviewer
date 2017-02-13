@@ -12,7 +12,7 @@ self.onmessage = (message) ->
   parser = new TopParser url
 
   # We load 100 MB chunks at a time.
-  rangeLength = 100 * 1024 * 1024
+  rangeLength = 50 * 1024 * 1024
 
   requestRangeStart = 0
   requestRangeEnd = rangeLength - 1
@@ -33,6 +33,7 @@ self.onmessage = (message) ->
   #console.log "Loading #{totalLength} bytes."
 
   loadChunk = =>
+
     # Clamp range end to total length so we don't read beyond the end of the file.
     requestRangeEnd = Math.min requestRangeEnd, totalLength - 1
     #console.log "Loading chunk: #{requestRangeStart}-#{requestRangeEnd}."
@@ -144,6 +145,7 @@ class TopParser
     if data[data.length-1] is '\n'
       lastLineIsComplete = true
 
+
     # Only parse all but the last line (it's probably incomplete).
     parseLineCount = if lastLineIsComplete then lines.length else lines.length - 1
 
@@ -222,6 +224,7 @@ class TopParser
       when @constructor.modes.Nodes
         # Parse node.
         vertexIndex = parseInt parts[0]
+        vertexIndex = vertexIndex-1
         vertex =
           x: parseFloat parts[1]
           y: parseFloat parts[2]
@@ -240,17 +243,17 @@ class TopParser
           when 4
             # Triangle (Tri_3)
             newElement = [
-              parseInt parts[2]
-              parseInt parts[3]
-              parseInt parts[4]
+              -1 + parseInt parts[2]
+              -1 + parseInt parts[3]
+              -1 + parseInt parts[4]
             ]
           when 5
             # Tetrahedron (Tetra_4)
             newElement = [
-              parseInt parts[2]
-              parseInt parts[3]
-              parseInt parts[4]
-              parseInt parts[5]
+              -1 + parseInt parts[2]
+              -1 + parseInt parts[3]
+              -1 + parseInt parts[4]
+              -1 + parseInt parts[5]
             ]
           else
             console.error "UNKNOWN ELEMENT TYPE", elementType, parts, line, @lastLine
@@ -362,7 +365,7 @@ class TopParser
       "4": 3
       "5": 4
 
-    elementsResult = {}
+
     for elementsType, elementsList of @currentElements.elements
       elementSize = nodesPerElement[elementsType]
       buffer = new Uint32Array elementsList.length * elementSize
@@ -373,7 +376,7 @@ class TopParser
 
       @currentElements.elements[elementsType] = buffer
 
-
+    elementsResult = {}
     elementsResult[@currentElementsName] = @currentElements
 
     postMessage

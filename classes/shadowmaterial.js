@@ -20,3 +20,5 @@
   })(TopViewer.PositionsMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=shadowmaterial.js.map

@@ -21,3 +21,5 @@
   })(TopViewer.IsovalueMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=isolinematerial.js.map

@@ -20,3 +20,5 @@
   })(TopViewer.SurfaceMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=modelmaterial.js.map

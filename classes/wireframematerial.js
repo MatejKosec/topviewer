@@ -20,3 +20,5 @@
   })(TopViewer.VertexMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=wireframematerial.js.map

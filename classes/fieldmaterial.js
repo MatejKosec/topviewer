@@ -31,3 +31,5 @@
   })(TopViewer.VertexMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=fieldmaterial.js.map

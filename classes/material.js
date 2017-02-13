@@ -139,3 +139,5 @@
   })(TopViewer.VertexMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=material.js.map

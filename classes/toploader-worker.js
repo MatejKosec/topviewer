@@ -11,7 +11,7 @@
     var loadChunk, parser, rangeHeader, rangeHeaderParts, rangeLength, request, requestRangeEnd, requestRangeStart, totalLength, url;
     url = message.data.url;
     parser = new TopParser(url);
-    rangeLength = 100 * 1024 * 1024;
+    rangeLength = 50 * 1024 * 1024;
     requestRangeStart = 0;
     requestRangeEnd = rangeLength - 1;
     request = new XMLHttpRequest;
@@ -185,6 +185,7 @@
       switch (this.currentMode) {
         case this.constructor.modes.Nodes:
           vertexIndex = parseInt(parts[0]);
+          vertexIndex = vertexIndex - 1;
           vertex = {
             x: parseFloat(parts[1]),
             y: parseFloat(parts[2]),
@@ -199,10 +200,10 @@
           }
           switch (elementType) {
             case 4:
-              newElement = [parseInt(parts[2]), parseInt(parts[3]), parseInt(parts[4])];
+              newElement = [-1 + parseInt(parts[2]), -1 + parseInt(parts[3]), -1 + parseInt(parts[4])];
               break;
             case 5:
-              newElement = [parseInt(parts[2]), parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5])];
+              newElement = [-1 + parseInt(parts[2]), -1 + parseInt(parts[3]), -1 + parseInt(parts[4]), -1 + parseInt(parts[5])];
               break;
             default:
               console.error("UNKNOWN ELEMENT TYPE", elementType, parts, line, this.lastLine);
@@ -302,7 +303,6 @@
         "4": 3,
         "5": 4
       };
-      elementsResult = {};
       ref = this.currentElements.elements;
       for (elementsType in ref) {
         elementsList = ref[elementsType];
@@ -315,6 +315,7 @@
         }
         this.currentElements.elements[elementsType] = buffer;
       }
+      elementsResult = {};
       elementsResult[this.currentElementsName] = this.currentElements;
       return postMessage({
         type: 'result',
@@ -390,3 +391,5 @@
   })();
 
 }).call(this);
+
+//# sourceMappingURL=toploader-worker.js.map

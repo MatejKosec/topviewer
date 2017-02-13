@@ -48,3 +48,5 @@
   })();
 
 }).call(this);
+
+//# sourceMappingURL=animation.js.map

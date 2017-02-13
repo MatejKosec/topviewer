@@ -12,3 +12,5 @@
   })();
 
 }).call(this);
+
+//# sourceMappingURL=lightingsetup.js.map

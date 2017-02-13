@@ -37,3 +37,5 @@
   })(TopViewer.IsovalueMaterial);
 
 }).call(this);
+
+//# sourceMappingURL=isosurfacematerial.js.map
