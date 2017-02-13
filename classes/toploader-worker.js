@@ -139,16 +139,15 @@
     };
 
     TopParser.prototype.parseLine = function(line) {
-      var base, elementIndex, elementType, newElement, parts, value, vertex, vertexIndex;
+      var base, buffer, elementIndex, elementType, i, k, newElement, parts, ref, value;
       parts = line.match(/\S+/g);
       switch (parts[0]) {
         case 'Nodes':
           this.endCurrentMode();
           this.currentMode = this.constructor.modes.Nodes;
           this.currentNodesName = parts[1];
-          this.currentNodes = {
-            nodes: []
-          };
+          this.currentNodes = {};
+          this.currentNodes.nodes = new Float32Array(1000 * 3);
           return;
         case 'Elements':
           this.endCurrentMode();
@@ -184,14 +183,19 @@
       }
       switch (this.currentMode) {
         case this.constructor.modes.Nodes:
-          vertexIndex = parseInt(parts[0]);
-          vertexIndex = vertexIndex - 1;
-          vertex = {
-            x: parseFloat(parts[1]),
-            y: parseFloat(parts[2]),
-            z: parseFloat(parts[3])
-          };
-          return this.currentNodes.nodes[vertexIndex] = vertex;
+          this.currentNodeIndex = parseInt(parts[0]);
+          if (this.currentNodeIndex * 3 > this.currentNodes.nodes.length) {
+            debugger;
+            buffer = new Float32Array(this.currentNodes.nodes.length * 2);
+            for (i = k = 0, ref = this.currentNodes.nodes.length; 0 <= ref ? k < ref : k > ref; i = 0 <= ref ? ++k : --k) {
+              buffer[i] = this.currentNodes.nodes[i];
+            }
+            this.currentNodes.nodes = null;
+            this.currentNodes.nodes = buffer;
+          }
+          this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 0] = parseFloat(parts[1]);
+          this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 1] = parseFloat(parts[2]);
+          return this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 2] = parseFloat(parts[3]);
         case this.constructor.modes.Elements:
           elementIndex = parseInt(parts[0]);
           elementType = parseInt(parts[1]);
@@ -200,10 +204,10 @@
           }
           switch (elementType) {
             case 4:
-              newElement = [-1 + parseInt(parts[2]), -1 + parseInt(parts[3]), -1 + parseInt(parts[4])];
+              newElement = [parseInt(parts[2]), parseInt(parts[3]), parseInt(parts[4])];
               break;
             case 5:
-              newElement = [-1 + parseInt(parts[2]), -1 + parseInt(parts[3]), -1 + parseInt(parts[4]), -1 + parseInt(parts[5])];
+              newElement = [parseInt(parts[2]), parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5])];
               break;
             default:
               console.error("UNKNOWN ELEMENT TYPE", elementType, parts, line, this.lastLine);
@@ -276,17 +280,7 @@
     };
 
     TopParser.prototype.endNodes = function() {
-      var buffer, i, k, length, nodesResult, ref;
-      length = Math.max(0, this.currentNodes.nodes.length - 1);
-      buffer = new Float32Array(length * 3);
-      for (i = k = 0, ref = length; 0 <= ref ? k < ref : k > ref; i = 0 <= ref ? ++k : --k) {
-        if (this.currentNodes.nodes[i + 1]) {
-          buffer[i * 3] = this.currentNodes.nodes[i + 1].x;
-          buffer[i * 3 + 1] = this.currentNodes.nodes[i + 1].y;
-          buffer[i * 3 + 2] = this.currentNodes.nodes[i + 1].z;
-        }
-      }
-      this.currentNodes.nodes = buffer;
+      var nodesResult;
       nodesResult = {};
       nodesResult[this.currentNodesName] = this.currentNodes;
       return postMessage({

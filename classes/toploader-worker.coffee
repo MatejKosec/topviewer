@@ -174,8 +174,10 @@ class TopParser
 
         # Parse nodes header.
         @currentNodesName = parts[1]
-        @currentNodes =
-          nodes: []
+        #Temporarily create an array for 1000 3D nodes, to be replaced once outgrown
+        @currentNodes = {}
+        @currentNodes.nodes = new Float32Array 1000 * 3
+
 
         return
 
@@ -222,15 +224,27 @@ class TopParser
     # No mode switch was detected, continue business as usual.
     switch @currentMode
       when @constructor.modes.Nodes
-        # Parse node.
-        vertexIndex = parseInt parts[0]
-        vertexIndex = vertexIndex-1
-        vertex =
-          x: parseFloat parts[1]
-          y: parseFloat parts[2]
-          z: parseFloat parts[3]
+        #Make sure current index will fit into buffer
+        @currentNodeIndex = parseInt parts[0]
+        #Allocate more space if not
+        if @currentNodeIndex*3 > @currentNodes.nodes.length
+          debugger
+          #Double the size of the array (this is potentially a pretty bad idea for large files)
+          buffer = new Float32Array @currentNodes.nodes.length*2
+          #Copy old stuff over
+          for i in [0...@currentNodes.nodes.length]
+              buffer[i] = @currentNodes.nodes[i]
+          #Swap the arrays
+          @currentNodes.nodes = null; #Get rid of the old reference
+          @currentNodes.nodes = buffer #Set it to the new reference
 
-        @currentNodes.nodes[vertexIndex] = vertex
+
+
+
+        @currentNodes.nodes[(@currentNodeIndex-1)*3+0] = parseFloat parts[1]
+        @currentNodes.nodes[(@currentNodeIndex-1)*3+1] = parseFloat parts[2]
+        @currentNodes.nodes[(@currentNodeIndex-1)*3+2] = parseFloat parts[3]
+
 
       when @constructor.modes.Elements
         # Parse element.
@@ -243,17 +257,17 @@ class TopParser
           when 4
             # Triangle (Tri_3)
             newElement = [
-              -1 + parseInt parts[2]
-              -1 + parseInt parts[3]
-              -1 + parseInt parts[4]
+              parseInt parts[2]
+              parseInt parts[3]
+              parseInt parts[4]
             ]
           when 5
             # Tetrahedron (Tetra_4)
             newElement = [
-              -1 + parseInt parts[2]
-              -1 + parseInt parts[3]
-              -1 + parseInt parts[4]
-              -1 + parseInt parts[5]
+              parseInt parts[2]
+              parseInt parts[3]
+              parseInt parts[4]
+              parseInt parts[5]
             ]
           else
             console.error "UNKNOWN ELEMENT TYPE", elementType, parts, line, @lastLine
@@ -337,20 +351,7 @@ class TopParser
         @endScalar()
 
   endNodes: ->
-    # Create nodes array buffer.
-    length = Math.max 0, @currentNodes.nodes.length - 1
-    buffer = new Float32Array length * 3
-
-    for i in [0...length]
-      # Convert to 0-based indices and skip over non-existent nodes
-      # (they simply won't be used, although they take space).
-      if @currentNodes.nodes[i+1]
-        buffer[i*3] = @currentNodes.nodes[i+1].x
-        buffer[i*3+1] = @currentNodes.nodes[i+1].y
-        buffer[i*3+2] = @currentNodes.nodes[i+1].z
-
-    @currentNodes.nodes = buffer
-
+    # Save the node array (buffering handled elsewhere)
     nodesResult = {}
     nodesResult[@currentNodesName] = @currentNodes
 
