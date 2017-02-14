@@ -228,7 +228,6 @@ class TopParser
         @currentNodeIndex = parseInt parts[0]
         #Allocate more space if not
         if @currentNodeIndex*3 > @currentNodes.nodes.length
-          debugger
           #Double the size of the array (this is potentially a pretty bad idea for large files)
           buffer = new Float32Array @currentNodes.nodes.length*2
           #Copy old stuff over
@@ -352,6 +351,19 @@ class TopParser
 
   endNodes: ->
     # Save the node array (buffering handled elsewhere)
+    #There array size does not fit the data exactly (can be up to a factor 2 too large),
+    #slim it down to exact size
+    if @currentNodeIndex*3 !== @currentNodes.nodes.length
+      debugger
+      #Get eaxt size necessary
+      buffer = new Float32Array @currentNodesIndex*3
+      #Copy old stuff over
+      for i in [0...@currentNodesIndex*3]
+        buffer[i] = @currentNodes.nodes[i]
+      #Swap the arrays
+      @currentNodes.nodes = null; #Get rid of the old reference
+      @currentNodes.nodes = buffer #Set it to the new reference
+    #Save the results
     nodesResult = {}
     nodesResult[@currentNodesName] = @currentNodes
 

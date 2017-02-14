@@ -280,7 +280,16 @@
     };
 
     TopParser.prototype.endNodes = function() {
-      var nodesResult;
+      var buffer, i, k, nodesResult, ref;
+      if (this.currentNodeIndex * 3 > this.currentNodes.nodes.length) {
+        debugger;
+        buffer = new Float32Array(this.currentNodes.nodes.length * 2);
+        for (i = k = 0, ref = this.currentNodes.nodes.length; 0 <= ref ? k < ref : k > ref; i = 0 <= ref ? ++k : --k) {
+          buffer[i] = this.currentNodes.nodes[i];
+        }
+        this.currentNodes.nodes = null;
+        this.currentNodes.nodes = buffer;
+      }
       nodesResult = {};
       nodesResult[this.currentNodesName] = this.currentNodes;
       return postMessage({
