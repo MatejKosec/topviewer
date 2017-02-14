@@ -187,8 +187,12 @@ class TopParser
 
         # Parse elements header.
         @currentElementsName = parts[1]
+        @currentTriIndex = 0
+        @currentTetIndex = 0
         @currentElements =
-          elements: {}
+          elements:
+            4: new Uint32Array 1000 * 3 #Temperarily allocate space for 1000 elements
+            5: new Uint32Array 1000 * 4 #Temperarily allocate space for 1000 elements
           nodesName: parts[3]
 
         return
@@ -237,41 +241,57 @@ class TopParser
           @currentNodes.nodes = null; #Get rid of the old reference
           @currentNodes.nodes = buffer #Set it to the new reference
 
-
-
-
         @currentNodes.nodes[(@currentNodeIndex-1)*3+0] = parseFloat parts[1]
         @currentNodes.nodes[(@currentNodeIndex-1)*3+1] = parseFloat parts[2]
         @currentNodes.nodes[(@currentNodeIndex-1)*3+2] = parseFloat parts[3]
 
-
       when @constructor.modes.Elements
         # Parse element.
-        elementIndex = parseInt parts[0]
+        @currentElementIndex = parseInt parts[0]
         elementType = parseInt parts[1]
-        @currentElements.elements[elementType] ?= []
 
         # Note: Vertex indices (1-4) based on TOP/DOMDEC User's Manual.
         switch elementType
           when 4
-            # Triangle (Tri_3)
-            newElement = [
-              parseInt parts[2]
-              parseInt parts[3]
-              parseInt parts[4]
-            ]
+            #Check if the new element can fit into the buffer
+            @currentTriIndex++
+            if @currentTriIndex*3 > @currentElements.elements[elementType].length
+              #Double the size of the array (this is potentially a pretty bad idea for large files)
+              buffer = new Uint32Array @currentElements.elements[elementType].length*2
+              #Copy old stuff over
+              for i in [0...@currentElements.elements[elementType].length]
+                buffer[i] = @currentElements.elements[elementType][i]
+              #Swap the arrays
+              @currentElements.elements[elementType] = null; #Get rid of the old reference
+              @currentElements.elements[elementType] = buffer #Set it to the new reference
+
+            # Add the new element Triangle (Tri_3)
+            @currentElements.elements[elementType][(@currentTriIndex-1)*3+0] = parseInt parts[2]
+            @currentElements.elements[elementType][(@currentTriIndex-1)*3+1] = parseInt parts[3]
+            @currentElements.elements[elementType][(@currentTriIndex-1)*3+2] = parseInt parts[4]
+
           when 5
-            # Tetrahedron (Tetra_4)
-            newElement = [
-              parseInt parts[2]
-              parseInt parts[3]
-              parseInt parts[4]
-              parseInt parts[5]
-            ]
+            #Check if the new element can fit into the buffer
+            @currentTetIndex++
+            if @currentTetIndex*4 > @currentElements.elements[elementType].length
+              #Double the size of the array (this is potentially a pretty bad idea for large files)
+              buffer = new Uint32Array @currentElements.elements[elementType].length*2
+              #Copy old stuff over
+              for i in [0...@currentElements.elements[elementType].length]
+                buffer[i] = @currentElements.elements[elementType][i]
+              #Swap the arrays
+              @currentElements.elements[elementType] = null; #Get rid of the old reference
+              @currentElements.elements[elementType] = buffer #Set it to the new reference
+
+            #Add the new Tetrahedron (Tetra_4)
+            @currentElements.elements[elementType][(@currentTetIndex-1)*4+0] = parseInt parts[2]
+            @currentElements.elements[elementType][(@currentTetIndex-1)*4+1] = parseInt parts[3]
+            @currentElements.elements[elementType][(@currentTetIndex-1)*4+2] = parseInt parts[4]
+            @currentElements.elements[elementType][(@currentTetIndex-1)*4+3] = parseInt parts[5]
           else
             console.error "UNKNOWN ELEMENT TYPE", elementType, parts, line, @lastLine
 
-        @currentElements.elements[elementType].push newElement
+
 
       when @constructor.modes.VectorCount
         # Read number of nodes.
@@ -353,12 +373,11 @@ class TopParser
     # Save the node array (buffering handled elsewhere)
     #There array size does not fit the data exactly (can be up to a factor 2 too large),
     #slim it down to exact size
-    if @currentNodeIndex*3 !== @currentNodes.nodes.length
-      debugger
-      #Get eaxt size necessary
-      buffer = new Float32Array @currentNodesIndex*3
+    if @currentNodeIndex*3 != @currentNodes.nodes.length
+      #Get actual required size of array
+      buffer = new Float32Array @currentNodeIndex*3
       #Copy old stuff over
-      for i in [0...@currentNodesIndex*3]
+      for i in [0...(@currentNodeIndex*3)]
         buffer[i] = @currentNodes.nodes[i]
       #Swap the arrays
       @currentNodes.nodes = null; #Get rid of the old reference
@@ -373,22 +392,21 @@ class TopParser
         nodes: nodesResult
 
   endElements: ->
-    # Create elements array buffer.
-    nodesPerElement =
-      "4": 3
-      "5": 4
+    #Make sure the array exactly fits the elements
+    #For tirangles
+    if @currentTriIndex*3 != @currentElements.elements[4].length
+      buffer = new Uint32Array currentTrieIndex * 3
+      for i in [0...@currentTriIndex*3]
+        buffer[i] = @currentElements.elements[4][i]
+      @currentElements.elements[4] = buffer
+    #For tetrahedra
+    if @currentTetIndex*4 != @currentElements.elements[5].length
+      buffer = new Uint32Array currentTrieIndex * 4
+      for i in [0...@currentTetIndex*4]
+        buffer[i] = @currentElements.elements[5][i]
+      @currentElements.elements[5] = buffer
 
-
-    for elementsType, elementsList of @currentElements.elements
-      elementSize = nodesPerElement[elementsType]
-      buffer = new Uint32Array elementsList.length * elementSize
-      for i in [0...elementsList.length]
-        for j in [0...elementSize]
-          # Convert to 0-based indices.
-          buffer[i*elementSize+j] = elementsList[i][j] - 1
-
-      @currentElements.elements[elementsType] = buffer
-
+    #Save the results
     elementsResult = {}
     elementsResult[@currentElementsName] = @currentElements
 
