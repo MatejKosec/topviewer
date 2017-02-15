@@ -199,6 +199,7 @@ class TopParser
 
       when 'Vector'
         @endCurrentMode()
+        debugger
         @currentMode = @constructor.modes.VectorCount
 
         # Parse vector header.
@@ -310,6 +311,7 @@ class TopParser
         @currentFrameNodeIndex = 0
 
       when @constructor.modes.Vector
+        debugger
         @currentFrame.vectors[@currentFrameNodeIndex * 3] = parseFloat parts[0]
         @currentFrame.vectors[@currentFrameNodeIndex * 3 + 1] = parseFloat parts[1]
         @currentFrame.vectors[@currentFrameNodeIndex * 3 + 2] = parseFloat parts[2]

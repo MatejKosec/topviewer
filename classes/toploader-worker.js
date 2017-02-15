@@ -165,6 +165,7 @@
           return;
         case 'Vector':
           this.endCurrentMode();
+          debugger;
           this.currentMode = this.constructor.modes.VectorCount;
           this.currentVectorNodesName = parts[5];
           this.currentVectorName = parts[1];
@@ -247,6 +248,7 @@
           };
           return this.currentFrameNodeIndex = 0;
         case this.constructor.modes.Vector:
+          debugger;
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3] = parseFloat(parts[0]);
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3 + 1] = parseFloat(parts[1]);
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3 + 2] = parseFloat(parts[2]);

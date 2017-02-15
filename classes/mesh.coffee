@@ -61,12 +61,13 @@ class TopViewer.Mesh extends THREE.Mesh
       addLine(@options.elements[i*3], @options.elements[i*3+1])
       addLine(@options.elements[i*3+1], @options.elements[i*3+2])
       addLine(@options.elements[i*3+2], @options.elements[i*3])
-
+    
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.wireframeMaterial
-
+    
     wireframeIndexArray = new Float32Array linesCount * 4
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
+    
 
     lineVertexIndex = 0
     for a in [0...connectivity.length]
@@ -76,15 +77,16 @@ class TopViewer.Mesh extends THREE.Mesh
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a)
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, b)
         lineVertexIndex += 2
-
+    
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.drawRange.count = linesCount * 2
+    
 
     # Create the isolines mesh.
     isolinesGeometry = new THREE.BufferGeometry()
     @isolinesMesh = new THREE.LineSegments isolinesGeometry, @options.model.isolineMaterial
     faceCount = @options.elements.length / 3
-
+    
     # Each isoline vertex needs access to all three face vertices.
     for i in [0..2]
       # The format of the array is, for each face and face corner i: v[i]_x, v[i]_y, v[i]_x, v[i]_y
@@ -99,7 +101,7 @@ class TopViewer.Mesh extends THREE.Mesh
           setVertexIndexCoordinates(isolinesIndexAttribute, j*2+k, @options.elements[j * 3 + i])
 
       isolinesGeometry.addAttribute "vertexIndexCorner#{i+1}", isolinesIndexAttribute
-
+    
     # We also need to tell the vertices if they are the start or the end of the isoline.
     isolinesTypeArray = new Float32Array faceCount * 2
     isolinesTypeAttribute = new THREE.BufferAttribute isolinesTypeArray, 1
@@ -113,13 +115,13 @@ class TopViewer.Mesh extends THREE.Mesh
 
     # Finish creating geometry.
     @_updateGeometry()
-
+    
     # Add the meshes to the model.
     @options.model.add @
     @options.model.add @backsideMesh
     @options.model.add @wireframeMesh
     @options.model.add @isolinesMesh
-
+    
     # Add the mesh to rendering controls.
     @options.engine.renderingControls.addMesh @options.name, @
 
@@ -128,7 +130,7 @@ class TopViewer.Mesh extends THREE.Mesh
     @_updateBounds @backsideMesh, @options.model
     @_updateBounds @wireframeMesh, @options.model
     @_updateBounds @isolinesMesh, @options.model
-
+    
   _updateBounds: (mesh, model) ->
     mesh.geometry.boundingBox = @options.model.boundingBox
     mesh.geometry.boundingSphere = @options.model.boundingSphere
