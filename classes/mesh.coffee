@@ -1,6 +1,7 @@
 'use strict'
 
 class TopViewer.Mesh extends THREE.Mesh
+#__________________________________________________________________________________________________________________
   constructor: (@options) ->
     super new THREE.BufferGeometry(), @options.model.material
 
@@ -45,6 +46,19 @@ class TopViewer.Mesh extends THREE.Mesh
     @customDepthMaterial = @options.model.shadowMaterial
     @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
+    # Finish creating geometry.
+    @_updateGeometry()
+
+    # Add the meshes to the model.
+    @options.model.add @
+    @options.model.add @backsideMesh
+
+    # Add the mesh to rendering controls.
+    @options.engine.renderingControls.addMesh @options.name, @
+
+#__________________________________________________________________________________________________________________
+  addWireframe: (@options) ->
+
     # Create the wireframe mesh.
     connectivity = []
     linesCount = 0
@@ -53,6 +67,7 @@ class TopViewer.Mesh extends THREE.Mesh
       [a, b] = [b, a] if a > b
 
       connectivity[a] ?= {}
+
       unless connectivity[a][b]
         connectivity[a][b] = true
         linesCount++
@@ -61,7 +76,8 @@ class TopViewer.Mesh extends THREE.Mesh
       addLine(@options.elements[i*3], @options.elements[i*3+1])
       addLine(@options.elements[i*3+1], @options.elements[i*3+2])
       addLine(@options.elements[i*3+2], @options.elements[i*3])
-    
+    debugger
+
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.wireframeMaterial
     
@@ -78,10 +94,13 @@ class TopViewer.Mesh extends THREE.Mesh
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, b)
         lineVertexIndex += 2
     
-    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
+    wireframeGeometry.addAtt  ribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.drawRange.count = linesCount * 2
-    
 
+    @options.model.add @wireframeMesh
+    _updateGeometry()
+#__________________________________________________________________________________________________________________
+  addIsolines: (@options) ->
     # Create the isolines mesh.
     isolinesGeometry = new THREE.BufferGeometry()
     @isolinesMesh = new THREE.LineSegments isolinesGeometry, @options.model.isolineMaterial
@@ -113,28 +132,20 @@ class TopViewer.Mesh extends THREE.Mesh
 
     isolinesGeometry.drawRange.count = faceCount * 2
 
-    # Finish creating geometry.
-    @_updateGeometry()
-    
-    # Add the meshes to the model.
-    @options.model.add @
-    @options.model.add @backsideMesh
-    @options.model.add @wireframeMesh
     @options.model.add @isolinesMesh
-    
-    # Add the mesh to rendering controls.
-    @options.engine.renderingControls.addMesh @options.name, @
-
+    _updateGeometry()
+#__________________________________________________________________________________________________________________
   _updateGeometry: ->
     @_updateBounds @, @options.model
     @_updateBounds @backsideMesh, @options.model
-    @_updateBounds @wireframeMesh, @options.model
-    @_updateBounds @isolinesMesh, @options.model
-    
+    if @wireframeMesh? then @_updateBounds @wireframeMesh, @options.model
+    if @isolinesMesh? then @_updateBounds @isolinesMesh, @options.model
+
+#__________________________________________________________________________________________________________________
   _updateBounds: (mesh, model) ->
     mesh.geometry.boundingBox = @options.model.boundingBox
     mesh.geometry.boundingSphere = @options.model.boundingSphere
-
+#__________________________________________________________________________________________________________________
   showFrame: () ->
     # We can only draw the mesh when it's been added and we have the rendering controls.
     unless @renderingControls
@@ -159,9 +170,16 @@ class TopViewer.Mesh extends THREE.Mesh
     else
       @visible = false
       @backsideMesh.visible = false
-
-    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isolinesMesh.visible = @renderingControls.showIsolinesControl.value()
+    #If the user sets the wireframe to visible, then add it to the render
+    wireFrameVisible = @renderingControls.showWireframeControl.value()
+    if wireFrameVisible
+      @addWireframe @options
+      @wireframeMesh.visible = wireFrameVisible
+    #If the user sets the isolines to visible, then add them to the render
+    isollinesMeshVisible = @renderingControls.showIsolinesControl.value()
+    if isollinesMeshVisible
+      @addIsolines @options
+      @isolinesMesh.visible = isollinesMeshVisible
 
     enableShadows = @options.engine.renderingControls.shadowsControl.value()
     
