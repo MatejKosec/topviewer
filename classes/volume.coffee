@@ -7,7 +7,7 @@ class TopViewer.Volume
     setVertexIndexCoordinates = (attribute, i, index) ->
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
-
+    ###
     # Create the wireframe mesh.
     connectivity = []
     linesCount = 0
@@ -27,7 +27,7 @@ class TopViewer.Volume
       addLine(@options.elements[i*4], @options.elements[i*4+3])
       addLine(@options.elements[i*4+1], @options.elements[i*4+3])
       addLine(@options.elements[i*4+2], @options.elements[i*4+3])
-
+    debugger
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
@@ -45,6 +45,12 @@ class TopViewer.Volume
 
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.drawRange.count = linesCount * 2
+    ###
+    debugger;
+    wireframeGeometry = new THREE.BoxGeometry  1, 1, 1
+    @wireframeMesh = new THREE.Mesh wireframeGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
+
+    ###
 
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
@@ -52,7 +58,7 @@ class TopViewer.Volume
     @isosurfacesMesh.receiveShadows = true
 
     tetraCount = @options.elements.length / 4
-
+    /*
     # Each isosurface vertex needs access to all four tetra vertices.
     for i in [0..3]
       # The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
@@ -77,6 +83,10 @@ class TopViewer.Volume
     isosurfacesGeometry.addAttribute "cornerIndex", isosurfacesCornerIndexAttribute
 
     isosurfacesGeometry.drawRange.count = tetraCount * 6
+    ###
+
+    isosurfacesGeometry= new THREE.BoxGeometry  1, 1, 1
+    @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
 
     # Finish creating geometry.
     @_updateGeometry()

@@ -8,7 +8,7 @@
     extend(Mesh, superClass);
 
     function Mesh(options) {
-      var baseIndex, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, height, i, indexArrays, indexAttributes, j, l, m, n, ref, setVertexIndexCoordinates;
+      var a, addLine, b, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       Mesh.__super__.constructor.call(this, new THREE.BufferGeometry(), this.options.model.material);
       indexArrays = [];
@@ -40,21 +40,12 @@
       this.backsideMesh = new THREE.Mesh(this.geometry, this.options.model.backsideMaterial);
       this.customDepthMaterial = this.options.model.shadowMaterial;
       this.backsideMesh.customDepthMaterial = this.options.model.shadowMaterial;
-      this._updateGeometry();
-      this.options.model.add(this);
-      this.options.model.add(this.backsideMesh);
-      this.options.engine.renderingControls.addMesh(this.options.name, this);
-    }
-
-    Mesh.prototype.addWireframe = function(options) {
-      var a, addLine, b, connectivity, i, l, lineVertexIndex, linesCount, m, ref, ref1, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
-      this.options = options;
       connectivity = [];
       linesCount = 0;
       addLine = function(a, b) {
-        var ref;
+        var ref1;
         if (a > b) {
-          ref = [b, a], a = ref[0], b = ref[1];
+          ref1 = [b, a], a = ref1[0], b = ref1[1];
         }
         if (connectivity[a] == null) {
           connectivity[a] = {};
@@ -64,18 +55,17 @@
           return linesCount++;
         }
       };
-      for (i = l = 0, ref = this.options.elements.length / 3; 0 <= ref ? l < ref : l > ref; i = 0 <= ref ? ++l : --l) {
+      for (i = o = 0, ref1 = this.options.elements.length / 3; 0 <= ref1 ? o < ref1 : o > ref1; i = 0 <= ref1 ? ++o : --o) {
         addLine(this.options.elements[i * 3], this.options.elements[i * 3 + 1]);
         addLine(this.options.elements[i * 3 + 1], this.options.elements[i * 3 + 2]);
         addLine(this.options.elements[i * 3 + 2], this.options.elements[i * 3]);
       }
-      debugger;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.wireframeMaterial);
       wireframeIndexArray = new Float32Array(linesCount * 4);
       wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
       lineVertexIndex = 0;
-      for (a = m = 0, ref1 = connectivity.length; 0 <= ref1 ? m < ref1 : m > ref1; a = 0 <= ref1 ? ++m : --m) {
+      for (a = p = 0, ref2 = connectivity.length; 0 <= ref2 ? p < ref2 : p > ref2; a = 0 <= ref2 ? ++p : --p) {
         if (!connectivity[a]) {
           continue;
         }
@@ -85,23 +75,16 @@
           lineVertexIndex += 2;
         }
       }
-      wireframeGeometry.addAtt(ribute('vertexIndex', wireframeIndexAttribute));
+      wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
       wireframeGeometry.drawRange.count = linesCount * 2;
-      this.options.model.add(this.wireframeMesh);
-      return _updateGeometry();
-    };
-
-    Mesh.prototype.addIsolines = function(options) {
-      var faceCount, i, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, m, n, o, ref, ref1;
-      this.options = options;
       isolinesGeometry = new THREE.BufferGeometry();
       this.isolinesMesh = new THREE.LineSegments(isolinesGeometry, this.options.model.isolineMaterial);
       faceCount = this.options.elements.length / 3;
-      for (i = l = 0; l <= 2; i = ++l) {
+      for (i = q = 0; q <= 2; i = ++q) {
         isolinesIndexArray = new Float32Array(faceCount * 4);
         isolinesIndexAttribute = new THREE.BufferAttribute(isolinesIndexArray, 2);
-        for (j = m = 0, ref = faceCount; 0 <= ref ? m < ref : m > ref; j = 0 <= ref ? ++m : --m) {
-          for (k = n = 0; n < 2; k = ++n) {
+        for (j = r = 0, ref3 = faceCount; 0 <= ref3 ? r < ref3 : r > ref3; j = 0 <= ref3 ? ++r : --r) {
+          for (k = s = 0; s < 2; k = ++s) {
             setVertexIndexCoordinates(isolinesIndexAttribute, j * 2 + k, this.options.elements[j * 3 + i]);
           }
         }
@@ -109,24 +92,24 @@
       }
       isolinesTypeArray = new Float32Array(faceCount * 2);
       isolinesTypeAttribute = new THREE.BufferAttribute(isolinesTypeArray, 1);
-      for (i = o = 0, ref1 = faceCount; 0 <= ref1 ? o < ref1 : o > ref1; i = 0 <= ref1 ? ++o : --o) {
+      for (i = t = 0, ref4 = faceCount; 0 <= ref4 ? t < ref4 : t > ref4; i = 0 <= ref4 ? ++t : --t) {
         isolinesTypeArray[i * 2 + 1] = 1.0;
       }
       isolinesGeometry.addAttribute("cornerIndex", isolinesTypeAttribute);
       isolinesGeometry.drawRange.count = faceCount * 2;
+      this._updateGeometry();
+      this.options.model.add(this);
+      this.options.model.add(this.backsideMesh);
+      this.options.model.add(this.wireframeMesh);
       this.options.model.add(this.isolinesMesh);
-      return _updateGeometry();
-    };
+      this.options.engine.renderingControls.addMesh(this.options.name, this);
+    }
 
     Mesh.prototype._updateGeometry = function() {
       this._updateBounds(this, this.options.model);
       this._updateBounds(this.backsideMesh, this.options.model);
-      if (this.wireframeMesh != null) {
-        this._updateBounds(this.wireframeMesh, this.options.model);
-      }
-      if (this.isolinesMesh != null) {
-        return this._updateBounds(this.isolinesMesh, this.options.model);
-      }
+      this._updateBounds(this.wireframeMesh, this.options.model);
+      return this._updateBounds(this.isolinesMesh, this.options.model);
     };
 
     Mesh.prototype._updateBounds = function(mesh, model) {
@@ -135,7 +118,7 @@
     };
 
     Mesh.prototype.showFrame = function() {
-      var enableShadows, isollinesMeshVisible, wireFrameVisible;
+      var enableShadows;
       if (!this.renderingControls) {
         this.visible = false;
         this.backsideMesh.visible = false;
@@ -156,16 +139,8 @@
         this.visible = false;
         this.backsideMesh.visible = false;
       }
-      wireFrameVisible = this.renderingControls.showWireframeControl.value();
-      if (wireFrameVisible) {
-        this.addWireframe(this.options);
-        this.wireframeMesh.visible = wireFrameVisible;
-      }
-      isollinesMeshVisible = this.renderingControls.showIsolinesControl.value();
-      if (isollinesMeshVisible) {
-        this.addIsolines(this.options);
-        this.isolinesMesh.visible = isollinesMeshVisible;
-      }
+      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
+      this.isolinesMesh.visible = this.renderingControls.showIsolinesControl.value();
       enableShadows = this.options.engine.renderingControls.shadowsControl.value();
       this.castShadow = enableShadows;
       this.receiveShadows = enableShadows;
