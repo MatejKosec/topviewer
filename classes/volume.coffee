@@ -8,62 +8,65 @@ class TopViewer.Volume
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
 
-    #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
-    #this means we can sort the array later and find all unique elements. This should be much more effieicnt
-    #than a connectivity matrix
-    addLine = (a, b,target, index) ->
-      [a, b] = [b, a] if a > b
-      target[index  ] = a;
-      target[index+1] = b;
-
-
-    debugger
     # Create the wireframe mesh (each element is composed of 6 edges), and each edge needs two entries
-    wireframeIndexArray = new Uint16Array @options.elements.length/4*6*2
+    wireframeIndexArray = new Uint32Array @options.elements.length/4*6*2
+    #In order to have 32 and 64 bit datatypes (rason explained below), the integer indexes are read as floats
+    #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
+    #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
+    wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
+    twiceNoEdges = 0
+    checkEdgeUnique32 = new Uint32Array 2
+    checkEdgeUnique64 = new Float64Array checkEdgeUnique32.buffer
 
-    for i in [0...@options.elements.length/4-1]
-      addLine @options.elements[i*4+0], @options.elements[i*4+1],wireframeIndexArray,12*i+0
-      addLine @options.elements[i*4+1], @options.elements[i*4+2],wireframeIndexArray,12*i+2
-      addLine @options.elements[i*4+2], @options.elements[i*4+0],wireframeIndexArray,12*i+4
-      addLine @options.elements[i*4+0], @options.elements[i*4+3],wireframeIndexArray,12*i+6
-      addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,12*i+8
-      addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,12*i+10
+    #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
+    #so that edges can be recorded uniquely
+    debugger
+    addLine = (a, b,target32,target64) ->
+      checkEdgeUnique32[0] = Math.min(a,b)
+      checkEdgeUnique32[1] = Math.max(a,b)
+      edge_is_unique = true;
+      i = 0
+      while i < twiceNoEdges/2 #The default javascript include functions are far too slow
+        if target64[i] == checkEdgeUnique64[0]
+          edge_is_unique = false;
+          i = twiceNoEdges; #stop loop
+        i++
 
-    #All potential edges have now been added. However, most edges appear twice (i.e. an edge usually
-    #belongs to 2 elements. To avoid doing double the necessary work, find the unique edges. Typically this is done
-    #with sort, filter. Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 16bit uints
-    #to 32bit uints
-    filter2Dunique = (element,index,array) ->
-      #Don't filter the first element
-      if index == 0
-        return true
-      #For all others check that they are different from predecessor
-      else
-        return  element isnt array[index-1]
+      if edge_is_unique
+        target32[twiceNoEdges  ] = a; #add first  edge index
+        target32[twiceNoEdges+1] = b; #add second edge index
+        twiceNoEdges+=2 #increase the edge count accordingly
 
-    wireframeIndexArray32 = new Uint32Array wireframeIndexArray.buffer #Note that this will use the same data as the 16 bit view
-    wireframeIndexArray32.sort #Sort in-place as a 2D element
-    wireframeIndexArray = null #Forget the original index view
-    filteredWireframeIndexArray = wireframeIndexArray32.filter filter2Dunique
-    wireframeIndexArray32 = null #release the momory of the 32 bit view
-    wireframeIndexArray = new Uint16Array filteredWireframeIndexArray.buffer #Finally, the matrix of unique edges
-    filteredwireframeIndexArray = null #release the momory of the 32bit view
+    for i in [0...Math.max(@options.elements.length/4-1,0)]
+      addLine @options.elements[i*4+0], @options.elements[i*4+1],wireframeIndexArray,wireframeIndexArray64
+      addLine @options.elements[i*4+1], @options.elements[i*4+2],wireframeIndexArray,wireframeIndexArray64
+      addLine @options.elements[i*4+2], @options.elements[i*4+0],wireframeIndexArray,wireframeIndexArray64
+      addLine @options.elements[i*4+0], @options.elements[i*4+3],wireframeIndexArray,wireframeIndexArray64
+      addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,wireframeIndexArray64
+      addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,wireframeIndexArray64
+
 
     debugger
+    #Some of the array will not have been filled (almost half) so strip it down
+    newwireframeIndexArray = new Uint32Array twiceNoEdges
+    for i in [0...Math.max(twiceNoEdges-1,0)]
+      newwireframeIndexArray[i] = wireframeIndexArray[i]
+    wireframeIndexArray = null #Delete the old array
+    wireframeIndexArray = newwireframeIndexArray #And use the new one instead
+
+
     #Create a buffer geometry
     wireframeGeometry = new THREE.BufferGeometry()
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
-    lineVertexIndex = 0
-    for i in [0...wireframeIndexArray.length-1]
-      setVertexIndexCoordinates wireframeIndexAttribute, lineVertexIndex, wireframeIndexAttribute[i]
-      setVertexIndexCoordinates wireframeIndexAttribute, lineVertexIndex + 1, wireframeIndexAttribute[i+1]
-      lineVertexIndex += 2
+
+    for i in [0...Math.max(wireframeIndexArray.length-1,0)]
+      setVertexIndexCoordinates wireframeIndexAttribute, i, wireframeIndexAttribute[i]
 
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    wireframeGeometry.drawRange.count = wireframeIndexAttribute.length
+    wireframeGeometry.drawRange.count = wireframeIndexAttribute.count #length is deprecated, use count
 
     ###
     connectivity = []
@@ -88,7 +91,7 @@ class TopViewer.Volume
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
-    wireframeIndexArray = new Float32Array linesCount * 4
+    wireframeIndexArray = new Uint32Array linesCount * 4
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
 
     lineVertexIndex = 0
@@ -118,7 +121,7 @@ class TopViewer.Volume
     # Each isosurface vertex needs access to all four tetra vertices.
     for i in [0..3]
       # The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
-      isosurfacesIndexArray = new Float32Array tetraCount * 12
+      isosurfacesIndexArray = new Uint32Array tetraCount * 12
       isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
 
       # Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
@@ -129,7 +132,7 @@ class TopViewer.Volume
       isosurfacesGeometry.addAttribute "vertexIndexCorner#{i+1}", isosurfacesIndexAttribute
 
     # We also need to tell the vertices what their index is and if they are part of the main or additional face.
-    isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
+    isosurfacesCornerIndexArray = new Uint32Array tetraCount * 6
     isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
 
     for i in [0...tetraCount]

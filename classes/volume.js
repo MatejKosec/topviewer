@@ -3,57 +3,61 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var addLine, filter2Dunique, filteredWireframeIndexArray, filteredwireframeIndexArray, height, i, isosurfacesGeometry, j, k, lineVertexIndex, ref, ref1, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexArray32, wireframeIndexAttribute;
+      var addLine, checkEdgeUnique32, checkEdgeUnique64, height, i, isosurfacesGeometry, j, k, l, newwireframeIndexArray, ref, ref1, ref2, setVertexIndexCoordinates, twiceNoEdges, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
         attribute.setX(i, index % 4096 / 4096);
         return attribute.setY(i, Math.floor(index / 4096) / height);
       };
-      addLine = function(a, b, target, index) {
-        var ref;
-        if (a > b) {
-          ref = [b, a], a = ref[0], b = ref[1];
-        }
-        target[index] = a;
-        return target[index + 1] = b;
-      };
+      wireframeIndexArray = new Uint32Array(this.options.elements.length / 4 * 6 * 2);
+      wireframeIndexArray64 = new Float64Array(wireframeIndexArray.buffer);
+      twiceNoEdges = 0;
+      checkEdgeUnique32 = new Uint32Array(2);
+      checkEdgeUnique64 = new Float64Array(checkEdgeUnique32.buffer);
       debugger;
-      wireframeIndexArray = new Uint16Array(this.options.elements.length / 4 * 6 * 2);
-      for (i = j = 0, ref = this.options.elements.length / 4 - 1; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 1], wireframeIndexArray, 12 * i + 0);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2], wireframeIndexArray, 12 * i + 2);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 0], wireframeIndexArray, 12 * i + 4);
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 6);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 8);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 10);
+      addLine = function(a, b, target32, target64) {
+        var edge_is_unique, i;
+        checkEdgeUnique32[0] = Math.min(a, b);
+        checkEdgeUnique32[1] = Math.max(a, b);
+        edge_is_unique = true;
+        i = 0;
+        while (i < twiceNoEdges / 2) {
+          if (target64[i] === checkEdgeUnique64[0]) {
+            edge_is_unique = false;
+            i = twiceNoEdges;
+          }
+          i++;
+        }
+        if (edge_is_unique) {
+          target32[twiceNoEdges] = a;
+          target32[twiceNoEdges + 1] = b;
+          return twiceNoEdges += 2;
+        }
+      };
+      for (i = j = 0, ref = Math.max(this.options.elements.length / 4 - 1, 0); 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 1], wireframeIndexArray, wireframeIndexArray64);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2], wireframeIndexArray, wireframeIndexArray64);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 0], wireframeIndexArray, wireframeIndexArray64);
+        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
       }
-      filter2Dunique = function(element, index, array) {
-        if (index === 0) {
-          return true;
-        } else {
-          return element !== array[index - 1];
-        }
-      };
-      wireframeIndexArray32 = new Uint32Array(wireframeIndexArray.buffer);
-      wireframeIndexArray32.sort;
-      wireframeIndexArray = null;
-      filteredWireframeIndexArray = wireframeIndexArray32.filter(filter2Dunique);
-      wireframeIndexArray32 = null;
-      wireframeIndexArray = new Uint16Array(filteredWireframeIndexArray.buffer);
-      filteredwireframeIndexArray = null;
       debugger;
+      newwireframeIndexArray = new Uint32Array(twiceNoEdges);
+      for (i = k = 0, ref1 = Math.max(twiceNoEdges - 1, 0); 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+        newwireframeIndexArray[i] = wireframeIndexArray[i];
+      }
+      wireframeIndexArray = null;
+      wireframeIndexArray = newwireframeIndexArray;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
-      lineVertexIndex = 0;
-      for (i = k = 0, ref1 = wireframeIndexArray.length - 1; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, wireframeIndexAttribute[i]);
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, wireframeIndexAttribute[i + 1]);
-        lineVertexIndex += 2;
+      for (i = l = 0, ref2 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+        setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexAttribute[i]);
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
-      wireframeGeometry.drawRange.count = wireframeIndexAttribute.length;
+      wireframeGeometry.drawRange.count = wireframeIndexAttribute.count;
 
       /*
       connectivity = []
@@ -78,7 +82,7 @@
       wireframeGeometry = new THREE.BufferGeometry()
       @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
       
-      wireframeIndexArray = new Float32Array linesCount * 4
+      wireframeIndexArray = new Uint32Array linesCount * 4
       wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
       
       lineVertexIndex = 0
@@ -108,7 +112,7 @@
        * Each isosurface vertex needs access to all four tetra vertices.
       for i in [0..3]
          * The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
-        isosurfacesIndexArray = new Float32Array tetraCount * 12
+        isosurfacesIndexArray = new Uint32Array tetraCount * 12
         isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
       
          * Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
@@ -119,7 +123,7 @@
         isosurfacesGeometry.addAttribute "vertexIndexCorner#{i+1}", isosurfacesIndexAttribute
       
        * We also need to tell the vertices what their index is and if they are part of the main or additional face.
-      isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
+      isosurfacesCornerIndexArray = new Uint32Array tetraCount * 6
       isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
       
       for i in [0...tetraCount]
