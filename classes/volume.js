@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var addLine, checkEdgeUnique32, checkEdgeUnique64, height, i, isosurfacesGeometry, j, k, l, newwireframeIndexArray, ref, ref1, ref2, setVertexIndexCoordinates, twiceNoEdges, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
+      var addLine, countUniqueEdges, height, i, isosurfacesGeometry, j, k, l, m, newwireframeIndexArray64, ref, ref1, ref2, ref3, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -12,52 +12,44 @@
       };
       wireframeIndexArray = new Uint32Array(this.options.elements.length / 4 * 6 * 2);
       wireframeIndexArray64 = new Float64Array(wireframeIndexArray.buffer);
-      twiceNoEdges = 0;
-      checkEdgeUnique32 = new Uint32Array(2);
-      checkEdgeUnique64 = new Float64Array(checkEdgeUnique32.buffer);
-      debugger;
-      addLine = function(a, b, target32, target64) {
-        var edge_is_unique, i;
-        checkEdgeUnique32[0] = Math.min(a, b);
-        checkEdgeUnique32[1] = Math.max(a, b);
-        edge_is_unique = true;
-        i = 0;
-        while (i < twiceNoEdges / 2) {
-          if (target64[i] === checkEdgeUnique64[0]) {
-            edge_is_unique = false;
-            i = twiceNoEdges;
-          }
-          i++;
-        }
-        if (edge_is_unique) {
-          target32[twiceNoEdges] = a;
-          target32[twiceNoEdges + 1] = b;
-          return twiceNoEdges += 2;
-        }
+      addLine = function(a, b, target32, index) {
+        target32[index] = a;
+        return target32[index + 1] = b;
       };
-      for (i = j = 0, ref = Math.max(this.options.elements.length / 4 - 1, 0); 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 1], wireframeIndexArray, wireframeIndexArray64);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2], wireframeIndexArray, wireframeIndexArray64);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 0], wireframeIndexArray, wireframeIndexArray64);
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, wireframeIndexArray64);
+      for (i = j = 0, ref = this.options.elements.length / 4; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 1], wireframeIndexArray, 12 * i + 0);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2], wireframeIndexArray, 12 * i + 2);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 0], wireframeIndexArray, 12 * i + 4);
+        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 6);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 8);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 10);
       }
-      debugger;
-      newwireframeIndexArray = new Uint32Array(twiceNoEdges);
-      for (i = k = 0, ref1 = Math.max(twiceNoEdges - 1, 0); 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-        newwireframeIndexArray[i] = wireframeIndexArray[i];
+      wireframeIndexArray64.sort(function(a, b) {
+        return a - b;
+      });
+      newwireframeIndexArray64 = new Float64Array(wireframeIndexArray64.length);
+      countUniqueEdges = 0;
+      for (i = k = 1, ref1 = Math.max(wireframeIndexArray64.length - 1, 0); 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
+        if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i]) {
+          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i - 1];
+          countUniqueEdges += 1;
+        }
       }
-      wireframeIndexArray = null;
-      wireframeIndexArray = newwireframeIndexArray;
+      wireframeIndexArray64 = new Float64Array(countUniqueEdges);
+      for (i = l = 0, ref2 = Math.max(countUniqueEdges - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+        wireframeIndexArray64[i] = newwireframeIndexArray64[i];
+      }
+      wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer);
+      newwireframeIndexArray64 = null;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
-      for (i = l = 0, ref2 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
-        setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexAttribute[i]);
+      for (i = m = 0, ref3 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+        setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexArray[i]);
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
-      wireframeGeometry.drawRange.count = wireframeIndexAttribute.count;
+      debugger;
+      wireframeGeometry.drawRange.count = countUniqueEdges * 2;
 
       /*
       connectivity = []

@@ -89,9 +89,9 @@ class TopViewer.Mesh extends THREE.Mesh
 
     # Each isoline vertex needs access to all three face vertices.
     for i in [0..2]
-# The format of the array is, for each face and face corner i: v[i]_x, v[i]_y, v[i]_x, v[i]_y
-# It is duplicated because we have two isoline vertices in
-# succession and both of them need access to the same data.
+    # The format of the array is, for each face and face corner i: v[i]_x, v[i]_y, v[i]_x, v[i]_y
+    # It is duplicated because we have two isoline vertices in
+    # succession and both of them need access to the same data.
       isolinesIndexArray = new Float32Array faceCount * 4
       isolinesIndexAttribute = new THREE.BufferAttribute isolinesIndexArray, 2
 
