@@ -46,6 +46,7 @@ class TopViewer.Mesh extends THREE.Mesh
     @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
     # Create the wireframe mesh.
+    debugger
     connectivity = []
     linesCount = 0
 

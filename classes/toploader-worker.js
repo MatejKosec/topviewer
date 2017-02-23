@@ -150,7 +150,9 @@
           this.currentNodes.nodes = new Float32Array(1000 * 3);
           return;
         case 'Elements':
+          debugger;
           this.endCurrentMode();
+          debugger;
           this.currentMode = this.constructor.modes.Elements;
           this.currentElementsName = parts[1];
           this.currentTriIndex = 0;
@@ -202,7 +204,7 @@
           this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 1] = parseFloat(parts[2]);
           return this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 2] = parseFloat(parts[3]);
         case this.constructor.modes.Elements:
-          this.currentElementIndex = parseInt(parts[0]);
+          this.currentElementIndex = parseInt(parts[0] - 1);
           elementType = parseInt(parts[1]);
           switch (elementType) {
             case 4:

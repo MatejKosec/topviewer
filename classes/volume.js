@@ -12,6 +12,7 @@
       };
       wireframeIndexArray = new Uint32Array(this.options.elements.length / 4 * 6 * 2);
       wireframeIndexArray64 = new Float64Array(wireframeIndexArray.buffer);
+      debugger;
       addLine = function(a, b, target32, index) {
         target32[index] = a;
         return target32[index + 1] = b;
@@ -28,22 +29,28 @@
         return a - b;
       });
       newwireframeIndexArray64 = new Float64Array(wireframeIndexArray64.length);
-      countUniqueEdges = 0;
-      for (i = k = 1, ref1 = Math.max(wireframeIndexArray64.length - 1, 0); 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
+      if (newwireframeIndexArray64.length !== 0) {
+        countUniqueEdges = 1;
+        newwireframeIndexArray64[0] = wireframeIndexArray64[0];
+      }
+      for (i = k = 1, ref1 = Math.max(wireframeIndexArray64.length); 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
         if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i]) {
-          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i - 1];
+          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i];
           countUniqueEdges += 1;
         }
       }
+      wireframeIndexArray64 = null;
       wireframeIndexArray64 = new Float64Array(countUniqueEdges);
       for (i = l = 0, ref2 = Math.max(countUniqueEdges - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         wireframeIndexArray64[i] = newwireframeIndexArray64[i];
       }
+      wireframeIndexArray = null;
       wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer);
       newwireframeIndexArray64 = null;
+      wireframeIndexArray64 = null;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
-      wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
+      wireframeIndexAttribute = new THREE.BufferAttribute(new Float32Array(wireframeIndexArray.length * 2), 2);
       for (i = m = 0, ref3 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
         setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexArray[i]);
       }

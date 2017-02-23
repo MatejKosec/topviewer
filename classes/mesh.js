@@ -40,6 +40,7 @@
       this.backsideMesh = new THREE.Mesh(this.geometry, this.options.model.backsideMaterial);
       this.customDepthMaterial = this.options.model.shadowMaterial;
       this.backsideMesh.customDepthMaterial = this.options.model.shadowMaterial;
+      debugger;
       connectivity = [];
       linesCount = 0;
       addLine = function(a, b) {

@@ -14,7 +14,7 @@ class TopViewer.Volume
     #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
     #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
     wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
-
+    debugger
     #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
     #so that edges can be recorded uniquely
     addLine = (a, b,target32,index) ->
@@ -34,19 +34,27 @@ class TopViewer.Volume
 
     #Now traverse the array, collecting all unique elements
     newwireframeIndexArray64 = new Float64Array wireframeIndexArray64.length
-    countUniqueEdges = 0
-    for i in [1...Math.max(wireframeIndexArray64.length-1,0)]
+    #Add first edge by default
+    if newwireframeIndexArray64.length != 0
+      countUniqueEdges = 1
+      newwireframeIndexArray64[0] = wireframeIndexArray64[0]
+    for i in [1...Math.max(wireframeIndexArray64.length)]
       if wireframeIndexArray64[i-1] != wireframeIndexArray64[i]
-        newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i-1]
+        newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
         countUniqueEdges +=1
+
+
 
     #Now copy over into smaller array
     #Some of the array will not have been filled (almost half) so strip it down
+    wireframeIndexArray64 = null
     wireframeIndexArray64 = new Float64Array countUniqueEdges
     for i in [0...Math.max(countUniqueEdges-1,0)]
       wireframeIndexArray64[i] = newwireframeIndexArray64[i]
+    wireframeIndexArray = null #delete old array
     wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer) #And use the new one instead
     newwireframeIndexArray64 = null #Delete the old array
+    wireframeIndexArray64 = null #Delete the old array
 
 
     #Create a buffer geometry
@@ -54,7 +62,7 @@ class TopViewer.Volume
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
-    wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
+    wireframeIndexAttribute = new THREE.BufferAttribute( new Float32Array(wireframeIndexArray.length*2), 2)
 
     for i in [0...Math.max(wireframeIndexArray.length-1,0)]
       setVertexIndexCoordinates wireframeIndexAttribute, i, wireframeIndexArray[i]

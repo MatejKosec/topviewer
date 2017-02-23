@@ -182,7 +182,9 @@ class TopParser
         return
 
       when 'Elements'
+        debugger
         @endCurrentMode()
+        debugger
         @currentMode = @constructor.modes.Elements
 
         # Parse elements header.
@@ -248,7 +250,7 @@ class TopParser
 
       when @constructor.modes.Elements
         # Parse element.
-        @currentElementIndex = parseInt parts[0]
+        @currentElementIndex = parseInt parts[0] - 1
         elementType = parseInt parts[1]
 
         # Note: Vertex indices (1-4) based on TOP/DOMDEC User's Manual.
