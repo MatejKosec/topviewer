@@ -63,7 +63,8 @@ self.onmessage = (message) ->
         parser.parse reader.result, rangeStart / totalLength, (rangeEnd - rangeStart) / totalLength
 
         # Complete parsing when we've parsed the last chunk.
-        if rangeEnd is totalLength - 1
+        if rangeEnd >= totalLength - 1
+          debugger
           parser.end()
 
       reader.readAsText request.response
@@ -411,7 +412,7 @@ class TopParser
         buffer[i] = @currentElements.elements[5][i]
       @currentElements.elements[5] = null; #Get rid of the old reference
       @currentElements.elements[5] = buffer
-
+    debugger
     #Save the results
     elementsResult = {}
     elementsResult[@currentElementsName] = @currentElements

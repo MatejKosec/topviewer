@@ -102,6 +102,7 @@ class TopViewer.Model extends THREE.Object3D
     @_currentVectorFrames = {}
 
   addElements: (elementsName, elementsType, elements) ->
+    debugger
     switch elementsType
       when 4
         # Triangle (Tri_3)

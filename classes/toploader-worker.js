@@ -48,7 +48,8 @@
           reader = new FileReader;
           reader.onload = function(event) {
             parser.parse(reader.result, rangeStart / totalLength, (rangeEnd - rangeStart) / totalLength);
-            if (rangeEnd === totalLength - 1) {
+            if (rangeEnd >= totalLength - 1) {
+              debugger;
               return parser.end();
             }
           };
@@ -343,6 +344,7 @@
         this.currentElements.elements[5] = null;
         this.currentElements.elements[5] = buffer;
       }
+      debugger;
       elementsResult = {};
       elementsResult[this.currentElementsName] = this.currentElements;
       return postMessage({

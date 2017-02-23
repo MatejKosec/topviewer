@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var addLine, countUniqueEdges, height, i, isosurfacesGeometry, j, k, l, m, newwireframeIndexArray64, ref, ref1, ref2, ref3, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
+      var addLine, height, i, isosurfacesGeometry, j, k, l, newwireframeIndexArray64, ref, ref1, ref2, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -25,23 +25,25 @@
         addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 8);
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 10);
       }
-      wireframeIndexArray64.sort(function(a, b) {
-        return a - b;
-      });
-      newwireframeIndexArray64 = new Float64Array(wireframeIndexArray64.length);
-      if (newwireframeIndexArray64.length !== 0) {
-        countUniqueEdges = 1;
-        newwireframeIndexArray64[0] = wireframeIndexArray64[0];
-      }
-      for (i = k = 1, ref1 = Math.max(wireframeIndexArray64.length); 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
-        if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i]) {
-          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i];
-          countUniqueEdges += 1;
-        }
-      }
+
+      /*
+      wireframeIndexArray64.sort((a,b) -> a-b) #This is expensive
+      
+      #Now traverse the array, collecting all unique elements
+      newwireframeIndexArray64 = new Float64Array wireframeIndexArray64.length
+      #Add first edge by default
+      if newwireframeIndexArray64.length != 0
+        countUniqueEdges = 1
+        newwireframeIndexArray64[0] = wireframeIndexArray64[0]
+      for i in [1...Math.max(wireframeIndexArray64.length)]
+        if wireframeIndexArray64[i-1] != wireframeIndexArray64[i]
+          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
+          countUniqueEdges +=1
+       */
+      newwireframeIndexArray64 = _.uniq(wireframeIndexArray64);
       wireframeIndexArray64 = null;
       wireframeIndexArray64 = new Float64Array(countUniqueEdges);
-      for (i = l = 0, ref2 = Math.max(countUniqueEdges - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+      for (i = k = 0, ref1 = Math.max(countUniqueEdges - 1, 0); 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
         wireframeIndexArray64[i] = newwireframeIndexArray64[i];
       }
       wireframeIndexArray = null;
@@ -51,7 +53,7 @@
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       wireframeIndexAttribute = new THREE.BufferAttribute(new Float32Array(wireframeIndexArray.length * 2), 2);
-      for (i = m = 0, ref3 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+      for (i = l = 0, ref2 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexArray[i]);
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);

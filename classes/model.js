@@ -93,6 +93,7 @@
     }
 
     Model.prototype.addElements = function(elementsName, elementsType, elements) {
+      debugger;
       var collection, constructor;
       switch (elementsType) {
         case 4:
