@@ -49,7 +49,6 @@
           reader.onload = function(event) {
             parser.parse(reader.result, rangeStart / totalLength, (rangeEnd - rangeStart) / totalLength);
             if (rangeEnd >= totalLength - 1) {
-              debugger;
               return parser.end();
             }
           };
@@ -151,9 +150,7 @@
           this.currentNodes.nodes = new Float32Array(1000 * 3);
           return;
         case 'Elements':
-          debugger;
           this.endCurrentMode();
-          debugger;
           this.currentMode = this.constructor.modes.Elements;
           this.currentElementsName = parts[1];
           this.currentTriIndex = 0;
@@ -168,7 +165,6 @@
           return;
         case 'Vector':
           this.endCurrentMode();
-          debugger;
           this.currentMode = this.constructor.modes.VectorCount;
           this.currentVectorNodesName = parts[5];
           this.currentVectorName = parts[1];
@@ -251,7 +247,6 @@
           };
           return this.currentFrameNodeIndex = 0;
         case this.constructor.modes.Vector:
-          debugger;
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3] = parseFloat(parts[0]);
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3 + 1] = parseFloat(parts[1]);
           this.currentFrame.vectors[this.currentFrameNodeIndex * 3 + 2] = parseFloat(parts[2]);
@@ -344,7 +339,6 @@
         this.currentElements.elements[5] = null;
         this.currentElements.elements[5] = buffer;
       }
-      debugger;
       elementsResult = {};
       elementsResult[this.currentElementsName] = this.currentElements;
       return postMessage({

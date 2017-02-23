@@ -30,7 +30,6 @@ class TopViewer.Volume
       addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,12*i + 8
       addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,12*i + 10
 
-    ###
     wireframeIndexArray64.sort((a,b) -> a-b) #This is expensive
 
     #Now traverse the array, collecting all unique elements
@@ -43,8 +42,8 @@ class TopViewer.Volume
       if wireframeIndexArray64[i-1] != wireframeIndexArray64[i]
         newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
         countUniqueEdges +=1
-    ###
-    newwireframeIndexArray64 = _.uniq wireframeIndexArray64
+
+
 
     #Now copy over into smaller array
     #Some of the array will not have been filled (almost half) so strip it down
@@ -72,6 +71,7 @@ class TopViewer.Volume
     #wireframeGeometry.drawRange.count = wireframeIndexAttribute.count #length is deprecated, use count
     debugger
     wireframeGeometry.drawRange.count = countUniqueEdges*2 #length is deprecated, use count
+    #wireframeGeometry.drawRange.count =wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
 
     ###
     connectivity = []

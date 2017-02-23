@@ -64,7 +64,7 @@ self.onmessage = (message) ->
 
         # Complete parsing when we've parsed the last chunk.
         if rangeEnd >= totalLength - 1
-          debugger
+          
           parser.end()
 
       reader.readAsText request.response
@@ -183,9 +183,9 @@ class TopParser
         return
 
       when 'Elements'
-        debugger
+        
         @endCurrentMode()
-        debugger
+        
         @currentMode = @constructor.modes.Elements
 
         # Parse elements header.
@@ -202,7 +202,7 @@ class TopParser
 
       when 'Vector'
         @endCurrentMode()
-        debugger
+        
         @currentMode = @constructor.modes.VectorCount
 
         # Parse vector header.
@@ -314,7 +314,7 @@ class TopParser
         @currentFrameNodeIndex = 0
 
       when @constructor.modes.Vector
-        debugger
+        
         @currentFrame.vectors[@currentFrameNodeIndex * 3] = parseFloat parts[0]
         @currentFrame.vectors[@currentFrameNodeIndex * 3 + 1] = parseFloat parts[1]
         @currentFrame.vectors[@currentFrameNodeIndex * 3 + 2] = parseFloat parts[2]
@@ -412,7 +412,7 @@ class TopParser
         buffer[i] = @currentElements.elements[5][i]
       @currentElements.elements[5] = null; #Get rid of the old reference
       @currentElements.elements[5] = buffer
-    debugger
+    
     #Save the results
     elementsResult = {}
     elementsResult[@currentElementsName] = @currentElements
