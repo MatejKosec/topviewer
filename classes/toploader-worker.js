@@ -48,7 +48,7 @@
           reader = new FileReader;
           reader.onload = function(event) {
             parser.parse(reader.result, rangeStart / totalLength, (rangeEnd - rangeStart) / totalLength);
-            if (rangeEnd >= totalLength - 1) {
+            if (rangeEnd === totalLength - 1) {
               return parser.end();
             }
           };
@@ -201,7 +201,7 @@
           this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 1] = parseFloat(parts[2]);
           return this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 2] = parseFloat(parts[3]);
         case this.constructor.modes.Elements:
-          this.currentElementIndex = parseInt(parts[0] - 1);
+          this.currentElementIndex = parseInt(parts[0]);
           elementType = parseInt(parts[1]);
           switch (elementType) {
             case 4:

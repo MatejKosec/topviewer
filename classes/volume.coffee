@@ -7,17 +7,17 @@ class TopViewer.Volume
     setVertexIndexCoordinates = (attribute, i, index) ->
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
-
+    debugger
     # Create the wireframe mesh (each element is composed of 6 edges), and each edge needs two entries
     wireframeIndexArray = new Uint32Array @options.elements.length/4*6*2
     #In order to have 32 and 64 bit datatypes (rason explained below), the integer indexes are read as floats
     #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
     #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
     wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
-    debugger
     #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
     #so that edges can be recorded uniquely
     addLine = (a, b,target32,index) ->
+        [a, b] = [b, a] if a > b
         target32[index  ] = a; #add first  edge index
         target32[index+1] = b; #add second edge index
 
@@ -38,18 +38,16 @@ class TopViewer.Volume
     if newwireframeIndexArray64.length != 0
       countUniqueEdges = 1
       newwireframeIndexArray64[0] = wireframeIndexArray64[0]
-    for i in [1...Math.max(wireframeIndexArray64.length)]
-      if wireframeIndexArray64[i-1] != wireframeIndexArray64[i]
+    for i in [1...wireframeIndexArray64.length]
+      if wireframeIndexArray64[i-1] != wireframeIndexArray64[i] and i < wireframeIndexArray64.length
         newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
         countUniqueEdges +=1
-
-
 
     #Now copy over into smaller array
     #Some of the array will not have been filled (almost half) so strip it down
     wireframeIndexArray64 = null
     wireframeIndexArray64 = new Float64Array countUniqueEdges
-    for i in [0...Math.max(countUniqueEdges-1,0)]
+    for i in [0...countUniqueEdges]
       wireframeIndexArray64[i] = newwireframeIndexArray64[i]
     wireframeIndexArray = null #delete old array
     wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer) #And use the new one instead
@@ -64,14 +62,16 @@ class TopViewer.Volume
 
     wireframeIndexAttribute = new THREE.BufferAttribute( new Float32Array(wireframeIndexArray.length*2), 2)
 
-    for i in [0...Math.max(wireframeIndexArray.length-1,0)]
+    for i in [0...wireframeIndexArray.length]
       setVertexIndexCoordinates wireframeIndexAttribute, i, wireframeIndexArray[i]
+
 
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     #wireframeGeometry.drawRange.count = wireframeIndexAttribute.count #length is deprecated, use count
     debugger
-    wireframeGeometry.drawRange.count = countUniqueEdges*2 #length is deprecated, use count
-    #wireframeGeometry.drawRange.count =wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
+    #wireframeGeometry.drawRange.count = countUniqueEdges #length is deprecated, use count
+    wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
+    #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
 
     ###
     connectivity = []
@@ -96,7 +96,7 @@ class TopViewer.Volume
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
-    wireframeIndexArray = new Uint32Array linesCount * 4
+    wireframeIndexArray = new Float32Array linesCount * 4
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
 
     lineVertexIndex = 0
@@ -126,7 +126,7 @@ class TopViewer.Volume
     # Each isosurface vertex needs access to all four tetra vertices.
     for i in [0..3]
       # The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
-      isosurfacesIndexArray = new Uint32Array tetraCount * 12
+      isosurfacesIndexArray = new Float32Array tetraCount * 12
       isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
 
       # Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
@@ -137,7 +137,7 @@ class TopViewer.Volume
       isosurfacesGeometry.addAttribute "vertexIndexCorner#{i+1}", isosurfacesIndexAttribute
 
     # We also need to tell the vertices what their index is and if they are part of the main or additional face.
-    isosurfacesCornerIndexArray = new Uint32Array tetraCount * 6
+    isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
     isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
 
     for i in [0...tetraCount]
@@ -177,5 +177,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
+    @wireframeMesh.visible = true #@renderingControls.showWireframeControl.value()
     @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()

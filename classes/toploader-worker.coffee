@@ -63,8 +63,7 @@ self.onmessage = (message) ->
         parser.parse reader.result, rangeStart / totalLength, (rangeEnd - rangeStart) / totalLength
 
         # Complete parsing when we've parsed the last chunk.
-        if rangeEnd >= totalLength - 1
-          
+        if rangeEnd is totalLength - 1
           parser.end()
 
       reader.readAsText request.response
@@ -183,9 +182,7 @@ class TopParser
         return
 
       when 'Elements'
-        
-        @endCurrentMode()
-        
+        @endCurrentMode()        
         @currentMode = @constructor.modes.Elements
 
         # Parse elements header.
@@ -202,7 +199,6 @@ class TopParser
 
       when 'Vector'
         @endCurrentMode()
-        
         @currentMode = @constructor.modes.VectorCount
 
         # Parse vector header.
@@ -251,7 +247,7 @@ class TopParser
 
       when @constructor.modes.Elements
         # Parse element.
-        @currentElementIndex = parseInt parts[0] - 1
+        @currentElementIndex = parseInt parts[0]
         elementType = parseInt parts[1]
 
         # Note: Vertex indices (1-4) based on TOP/DOMDEC User's Manual.

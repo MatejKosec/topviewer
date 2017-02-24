@@ -10,10 +10,14 @@
         attribute.setX(i, index % 4096 / 4096);
         return attribute.setY(i, Math.floor(index / 4096) / height);
       };
+      debugger;
       wireframeIndexArray = new Uint32Array(this.options.elements.length / 4 * 6 * 2);
       wireframeIndexArray64 = new Float64Array(wireframeIndexArray.buffer);
-      debugger;
       addLine = function(a, b, target32, index) {
+        var ref;
+        if (a > b) {
+          ref = [b, a], a = ref[0], b = ref[1];
+        }
         target32[index] = a;
         return target32[index + 1] = b;
       };
@@ -33,15 +37,15 @@
         countUniqueEdges = 1;
         newwireframeIndexArray64[0] = wireframeIndexArray64[0];
       }
-      for (i = k = 1, ref1 = Math.max(wireframeIndexArray64.length); 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
-        if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i]) {
+      for (i = k = 1, ref1 = wireframeIndexArray64.length; 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
+        if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i] && i < wireframeIndexArray64.length) {
           newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i];
           countUniqueEdges += 1;
         }
       }
       wireframeIndexArray64 = null;
       wireframeIndexArray64 = new Float64Array(countUniqueEdges);
-      for (i = l = 0, ref2 = Math.max(countUniqueEdges - 1, 0); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+      for (i = l = 0, ref2 = countUniqueEdges; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         wireframeIndexArray64[i] = newwireframeIndexArray64[i];
       }
       wireframeIndexArray = null;
@@ -51,12 +55,12 @@
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       wireframeIndexAttribute = new THREE.BufferAttribute(new Float32Array(wireframeIndexArray.length * 2), 2);
-      for (i = m = 0, ref3 = Math.max(wireframeIndexArray.length - 1, 0); 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+      for (i = m = 0, ref3 = wireframeIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
         setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexArray[i]);
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
       debugger;
-      wireframeGeometry.drawRange.count = countUniqueEdges * 2;
+      wireframeGeometry.setDrawRange(0, countUniqueEdges * 2);
 
       /*
       connectivity = []
@@ -81,7 +85,7 @@
       wireframeGeometry = new THREE.BufferGeometry()
       @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
       
-      wireframeIndexArray = new Uint32Array linesCount * 4
+      wireframeIndexArray = new Float32Array linesCount * 4
       wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
       
       lineVertexIndex = 0
@@ -111,7 +115,7 @@
        * Each isosurface vertex needs access to all four tetra vertices.
       for i in [0..3]
          * The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
-        isosurfacesIndexArray = new Uint32Array tetraCount * 12
+        isosurfacesIndexArray = new Float32Array tetraCount * 12
         isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
       
          * Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
@@ -122,7 +126,7 @@
         isosurfacesGeometry.addAttribute "vertexIndexCorner#{i+1}", isosurfacesIndexAttribute
       
        * We also need to tell the vertices what their index is and if they are part of the main or additional face.
-      isosurfacesCornerIndexArray = new Uint32Array tetraCount * 6
+      isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
       isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
       
       for i in [0...tetraCount]
@@ -159,7 +163,7 @@
         this.isosurfacesMesh.visible = false;
         return;
       }
-      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
+      this.wireframeMesh.visible = true;
       return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
     };
 
