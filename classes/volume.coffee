@@ -7,17 +7,17 @@ class TopViewer.Volume
     setVertexIndexCoordinates = (attribute, i, index) ->
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
-    debugger
+    ###
     # Create the wireframe mesh (each element is composed of 6 edges), and each edge needs two entries
     wireframeIndexArray = new Uint32Array @options.elements.length/4*6*2
-    #In order to have 32 and 64 bit datatypes (rason explained below), the integer indexes are read as floats
+    #In order to have 32 and 64 bit datatypes (reason explained below), the integer indexes are read as floats
     #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
     #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
     wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
     #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
     #so that edges can be recorded uniquely
     addLine = (a, b,target32,index) ->
-        [a, b] = [b, a] if a > b
+        [a, b] = [b, a] if a < b
         target32[index  ] = a; #add first  edge index
         target32[index+1] = b; #add second edge index
 
@@ -30,7 +30,7 @@ class TopViewer.Volume
       addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,12*i + 8
       addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,12*i + 10
 
-    wireframeIndexArray64.sort((a,b) -> a-b) #This is expensive
+    wireframeIndexArray64.sort() #This is expensive (seems much chaper when tested in browser)
 
     #Now traverse the array, collecting all unique elements
     newwireframeIndexArray64 = new Float64Array wireframeIndexArray64.length
@@ -44,7 +44,7 @@ class TopViewer.Volume
         countUniqueEdges +=1
 
     #Now copy over into smaller array
-    #Some of the array will not have been filled (almost half) so strip it down
+    #Some of the array will not have been filled so strip it down
     wireframeIndexArray64 = null
     wireframeIndexArray64 = new Float64Array countUniqueEdges
     for i in [0...countUniqueEdges]
@@ -72,6 +72,49 @@ class TopViewer.Volume
     #wireframeGeometry.drawRange.count = countUniqueEdges #length is deprecated, use count
     wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
     #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
+    ###
+    connectivity = {}
+    linesCount = 0
+
+    addLine = (a, b) ->
+      [a, b] = [b, a] if a > b
+
+      connectivity[a] ?= []
+      unless connectivity[a].indexOf(b) != -1
+        connectivity[a].push b
+        linesCount++
+    debugger
+    for i in [0...@options.elements.length/4]
+      addLine(@options.elements[i*4], @options.elements[i*4+1])
+      addLine(@options.elements[i*4+1], @options.elements[i*4+2])
+      addLine(@options.elements[i*4+2], @options.elements[i*4])
+      addLine(@options.elements[i*4], @options.elements[i*4+3])
+      addLine(@options.elements[i*4+1], @options.elements[i*4+3])
+      addLine(@options.elements[i*4+2], @options.elements[i*4+3])
+    debugger
+    wireframeGeometry = new THREE.BufferGeometry()
+    @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
+
+    wireframeIndexArray = new Float32Array linesCount * 4
+    wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
+
+    lineVertexIndex = 0
+    for a of connectivity
+      continue unless connectivity[a]
+
+      for i in [0...connectivity[a].length]
+        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a)
+        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
+        lineVertexIndex += 2
+    debugger
+    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
+    wireframeGeometry.setDrawRange(0, linesCount * 2)
+    ###
+        wireframeGeometry = new THREE.BoxGeometry  1, 1, 1
+        @wireframeMesh = new THREE.Mesh wireframeGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
+
+
+    ###
 
     ###
     connectivity = []

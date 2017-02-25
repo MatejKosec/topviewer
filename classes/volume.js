@@ -3,64 +3,128 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var addLine, countUniqueEdges, height, i, isosurfacesGeometry, j, k, l, m, newwireframeIndexArray64, ref, ref1, ref2, ref3, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexArray64, wireframeIndexAttribute;
+      var a, addLine, connectivity, height, i, isosurfacesGeometry, j, k, lineVertexIndex, linesCount, ref, ref1, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
         attribute.setX(i, index % 4096 / 4096);
         return attribute.setY(i, Math.floor(index / 4096) / height);
       };
-      debugger;
-      wireframeIndexArray = new Uint32Array(this.options.elements.length / 4 * 6 * 2);
-      wireframeIndexArray64 = new Float64Array(wireframeIndexArray.buffer);
-      addLine = function(a, b, target32, index) {
+
+      /*
+       * Create the wireframe mesh (each element is composed of 6 edges), and each edge needs two entries
+      wireframeIndexArray = new Uint32Array @options.elements.length/4*6*2
+      #In order to have 32 and 64 bit datatypes (reason explained below), the integer indexes are read as floats
+      #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
+      #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
+      wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
+      #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
+      #so that edges can be recorded uniquely
+      addLine = (a, b,target32,index) ->
+          [a, b] = [b, a] if a < b
+          target32[index  ] = a; #add first  edge index
+          target32[index+1] = b; #add second edge index
+      
+      
+      for i in [0...@options.elements.length/4]
+        addLine @options.elements[i*4+0], @options.elements[i*4+1],wireframeIndexArray,12*i + 0
+        addLine @options.elements[i*4+1], @options.elements[i*4+2],wireframeIndexArray,12*i + 2
+        addLine @options.elements[i*4+2], @options.elements[i*4+0],wireframeIndexArray,12*i + 4
+        addLine @options.elements[i*4+0], @options.elements[i*4+3],wireframeIndexArray,12*i + 6
+        addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,12*i + 8
+        addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,12*i + 10
+      
+      wireframeIndexArray64.sort() #This is expensive (seems much chaper when tested in browser)
+      
+      #Now traverse the array, collecting all unique elements
+      newwireframeIndexArray64 = new Float64Array wireframeIndexArray64.length
+      #Add first edge by default
+      if newwireframeIndexArray64.length != 0
+        countUniqueEdges = 1
+        newwireframeIndexArray64[0] = wireframeIndexArray64[0]
+      for i in [1...wireframeIndexArray64.length]
+        if wireframeIndexArray64[i-1] != wireframeIndexArray64[i] and i < wireframeIndexArray64.length
+          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
+          countUniqueEdges +=1
+      
+      #Now copy over into smaller array
+      #Some of the array will not have been filled so strip it down
+      wireframeIndexArray64 = null
+      wireframeIndexArray64 = new Float64Array countUniqueEdges
+      for i in [0...countUniqueEdges]
+        wireframeIndexArray64[i] = newwireframeIndexArray64[i]
+      wireframeIndexArray = null #delete old array
+      wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer) #And use the new one instead
+      newwireframeIndexArray64 = null #Delete the old array
+      wireframeIndexArray64 = null #Delete the old array
+      
+      
+      #Create a buffer geometry
+      wireframeGeometry = new THREE.BufferGeometry()
+      #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
+      @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
+      
+      wireframeIndexAttribute = new THREE.BufferAttribute( new Float32Array(wireframeIndexArray.length*2), 2)
+      
+      for i in [0...wireframeIndexArray.length]
+        setVertexIndexCoordinates wireframeIndexAttribute, i, wireframeIndexArray[i]
+      
+      
+      wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
+      #wireframeGeometry.drawRange.count = wireframeIndexAttribute.count #length is deprecated, use count
+      debugger
+      #wireframeGeometry.drawRange.count = countUniqueEdges #length is deprecated, use count
+      wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
+      #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
+       */
+      connectivity = {};
+      linesCount = 0;
+      addLine = function(a, b) {
         var ref;
         if (a > b) {
           ref = [b, a], a = ref[0], b = ref[1];
         }
-        target32[index] = a;
-        return target32[index + 1] = b;
-      };
-      for (i = j = 0, ref = this.options.elements.length / 4; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 1], wireframeIndexArray, 12 * i + 0);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2], wireframeIndexArray, 12 * i + 2);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 0], wireframeIndexArray, 12 * i + 4);
-        addLine(this.options.elements[i * 4 + 0], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 6);
-        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 8);
-        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3], wireframeIndexArray, 12 * i + 10);
-      }
-      wireframeIndexArray64.sort(function(a, b) {
-        return a - b;
-      });
-      newwireframeIndexArray64 = new Float64Array(wireframeIndexArray64.length);
-      if (newwireframeIndexArray64.length !== 0) {
-        countUniqueEdges = 1;
-        newwireframeIndexArray64[0] = wireframeIndexArray64[0];
-      }
-      for (i = k = 1, ref1 = wireframeIndexArray64.length; 1 <= ref1 ? k < ref1 : k > ref1; i = 1 <= ref1 ? ++k : --k) {
-        if (wireframeIndexArray64[i - 1] !== wireframeIndexArray64[i] && i < wireframeIndexArray64.length) {
-          newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i];
-          countUniqueEdges += 1;
+        if (connectivity[a] == null) {
+          connectivity[a] = [];
         }
+        if (connectivity[a].indexOf(b) === -1) {
+          connectivity[a].push(b);
+          return linesCount++;
+        }
+      };
+      debugger;
+      for (i = j = 0, ref = this.options.elements.length / 4; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        addLine(this.options.elements[i * 4], this.options.elements[i * 4 + 1]);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2]);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4]);
+        addLine(this.options.elements[i * 4], this.options.elements[i * 4 + 3]);
+        addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3]);
+        addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3]);
       }
-      wireframeIndexArray64 = null;
-      wireframeIndexArray64 = new Float64Array(countUniqueEdges);
-      for (i = l = 0, ref2 = countUniqueEdges; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
-        wireframeIndexArray64[i] = newwireframeIndexArray64[i];
-      }
-      wireframeIndexArray = null;
-      wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer);
-      newwireframeIndexArray64 = null;
-      wireframeIndexArray64 = null;
+      debugger;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
-      wireframeIndexAttribute = new THREE.BufferAttribute(new Float32Array(wireframeIndexArray.length * 2), 2);
-      for (i = m = 0, ref3 = wireframeIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
-        setVertexIndexCoordinates(wireframeIndexAttribute, i, wireframeIndexArray[i]);
+      wireframeIndexArray = new Float32Array(linesCount * 4);
+      wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
+      lineVertexIndex = 0;
+      for (a in connectivity) {
+        if (!connectivity[a]) {
+          continue;
+        }
+        for (i = k = 0, ref1 = connectivity[a].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a);
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i]);
+          lineVertexIndex += 2;
+        }
       }
-      wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
       debugger;
-      wireframeGeometry.setDrawRange(0, countUniqueEdges * 2);
+      wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
+      wireframeGeometry.setDrawRange(0, linesCount * 2);
+
+      /*
+          wireframeGeometry = new THREE.BoxGeometry  1, 1, 1
+          @wireframeMesh = new THREE.Mesh wireframeGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
+       */
 
       /*
       connectivity = []
