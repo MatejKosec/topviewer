@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, height, i, isosurfacesGeometry, j, k, lineVertexIndex, linesCount, ref, ref1, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, connectivity, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, ref, ref1, ref2, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -77,7 +77,7 @@
       wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
       #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
        */
-      connectivity = {};
+      connectivity = [];
       linesCount = 0;
       addLine = function(a, b) {
         var ref;
@@ -107,11 +107,11 @@
       wireframeIndexArray = new Float32Array(linesCount * 4);
       wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
       lineVertexIndex = 0;
-      for (a in connectivity) {
+      for (a = k = 0, ref1 = connectivity.length; 0 <= ref1 ? k < ref1 : k > ref1; a = 0 <= ref1 ? ++k : --k) {
         if (!connectivity[a]) {
           continue;
         }
-        for (i = k = 0, ref1 = connectivity[a].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+        for (i = l = 0, ref2 = connectivity[a].length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
           setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a);
           setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i]);
           lineVertexIndex += 2;

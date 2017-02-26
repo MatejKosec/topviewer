@@ -73,7 +73,7 @@ class TopViewer.Volume
     wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
     #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
     ###
-    connectivity = {}
+    connectivity = []
     linesCount = 0
 
     addLine = (a, b) ->
@@ -99,7 +99,7 @@ class TopViewer.Volume
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
 
     lineVertexIndex = 0
-    for a of connectivity
+    for a in [0...connectivity.length]
       continue unless connectivity[a]
 
       for i in [0...connectivity[a].length]
