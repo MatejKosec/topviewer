@@ -16,62 +16,12 @@ class TopViewer.Volume
     wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
     #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
     #so that edges can be recorded uniquely
-    addLine = (a, b,target32,index) ->
-        [a, b] = [b, a] if a < b
-        target32[index  ] = a; #add first  edge index
-        target32[index+1] = b; #add second edge index
-
-
-    for i in [0...@options.elements.length/4]
-      addLine @options.elements[i*4+0], @options.elements[i*4+1],wireframeIndexArray,12*i + 0
-      addLine @options.elements[i*4+1], @options.elements[i*4+2],wireframeIndexArray,12*i + 2
-      addLine @options.elements[i*4+2], @options.elements[i*4+0],wireframeIndexArray,12*i + 4
-      addLine @options.elements[i*4+0], @options.elements[i*4+3],wireframeIndexArray,12*i + 6
-      addLine @options.elements[i*4+1], @options.elements[i*4+3],wireframeIndexArray,12*i + 8
-      addLine @options.elements[i*4+2], @options.elements[i*4+3],wireframeIndexArray,12*i + 10
-
-    wireframeIndexArray64.sort() #This is expensive (seems much chaper when tested in browser)
-
-    #Now traverse the array, collecting all unique elements
-    newwireframeIndexArray64 = new Float64Array wireframeIndexArray64.length
-    #Add first edge by default
-    if newwireframeIndexArray64.length != 0
-      countUniqueEdges = 1
-      newwireframeIndexArray64[0] = wireframeIndexArray64[0]
-    for i in [1...wireframeIndexArray64.length]
-      if wireframeIndexArray64[i-1] != wireframeIndexArray64[i] and i < wireframeIndexArray64.length
-        newwireframeIndexArray64[countUniqueEdges] = wireframeIndexArray64[i]
-        countUniqueEdges +=1
-
-    #Now copy over into smaller array
-    #Some of the array will not have been filled so strip it down
-    wireframeIndexArray64 = null
-    wireframeIndexArray64 = new Float64Array countUniqueEdges
-    for i in [0...countUniqueEdges]
-      wireframeIndexArray64[i] = newwireframeIndexArray64[i]
-    wireframeIndexArray = null #delete old array
-    wireframeIndexArray = new Uint32Array(newwireframeIndexArray64.buffer) #And use the new one instead
-    newwireframeIndexArray64 = null #Delete the old array
-    wireframeIndexArray64 = null #Delete the old array
-
 
     #Create a buffer geometry
     wireframeGeometry = new THREE.BufferGeometry()
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
-    wireframeIndexAttribute = new THREE.BufferAttribute( new Float32Array(wireframeIndexArray.length*2), 2)
-
-    for i in [0...wireframeIndexArray.length]
-      setVertexIndexCoordinates wireframeIndexAttribute, i, wireframeIndexArray[i]
-
-
-    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    #wireframeGeometry.drawRange.count = wireframeIndexAttribute.count #length is deprecated, use count
-    debugger
-    #wireframeGeometry.drawRange.count = countUniqueEdges #length is deprecated, use count
-    wireframeGeometry.setDrawRange 0, countUniqueEdges*2 #Set begin and end count for render
-    #wireframeGeometry.drawRange.count= wireframeIndexAttribute.count*wireframeIndexAttribute.itemSize
     ###
     connectivity = []
     linesCount = 0
@@ -99,11 +49,10 @@ class TopViewer.Volume
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
 
     lineVertexIndex = 0
-    for a in [0...connectivity.length]
+    for a of connectivity
       continue unless connectivity[a]
-
       for i in [0...connectivity[a].length]
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a)
+        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
         lineVertexIndex += 2
     debugger

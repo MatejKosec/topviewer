@@ -46,15 +46,15 @@ class TopViewer.Mesh extends THREE.Mesh
     @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
     # Create the wireframe mesh.
-    connectivity = []
+    connectivity = {}
     linesCount = 0
 
     addLine = (a, b) ->
       [a, b] = [b, a] if a > b
 
-      connectivity[a] ?= {}
-      unless connectivity[a][b]
-        connectivity[a][b] = true
+      connectivity[a] ?= []
+      unless connectivity[a].indexOf(b) != -1
+        connectivity[a].push b
         linesCount++
 
     for i in [0...@options.elements.length/3]
@@ -70,16 +70,15 @@ class TopViewer.Mesh extends THREE.Mesh
 
 
     lineVertexIndex = 0
-    for a in [0...connectivity.length]
+    for a of connectivity
       continue unless connectivity[a]
-
-      for b of connectivity[a]
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a)
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, b)
+      for i in [0...connectivity[a].length]
+        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
+        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
         lineVertexIndex += 2
 
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    wireframeGeometry.drawRange.count = linesCount * 2
+    wireframeGeometry.setDrawRange(0, linesCount * 2)
 
 
     # Create the isolines mesh.

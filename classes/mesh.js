@@ -8,7 +8,7 @@
     extend(Mesh, superClass);
 
     function Mesh(options) {
-      var a, addLine, b, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       Mesh.__super__.constructor.call(this, new THREE.BufferGeometry(), this.options.model.material);
       indexArrays = [];
@@ -40,7 +40,7 @@
       this.backsideMesh = new THREE.Mesh(this.geometry, this.options.model.backsideMaterial);
       this.customDepthMaterial = this.options.model.shadowMaterial;
       this.backsideMesh.customDepthMaterial = this.options.model.shadowMaterial;
-      connectivity = [];
+      connectivity = {};
       linesCount = 0;
       addLine = function(a, b) {
         var ref1;
@@ -48,10 +48,10 @@
           ref1 = [b, a], a = ref1[0], b = ref1[1];
         }
         if (connectivity[a] == null) {
-          connectivity[a] = {};
+          connectivity[a] = [];
         }
-        if (!connectivity[a][b]) {
-          connectivity[a][b] = true;
+        if (connectivity[a].indexOf(b) === -1) {
+          connectivity[a].push(b);
           return linesCount++;
         }
       };
@@ -65,18 +65,18 @@
       wireframeIndexArray = new Float32Array(linesCount * 4);
       wireframeIndexAttribute = new THREE.BufferAttribute(wireframeIndexArray, 2);
       lineVertexIndex = 0;
-      for (a = p = 0, ref2 = connectivity.length; 0 <= ref2 ? p < ref2 : p > ref2; a = 0 <= ref2 ? ++p : --p) {
+      for (a in connectivity) {
         if (!connectivity[a]) {
           continue;
         }
-        for (b in connectivity[a]) {
-          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a);
-          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, b);
+        for (i = p = 0, ref2 = connectivity[a].length; 0 <= ref2 ? p < ref2 : p > ref2; i = 0 <= ref2 ? ++p : --p) {
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a));
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i]);
           lineVertexIndex += 2;
         }
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
-      wireframeGeometry.drawRange.count = linesCount * 2;
+      wireframeGeometry.setDrawRange(0, linesCount * 2);
       isolinesGeometry = new THREE.BufferGeometry();
       this.isolinesMesh = new THREE.LineSegments(isolinesGeometry, this.options.model.isolineMaterial);
       faceCount = this.options.elements.length / 3;
