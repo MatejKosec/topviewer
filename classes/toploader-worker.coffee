@@ -248,48 +248,48 @@ class TopParser
       when @constructor.modes.Elements
         # Parse element.
         @currentElementIndex = parseInt parts[0]
-        elementType = parseInt parts[1]
+        @elementType = parseInt parts[1]
 
         # Note: Vertex indices (1-4) based on TOP/DOMDEC User's Manual.
-        switch elementType
+        switch @elementType
           when 4
             #Check if the new element can fit into the buffer
             @currentTriIndex++
-            if @currentTriIndex*3 > @currentElements.elements[elementType].length
+            if @currentTriIndex*3 > @currentElements.elements[@elementType].length
               #Double the size of the array (this is potentially a pretty bad idea for large files)
-              buffer = new Uint32Array @currentElements.elements[elementType].length*2
+              buffer = new Uint32Array @currentElements.elements[@elementType].length*2
               #Copy old stuff over
-              for i in [0...@currentElements.elements[elementType].length]
-                buffer[i] = @currentElements.elements[elementType][i]
+              for i in [0...@currentElements.elements[@elementType].length]
+                buffer[i] = @currentElements.elements[@elementType][i]
               #Swap the arrays
-              @currentElements.elements[elementType] = null; #Get rid of the old reference
-              @currentElements.elements[elementType] = buffer #Set it to the new reference
+              @currentElements.elements[@elementType] = null; #Get rid of the old reference
+              @currentElements.elements[@elementType] = buffer #Set it to the new reference
 
             # Add the new element Triangle (Tri_3)
-            @currentElements.elements[elementType][(@currentTriIndex-1)*3+0] = -1 + parseInt parts[2]
-            @currentElements.elements[elementType][(@currentTriIndex-1)*3+1] = -1 + parseInt parts[3]
-            @currentElements.elements[elementType][(@currentTriIndex-1)*3+2] = -1 + parseInt parts[4]
+            @currentElements.elements[@elementType][(@currentTriIndex-1)*3+0] = -1 + parseInt parts[2]
+            @currentElements.elements[@elementType][(@currentTriIndex-1)*3+1] = -1 + parseInt parts[3]
+            @currentElements.elements[@elementType][(@currentTriIndex-1)*3+2] = -1 + parseInt parts[4]
 
           when 5
             #Check if the new element can fit into the buffer
             @currentTetIndex++
-            if @currentTetIndex*4 > @currentElements.elements[elementType].length
+            if @currentTetIndex*4 > @currentElements.elements[@elementType].length
               #Double the size of the array (this is potentially a pretty bad idea for large files)
-              buffer = new Uint32Array @currentElements.elements[elementType].length*2
+              buffer = new Uint32Array @currentElements.elements[@elementType].length*2
               #Copy old stuff over
-              for i in [0...@currentElements.elements[elementType].length]
-                buffer[i] = @currentElements.elements[elementType][i]
+              for i in [0...@currentElements.elements[@elementType].length]
+                buffer[i] = @currentElements.elements[@elementType][i]
               #Swap the arrays
-              @currentElements.elements[elementType] = null; #Get rid of the old reference
-              @currentElements.elements[elementType] = buffer #Set it to the new reference
+              @currentElements.elements[@elementType] = null; #Get rid of the old reference
+              @currentElements.elements[@elementType] = buffer #Set it to the new reference
 
             #Add the new Tetrahedron (Tetra_4)
-            @currentElements.elements[elementType][(@currentTetIndex-1)*4+0] = -1 + parseInt parts[2]
-            @currentElements.elements[elementType][(@currentTetIndex-1)*4+1] = -1 + parseInt parts[3]
-            @currentElements.elements[elementType][(@currentTetIndex-1)*4+2] = -1 + parseInt parts[4]
-            @currentElements.elements[elementType][(@currentTetIndex-1)*4+3] = -1 + parseInt parts[5]
+            @currentElements.elements[@elementType][(@currentTetIndex-1)*4+0] = -1 + parseInt parts[2]
+            @currentElements.elements[@elementType][(@currentTetIndex-1)*4+1] = -1 + parseInt parts[3]
+            @currentElements.elements[@elementType][(@currentTetIndex-1)*4+2] = -1 + parseInt parts[4]
+            @currentElements.elements[@elementType][(@currentTetIndex-1)*4+3] = -1 + parseInt parts[5]
           else
-            console.error "UNKNOWN ELEMENT TYPE", elementType, parts, line, @lastLine
+            console.error "UNKNOWN ELEMENT TYPE", @elementType, parts, line, @lastLine
 
 
 
@@ -394,19 +394,21 @@ class TopParser
   endElements: ->
     #Make sure the array exactly fits the elements
     #For tirangles
-    if @currentTriIndex*3 != @currentElements.elements[4].length
-      buffer = new Uint32Array @currentTriIndex * 3
-      for i in [0...@currentTriIndex*3]
-        buffer[i] = @currentElements.elements[4][i]
-      @currentElements.elements[4] = null; #Get rid of the old reference
-      @currentElements.elements[4] = buffer
+    if @elementType == 4
+      if @currentTriIndex*3 != @currentElements.elements[4].length
+        buffer = new Uint32Array @currentTriIndex * 3
+        for i in [0...@currentTriIndex*3]
+          buffer[i] = @currentElements.elements[4][i]
+        @currentElements.elements[4] = null; #Get rid of the old reference
+        @currentElements.elements[4] = buffer
     #For tetrahedra
-    if @currentTetIndex*4 != @currentElements.elements[5].length
-      buffer = new Uint32Array @currentTetIndex * 4
-      for i in [0...@currentTetIndex*4]
-        buffer[i] = @currentElements.elements[5][i]
-      @currentElements.elements[5] = null; #Get rid of the old reference
-      @currentElements.elements[5] = buffer
+    else if @elementType == 5
+      if @currentTetIndex*4 != @currentElements.elements[5].length
+        buffer = new Uint32Array @currentTetIndex * 4
+        for i in [0...@currentTetIndex*4]
+          buffer[i] = @currentElements.elements[5][i]
+        @currentElements.elements[5] = null; #Get rid of the old reference
+        @currentElements.elements[5] = buffer
     
     #Save the results
     elementsResult = {}

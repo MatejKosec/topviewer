@@ -139,7 +139,7 @@
     };
 
     TopParser.prototype.parseLine = function(line) {
-      var buffer, elementType, i, j, k, l, parts, ref, ref1, ref2, value;
+      var buffer, i, j, k, l, parts, ref, ref1, ref2, value;
       parts = line.match(/\S+/g);
       switch (parts[0]) {
         case 'Nodes':
@@ -202,37 +202,37 @@
           return this.currentNodes.nodes[(this.currentNodeIndex - 1) * 3 + 2] = parseFloat(parts[3]);
         case this.constructor.modes.Elements:
           this.currentElementIndex = parseInt(parts[0]);
-          elementType = parseInt(parts[1]);
-          switch (elementType) {
+          this.elementType = parseInt(parts[1]);
+          switch (this.elementType) {
             case 4:
               this.currentTriIndex++;
-              if (this.currentTriIndex * 3 > this.currentElements.elements[elementType].length) {
-                buffer = new Uint32Array(this.currentElements.elements[elementType].length * 2);
-                for (i = k = 0, ref1 = this.currentElements.elements[elementType].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-                  buffer[i] = this.currentElements.elements[elementType][i];
+              if (this.currentTriIndex * 3 > this.currentElements.elements[this.elementType].length) {
+                buffer = new Uint32Array(this.currentElements.elements[this.elementType].length * 2);
+                for (i = k = 0, ref1 = this.currentElements.elements[this.elementType].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+                  buffer[i] = this.currentElements.elements[this.elementType][i];
                 }
-                this.currentElements.elements[elementType] = null;
-                this.currentElements.elements[elementType] = buffer;
+                this.currentElements.elements[this.elementType] = null;
+                this.currentElements.elements[this.elementType] = buffer;
               }
-              this.currentElements.elements[elementType][(this.currentTriIndex - 1) * 3 + 0] = -1 + parseInt(parts[2]);
-              this.currentElements.elements[elementType][(this.currentTriIndex - 1) * 3 + 1] = -1 + parseInt(parts[3]);
-              return this.currentElements.elements[elementType][(this.currentTriIndex - 1) * 3 + 2] = -1 + parseInt(parts[4]);
+              this.currentElements.elements[this.elementType][(this.currentTriIndex - 1) * 3 + 0] = -1 + parseInt(parts[2]);
+              this.currentElements.elements[this.elementType][(this.currentTriIndex - 1) * 3 + 1] = -1 + parseInt(parts[3]);
+              return this.currentElements.elements[this.elementType][(this.currentTriIndex - 1) * 3 + 2] = -1 + parseInt(parts[4]);
             case 5:
               this.currentTetIndex++;
-              if (this.currentTetIndex * 4 > this.currentElements.elements[elementType].length) {
-                buffer = new Uint32Array(this.currentElements.elements[elementType].length * 2);
-                for (i = l = 0, ref2 = this.currentElements.elements[elementType].length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
-                  buffer[i] = this.currentElements.elements[elementType][i];
+              if (this.currentTetIndex * 4 > this.currentElements.elements[this.elementType].length) {
+                buffer = new Uint32Array(this.currentElements.elements[this.elementType].length * 2);
+                for (i = l = 0, ref2 = this.currentElements.elements[this.elementType].length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+                  buffer[i] = this.currentElements.elements[this.elementType][i];
                 }
-                this.currentElements.elements[elementType] = null;
-                this.currentElements.elements[elementType] = buffer;
+                this.currentElements.elements[this.elementType] = null;
+                this.currentElements.elements[this.elementType] = buffer;
               }
-              this.currentElements.elements[elementType][(this.currentTetIndex - 1) * 4 + 0] = -1 + parseInt(parts[2]);
-              this.currentElements.elements[elementType][(this.currentTetIndex - 1) * 4 + 1] = -1 + parseInt(parts[3]);
-              this.currentElements.elements[elementType][(this.currentTetIndex - 1) * 4 + 2] = -1 + parseInt(parts[4]);
-              return this.currentElements.elements[elementType][(this.currentTetIndex - 1) * 4 + 3] = -1 + parseInt(parts[5]);
+              this.currentElements.elements[this.elementType][(this.currentTetIndex - 1) * 4 + 0] = -1 + parseInt(parts[2]);
+              this.currentElements.elements[this.elementType][(this.currentTetIndex - 1) * 4 + 1] = -1 + parseInt(parts[3]);
+              this.currentElements.elements[this.elementType][(this.currentTetIndex - 1) * 4 + 2] = -1 + parseInt(parts[4]);
+              return this.currentElements.elements[this.elementType][(this.currentTetIndex - 1) * 4 + 3] = -1 + parseInt(parts[5]);
             default:
-              return console.error("UNKNOWN ELEMENT TYPE", elementType, parts, line, this.lastLine);
+              return console.error("UNKNOWN ELEMENT TYPE", this.elementType, parts, line, this.lastLine);
           }
           break;
         case this.constructor.modes.VectorCount:
@@ -323,21 +323,24 @@
 
     TopParser.prototype.endElements = function() {
       var buffer, elementsResult, i, j, k, ref, ref1;
-      if (this.currentTriIndex * 3 !== this.currentElements.elements[4].length) {
-        buffer = new Uint32Array(this.currentTriIndex * 3);
-        for (i = j = 0, ref = this.currentTriIndex * 3; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-          buffer[i] = this.currentElements.elements[4][i];
+      if (this.elementType === 4) {
+        if (this.currentTriIndex * 3 !== this.currentElements.elements[4].length) {
+          buffer = new Uint32Array(this.currentTriIndex * 3);
+          for (i = j = 0, ref = this.currentTriIndex * 3; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+            buffer[i] = this.currentElements.elements[4][i];
+          }
+          this.currentElements.elements[4] = null;
+          this.currentElements.elements[4] = buffer;
         }
-        this.currentElements.elements[4] = null;
-        this.currentElements.elements[4] = buffer;
-      }
-      if (this.currentTetIndex * 4 !== this.currentElements.elements[5].length) {
-        buffer = new Uint32Array(this.currentTetIndex * 4);
-        for (i = k = 0, ref1 = this.currentTetIndex * 4; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-          buffer[i] = this.currentElements.elements[5][i];
+      } else if (this.elementType === 5) {
+        if (this.currentTetIndex * 4 !== this.currentElements.elements[5].length) {
+          buffer = new Uint32Array(this.currentTetIndex * 4);
+          for (i = k = 0, ref1 = this.currentTetIndex * 4; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+            buffer[i] = this.currentElements.elements[5][i];
+          }
+          this.currentElements.elements[5] = null;
+          this.currentElements.elements[5] = buffer;
         }
-        this.currentElements.elements[5] = null;
-        this.currentElements.elements[5] = buffer;
       }
       elementsResult = {};
       elementsResult[this.currentElementsName] = this.currentElements;
