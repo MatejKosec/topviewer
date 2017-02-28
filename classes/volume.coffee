@@ -58,8 +58,8 @@ class TopViewer.Volume
     debugger
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.setDrawRange(0, linesCount * 2)
-
-
+ 
+    ###
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
@@ -91,7 +91,10 @@ class TopViewer.Volume
     isosurfacesGeometry.addAttribute "cornerIndex", isosurfacesCornerIndexAttribute
 
     isosurfacesGeometry.drawRange.count = tetraCount * 6
+    ###
 
+    isosurfacesGeometry= new THREE.BoxGeometry  1, 1, 1
+    @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
 
     # Finish creating geometry.
     @_updateGeometry()

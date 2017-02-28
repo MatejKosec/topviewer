@@ -46,7 +46,7 @@
       @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
       # Create the wireframe mesh.
-      connectivity = []
+      connectivity = {}
       linesCount = 0
 
       addLine = (a, b) ->
