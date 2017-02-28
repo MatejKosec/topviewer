@@ -7,22 +7,8 @@ class TopViewer.Volume
     setVertexIndexCoordinates = (attribute, i, index) ->
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
-    ###
-    # Create the wireframe mesh (each element is composed of 6 edges), and each edge needs two entries
-    wireframeIndexArray = new Uint32Array @options.elements.length/4*6*2
-    #In order to have 32 and 64 bit datatypes (reason explained below), the integer indexes are read as floats
-    #To check whether the edge is present 2 consecutive 32bit integrers (or floats should be check (i.e. 1 64 bit integer)
-    #Because, js doesn't do 2D typed arrays, it needs to be tricked by casting the 32bit uints into 32bit uints
-    wireframeIndexArray64 = new Float64Array wireframeIndexArray.buffer #this will use the same data as the 32 bit array
-    #When adding lines, make sure smaller index is always first, so that a,b records the same way as b,a
-    #so that edges can be recorded uniquely
 
-    #Create a buffer geometry
-    wireframeGeometry = new THREE.BufferGeometry()
-    #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
-    @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
-
-    ###
+    #Create the 3D wireframe 
     connectivity = []
     linesCount = 0
 
@@ -43,6 +29,7 @@ class TopViewer.Volume
       addLine(@options.elements[i*4+2], @options.elements[i*4+3])
     debugger
     wireframeGeometry = new THREE.BufferGeometry()
+    #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
     wireframeIndexArray = new Float32Array linesCount * 4
@@ -58,8 +45,7 @@ class TopViewer.Volume
     debugger
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.setDrawRange(0, linesCount * 2)
- 
-    ###
+
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
@@ -91,10 +77,6 @@ class TopViewer.Volume
     isosurfacesGeometry.addAttribute "cornerIndex", isosurfacesCornerIndexAttribute
 
     isosurfacesGeometry.drawRange.count = tetraCount * 6
-    ###
-
-    isosurfacesGeometry= new THREE.BoxGeometry  1, 1, 1
-    @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
 
     # Finish creating geometry.
     @_updateGeometry()

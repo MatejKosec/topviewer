@@ -11,7 +11,7 @@
     var loadChunk, parser, rangeHeader, rangeHeaderParts, rangeLength, request, requestRangeEnd, requestRangeStart, totalLength, url;
     url = message.data.url;
     parser = new TopParser(url);
-    rangeLength = 50 * 1024 * 1024;
+    rangeLength = 100 * 1024 * 1024;
     requestRangeStart = 0;
     requestRangeEnd = rangeLength - 1;
     request = new XMLHttpRequest;
