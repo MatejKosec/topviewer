@@ -5,10 +5,12 @@
     hasProp = {}.hasOwnProperty;
 
   TopViewer.Mesh = (function(superClass) {
+    var faceCount, i, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, m, n, o, ref, ref1;
+
     extend(Mesh, superClass);
 
     function Mesh(options) {
-      var a, addLine, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, height, i, indexArrays, indexAttributes, j, l, lineVertexIndex, linesCount, m, n, o, p, ref, ref1, ref2, setVertexIndexCoordinates, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       Mesh.__super__.constructor.call(this, new THREE.BufferGeometry(), this.options.model.material);
       indexArrays = [];
@@ -77,47 +79,65 @@
       }
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
       wireframeGeometry.setDrawRange(0, linesCount * 2);
-      isolinesGeometry = new THREE.BufferGeometry();
-      this.isolinesMesh = new THREE.LineSegments(isolinesGeometry, this.options.model.isolineMaterial);
-      faceCount = this.options.elements.length / 3;
-      for (i = q = 0; q <= 2; i = ++q) {
-        isolinesIndexArray = new Float32Array(faceCount * 4);
-        isolinesIndexAttribute = new THREE.BufferAttribute(isolinesIndexArray, 2);
-        for (j = r = 0, ref3 = faceCount; 0 <= ref3 ? r < ref3 : r > ref3; j = 0 <= ref3 ? ++r : --r) {
-          for (k = s = 0; s < 2; k = ++s) {
-            setVertexIndexCoordinates(isolinesIndexAttribute, j * 2 + k, this.options.elements[j * 3 + i]);
-          }
-        }
-        isolinesGeometry.addAttribute("vertexIndexCorner" + (i + 1), isolinesIndexAttribute);
-      }
-      isolinesTypeArray = new Float32Array(faceCount * 2);
-      isolinesTypeAttribute = new THREE.BufferAttribute(isolinesTypeArray, 1);
-      for (i = t = 0, ref4 = faceCount; 0 <= ref4 ? t < ref4 : t > ref4; i = 0 <= ref4 ? ++t : --t) {
-        isolinesTypeArray[i * 2 + 1] = 1.0;
-      }
-      isolinesGeometry.addAttribute("cornerIndex", isolinesTypeAttribute);
-      isolinesGeometry.drawRange.count = faceCount * 2;
-      this._updateGeometry();
-      this.options.model.add(this);
-      this.options.model.add(this.backsideMesh);
-      this.options.model.add(this.wireframeMesh);
-      this.options.model.add(this.isolinesMesh);
-      this.options.engine.renderingControls.addMesh(this.options.name, this);
     }
 
-    Mesh.prototype._updateGeometry = function() {
+    isolinesGeometry = new THREE.BufferGeometry();
+
+    Mesh.isolinesMesh = new THREE.LineSegments(isolinesGeometry, Mesh.options.model.isolineMaterial);
+
+    faceCount = Mesh.options.elements.length / 3;
+
+    for (i = l = 0; l <= 2; i = ++l) {
+      isolinesIndexArray = new Float32Array(faceCount * 4);
+      isolinesIndexAttribute = new THREE.BufferAttribute(isolinesIndexArray, 2);
+      for (j = m = 0, ref = faceCount; 0 <= ref ? m < ref : m > ref; j = 0 <= ref ? ++m : --m) {
+        for (k = n = 0; n < 2; k = ++n) {
+          setVertexIndexCoordinates(isolinesIndexAttribute, j * 2 + k, Mesh.options.elements[j * 3 + i]);
+        }
+      }
+      isolinesGeometry.addAttribute("vertexIndexCorner" + (i + 1), isolinesIndexAttribute);
+    }
+
+    isolinesTypeArray = new Float32Array(faceCount * 2);
+
+    isolinesTypeAttribute = new THREE.BufferAttribute(isolinesTypeArray, 1);
+
+    for (i = o = 0, ref1 = faceCount; 0 <= ref1 ? o < ref1 : o > ref1; i = 0 <= ref1 ? ++o : --o) {
+      isolinesTypeArray[i * 2 + 1] = 1.0;
+    }
+
+    isolinesGeometry.addAttribute("cornerIndex", isolinesTypeAttribute);
+
+    isolinesGeometry.drawRange.count = faceCount * 2;
+
+    Mesh._updateGeometry();
+
+    Mesh.options.model.add(Mesh);
+
+    Mesh.options.model.add(Mesh.backsideMesh);
+
+    Mesh.options.model.add(Mesh.wireframeMesh);
+
+    Mesh.options.model.add(Mesh.isolinesMesh);
+
+    Mesh.options.engine.renderingControls.addMesh(Mesh.options.name, Mesh);
+
+    return Mesh;
+
+  })(THREE.Mesh);
+
+  ({
+    _updateGeometry: function() {
       this._updateBounds(this, this.options.model);
       this._updateBounds(this.backsideMesh, this.options.model);
       this._updateBounds(this.wireframeMesh, this.options.model);
       return this._updateBounds(this.isolinesMesh, this.options.model);
-    };
-
-    Mesh.prototype._updateBounds = function(mesh, model) {
+    },
+    _updateBounds: function(mesh, model) {
       mesh.geometry.boundingBox = this.options.model.boundingBox;
       return mesh.geometry.boundingSphere = this.options.model.boundingSphere;
-    };
-
-    Mesh.prototype.showFrame = function() {
+    },
+    showFrame: function() {
       var enableShadows;
       if (!this.renderingControls) {
         this.visible = false;
@@ -146,11 +166,8 @@
       this.receiveShadows = enableShadows;
       this.backsideMesh.castShadow = enableShadows;
       return this.backsideMesh.receiveShadows = enableShadows;
-    };
-
-    return Mesh;
-
-  })(THREE.Mesh);
+    }
+  });
 
 }).call(this);
 

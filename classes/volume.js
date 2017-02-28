@@ -71,53 +71,6 @@
       wireframeGeometry.setDrawRange(0, linesCount * 2);
 
       /*
-          wireframeGeometry = new THREE.BoxGeometry  1, 1, 1
-          @wireframeMesh = new THREE.Mesh wireframeGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
-       */
-
-      /*
-      connectivity = []
-      linesCount = 0
-      
-      addLine = (a, b) ->
-        [a, b] = [b, a] if a > b
-      
-        connectivity[a] ?= {}
-        unless connectivity[a][b]
-          connectivity[a][b] = true
-          linesCount++
-      
-      for i in [0...@options.elements.length/4]
-        addLine(@options.elements[i*4], @options.elements[i*4+1])
-        addLine(@options.elements[i*4+1], @options.elements[i*4+2])
-        addLine(@options.elements[i*4+2], @options.elements[i*4])
-        addLine(@options.elements[i*4], @options.elements[i*4+3])
-        addLine(@options.elements[i*4+1], @options.elements[i*4+3])
-        addLine(@options.elements[i*4+2], @options.elements[i*4+3])
-      debugger
-      wireframeGeometry = new THREE.BufferGeometry()
-      @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
-      
-      wireframeIndexArray = new Float32Array linesCount * 4
-      wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
-      
-      lineVertexIndex = 0
-      for a in [0...connectivity.length]
-        continue unless connectivity[a]
-      
-        for b of connectivity[a]
-          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, a)
-          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, b)
-          lineVertexIndex += 2
-      
-      wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-      wireframeGeometry.drawRange.count = linesCount * 2
-      
-      wireframeGeometry = new THREE.BoxGeometry  1, 1, 1
-      @wireframeMesh = new THREE.Mesh wireframeGeometry, new THREE.MeshBasicMaterial  { color: 0x00ff00 }
-       */
-
-      /*
        * Create the isosurfaces mesh.
       isosurfacesGeometry = new THREE.BufferGeometry()
       @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial

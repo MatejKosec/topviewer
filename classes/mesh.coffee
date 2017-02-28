@@ -1,84 +1,84 @@
-'use strict'
+  'use strict'
 
-class TopViewer.Mesh extends THREE.Mesh
-  constructor: (@options) ->
-    super new THREE.BufferGeometry(), @options.model.material
+  class TopViewer.Mesh extends THREE.Mesh
+    constructor: (@options) ->
+      super new THREE.BufferGeometry(), @options.model.material
 
-    # Create the surface mesh. We send in all three triangle indices so we can calculate the normal in the shader.
-    indexArrays = []
-    indexAttributes = []
-    for i in [0..2]
-      indexArrays[i] = new Float32Array @options.elements.length * 2
-      indexAttributes[i] = new THREE.BufferAttribute indexArrays[i], 2
+      # Create the surface mesh. We send in all three triangle indices so we can calculate the normal in the shader.
+      indexArrays = []
+      indexAttributes = []
+      for i in [0..2]
+        indexArrays[i] = new Float32Array @options.elements.length * 2
+        indexAttributes[i] = new THREE.BufferAttribute indexArrays[i], 2
 
-    # We also need to tell the vertices what their index is and if they are part of the main or additional face.
-    cornerIndexArray = new Float32Array @options.elements.length
-    cornerIndexAttribute = new THREE.BufferAttribute cornerIndexArray, 1
+      # We also need to tell the vertices what their index is and if they are part of the main or additional face.
+      cornerIndexArray = new Float32Array @options.elements.length
+      cornerIndexAttribute = new THREE.BufferAttribute cornerIndexArray, 1
 
-    height = @options.model.basePositionsTexture.image.height
+      height = @options.model.basePositionsTexture.image.height
 
-    setVertexIndexCoordinates = (attribute, i, index) ->
-      attribute.setX i, index % 4096 / 4096
-      attribute.setY i, Math.floor(index / 4096) / height
+      setVertexIndexCoordinates = (attribute, i, index) ->
+        attribute.setX i, index % 4096 / 4096
+        attribute.setY i, Math.floor(index / 4096) / height
 
-    for i in [0...@options.elements.length]
-      cornerInTriangle = i % 3
-      cornerIndexArray[i] = cornerInTriangle * 0.1
+      for i in [0...@options.elements.length]
+        cornerInTriangle = i % 3
+        cornerIndexArray[i] = cornerInTriangle * 0.1
 
-      # Create normal indices.
-      baseIndex = Math.floor(i/3) * 3
+        # Create normal indices.
+        baseIndex = Math.floor(i/3) * 3
 
-      # Set the 3 indices of the triangle (that this vertex is part of).
-      for j in [0..2]
-        setVertexIndexCoordinates(indexAttributes[j], i, @options.elements[baseIndex+j])
+        # Set the 3 indices of the triangle (that this vertex is part of).
+        for j in [0..2]
+          setVertexIndexCoordinates(indexAttributes[j], i, @options.elements[baseIndex+j])
 
-    @geometry.addAttribute 'vertexIndexCorner1', indexAttributes[0]
-    @geometry.addAttribute 'vertexIndexCorner2', indexAttributes[1]
-    @geometry.addAttribute 'vertexIndexCorner3', indexAttributes[2]
-    @geometry.addAttribute 'cornerIndex', cornerIndexAttribute
+      @geometry.addAttribute 'vertexIndexCorner1', indexAttributes[0]
+      @geometry.addAttribute 'vertexIndexCorner2', indexAttributes[1]
+      @geometry.addAttribute 'vertexIndexCorner3', indexAttributes[2]
+      @geometry.addAttribute 'cornerIndex', cornerIndexAttribute
 
-    @geometry.drawRange.count = @options.elements.length
+      @geometry.drawRange.count = @options.elements.length
 
-    @backsideMesh = new THREE.Mesh @geometry, @options.model.backsideMaterial
+      @backsideMesh = new THREE.Mesh @geometry, @options.model.backsideMaterial
 
-    # Set the custom material for shadows.
-    @customDepthMaterial = @options.model.shadowMaterial
-    @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
+      # Set the custom material for shadows.
+      @customDepthMaterial = @options.model.shadowMaterial
+      @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
-    # Create the wireframe mesh.
-    connectivity = {}
-    linesCount = 0
+      # Create the wireframe mesh.
+      connectivity = {}
+      linesCount = 0
 
-    addLine = (a, b) ->
-      [a, b] = [b, a] if a > b
+      addLine = (a, b) ->
+        [a, b] = [b, a] if a > b
 
-      connectivity[a] ?= []
-      unless connectivity[a].indexOf(b) != -1
-        connectivity[a].push b
-        linesCount++
+        connectivity[a] ?= []
+        unless connectivity[a].indexOf(b) != -1
+          connectivity[a].push b
+          linesCount++
 
-    for i in [0...@options.elements.length/3]
-      addLine(@options.elements[i*3], @options.elements[i*3+1])
-      addLine(@options.elements[i*3+1], @options.elements[i*3+2])
-      addLine(@options.elements[i*3+2], @options.elements[i*3])
+      for i in [0...@options.elements.length/3]
+        addLine(@options.elements[i*3], @options.elements[i*3+1])
+        addLine(@options.elements[i*3+1], @options.elements[i*3+2])
+        addLine(@options.elements[i*3+2], @options.elements[i*3])
 
-    wireframeGeometry = new THREE.BufferGeometry()
-    @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.wireframeMaterial
+      wireframeGeometry = new THREE.BufferGeometry()
+      @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.wireframeMaterial
 
-    wireframeIndexArray = new Float32Array linesCount * 4
-    wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
+      wireframeIndexArray = new Float32Array linesCount * 4
+      wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
 
 
-    lineVertexIndex = 0
-    for a of connectivity
-      continue unless connectivity[a]
-      for i in [0...connectivity[a].length]
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
-        lineVertexIndex += 2
+      lineVertexIndex = 0
+      for a of connectivity
+        continue unless connectivity[a]
+        for i in [0...connectivity[a].length]
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
+          setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
+          lineVertexIndex += 2
 
-    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    wireframeGeometry.setDrawRange(0, linesCount * 2)
+      wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
+      wireframeGeometry.setDrawRange(0, linesCount * 2)
 
 
     # Create the isolines mesh.
