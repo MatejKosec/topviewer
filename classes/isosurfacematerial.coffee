@@ -20,6 +20,9 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 #{TopViewer.ShaderChunks.isovalueMaterialVertex}
 #{TopViewer.ShaderChunks.surfaceMaterialVertex}
 
+
+uniform sampler2D tetraTexture;
+attribute float masterIndex;
 attribute vec2 vertexIndexCorner1;
 attribute vec2 vertexIndexCorner2;
 attribute vec2 vertexIndexCorner3;

@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, height, i, isosurfacesCornerIndexArray, isosurfacesCornerIndexAttribute, isosurfacesGeometry, isosurfacesIndexArray, isosurfacesIndexAttribute, j, k, l, lineVertexIndex, linesCount, m, n, o, p, q, r, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraCount, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, connectivity, height, i, isosurfacesCornerIndexArray, isosurfacesCornerIndexAttribute, isosurfacesGeometry, isosurfacesIndexArray, isosurfacesIndexAttribute, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -25,7 +25,6 @@
           return linesCount++;
         }
       };
-      debugger;
       for (i = l = 0, ref = this.options.elements.length / 4; 0 <= ref ? l < ref : l > ref; i = 0 <= ref ? ++l : --l) {
         addLine(this.options.elements[i * 4], this.options.elements[i * 4 + 1]);
         addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2]);
@@ -34,7 +33,6 @@
         addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 3]);
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3]);
       }
-      debugger;
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       wireframeIndexArray = new Float32Array(linesCount * 4);
@@ -50,18 +48,31 @@
           lineVertexIndex += 2;
         }
       }
-      debugger;
       wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
       wireframeGeometry.setDrawRange(0, linesCount * 2);
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
+      tetraHeight = 1;
+      while (this.options.elements.length / 4 > 4096 * tetraHeight) {
+        tetraHeight *= 2;
+      }
+      this.options.model.tetraTexture = new THREE.DataTexture(this.options.elements, 4096, tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType);
+      this.options.model.tetraTexture.needsUpdate = true;
+      debugger;
       tetraCount = this.options.elements.length / 4;
-      for (i = n = 0; n <= 3; i = ++n) {
+      masterIndexArray = new Float32Array(tetraCount * 6);
+      for (i = n = 0, ref2 = masterIndexArray.length; 0 <= ref2 ? n < ref2 : n > ref2; i = 0 <= ref2 ? ++n : --n) {
+        masterIndexArray[i] = i;
+      }
+      masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
+      isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      tetraCount = this.options.elements.length / 4;
+      for (i = o = 0; o <= 3; i = ++o) {
         isosurfacesIndexArray = new Float32Array(tetraCount * 12);
         isosurfacesIndexAttribute = new THREE.BufferAttribute(isosurfacesIndexArray, 2);
-        for (j = o = 0, ref2 = tetraCount; 0 <= ref2 ? o < ref2 : o > ref2; j = 0 <= ref2 ? ++o : --o) {
-          for (k = p = 0; p < 6; k = ++p) {
+        for (j = p = 0, ref3 = tetraCount; 0 <= ref3 ? p < ref3 : p > ref3; j = 0 <= ref3 ? ++p : --p) {
+          for (k = q = 0; q < 6; k = ++q) {
             setVertexIndexCoordinates(isosurfacesIndexAttribute, j * 6 + k, this.options.elements[j * 4 + i]);
           }
         }
@@ -69,8 +80,8 @@
       }
       isosurfacesCornerIndexArray = new Float32Array(tetraCount * 6);
       isosurfacesCornerIndexAttribute = new THREE.BufferAttribute(isosurfacesCornerIndexArray, 1);
-      for (i = q = 0, ref3 = tetraCount; 0 <= ref3 ? q < ref3 : q > ref3; i = 0 <= ref3 ? ++q : --q) {
-        for (k = r = 0; r < 6; k = ++r) {
+      for (i = r = 0, ref4 = tetraCount; 0 <= ref4 ? r < ref4 : r > ref4; i = 0 <= ref4 ? ++r : --r) {
+        for (k = s = 0; s < 6; k = ++s) {
           isosurfacesCornerIndexArray[i * 6 + k] = k * 0.1;
         }
       }
@@ -98,8 +109,8 @@
         this.isosurfacesMesh.visible = false;
         return;
       }
-      this.wireframeMesh.visible = true;
-      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
+      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
+      return this.isosurfacesMesh.visible = true;
     };
 
     return Volume;

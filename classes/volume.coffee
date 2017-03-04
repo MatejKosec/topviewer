@@ -19,7 +19,7 @@ class TopViewer.Volume
       unless connectivity[a].indexOf(b) != -1
         connectivity[a].push b
         linesCount++
-    debugger
+
     for i in [0...@options.elements.length/4]
       addLine(@options.elements[i*4], @options.elements[i*4+1])
       addLine(@options.elements[i*4+1], @options.elements[i*4+2])
@@ -27,7 +27,7 @@ class TopViewer.Volume
       addLine(@options.elements[i*4], @options.elements[i*4+3])
       addLine(@options.elements[i*4+1], @options.elements[i*4+3])
       addLine(@options.elements[i*4+2], @options.elements[i*4+3])
-    debugger
+
     wireframeGeometry = new THREE.BufferGeometry()
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
@@ -42,7 +42,7 @@ class TopViewer.Volume
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
         lineVertexIndex += 2
-    debugger
+
     wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.setDrawRange(0, linesCount * 2)
 
@@ -50,6 +50,26 @@ class TopViewer.Volume
     isosurfacesGeometry = new THREE.BufferGeometry()
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
     @isosurfacesMesh.receiveShadows = true
+
+    #Create a texture for the tetraheadra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
+    tetraHeight=1
+    while @options.elements.length / 4 > 4096 * tetraHeight
+      tetraHeight *= 2
+    @options.model.tetraTexture = new THREE.DataTexture @options.elements, 4096,\
+      tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType
+    @options.model.tetraTexture.needsUpdate = true
+    debugger
+
+    #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
+    tetraCount = @options.elements.length / 4
+      #The master index records which thread this is out of a global 6*tetraCount threads
+      #6 sequential threads collaborate on the isosurface for the same triangle
+    masterIndexArray = new Float32Array tetraCount * 6
+    for i in [0...masterIndexArray.length]
+      masterIndexArray[i] = i
+      #Store the master indexes into an attribute buffer
+    masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
+    isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
 
     tetraCount = @options.elements.length / 4
 
@@ -60,7 +80,7 @@ class TopViewer.Volume
       isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
 
       # Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
-      for j in [0...tetraCount]
+      for j in [0...tetraCount] #Repeating 1 element six times seems unnecessary...
         for k in [0...6]
           setVertexIndexCoordinates(isosurfacesIndexAttribute, j*6+k, @options.elements[j * 4 + i])
 
@@ -70,13 +90,16 @@ class TopViewer.Volume
     isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
     isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
 
-    for i in [0...tetraCount]
+    for i in [0...tetraCount] #Why can't we compute this in the shader? Does not depend on data...
       for k in [0...6]
         isosurfacesCornerIndexArray[i * 6 + k] = k * 0.1
 
     isosurfacesGeometry.addAttribute "cornerIndex", isosurfacesCornerIndexAttribute
 
     isosurfacesGeometry.drawRange.count = tetraCount * 6
+
+
+    #isosurfacesGeometry.setDrawRange tetraCount
 
     # Finish creating geometry.
     @_updateGeometry()
@@ -103,5 +126,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = true #@renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()
+    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
+    @isosurfacesMesh.visible = true #@renderingControls.showIsosurfacesControl.value()
