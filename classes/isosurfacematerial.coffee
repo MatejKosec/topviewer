@@ -2,9 +2,16 @@
 
 class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
   constructor: (@model) ->
+    debugger
     options =
       uniforms:
         lightingBidirectional:
+          value: 0
+        tetraTextureHeight:
+          type: 'i'
+          value: 0
+        bufferTextureHeight:
+          type: 'i'
           value: 0
 
       defines:
@@ -23,6 +30,8 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 
 uniform sampler2D tetraTexture;
 attribute float masterIndex;
+uniform int bufferTextureHeight;
+uniform int tetraTextureHeight;
 attribute vec2 vertexIndexCorner1;
 attribute vec2 vertexIndexCorner2;
 attribute vec2 vertexIndexCorner3;
@@ -52,6 +61,9 @@ void main()	{
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
   scalar = -1.0;
+    vec4 tet = texture2D(tetraTexture, vec2(masterIndex*0.1, 0.1)).rgba;
+    tet[0] = tet[1] + bufferTextureHeight + tetraTextureHeight;
+
 
   // Isosurfaces only exists if we have a scalar.
   if (scalarsRange > 0.0) {
