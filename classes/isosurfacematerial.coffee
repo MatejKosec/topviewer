@@ -39,6 +39,7 @@ vec2 vertexIndexCorner2;
 vec2 vertexIndexCorner3;
 vec2 vertexIndexCorner4;
 float cornerIndex;
+float tetraIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
@@ -63,9 +64,14 @@ void main()	{
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
   scalar = -1.0;
+  //The corner index is also just a function of the worker index (mod 6)
+  cornerIndex = mod(masterIndex,6.0)*0.1;
+  //The tetra index repeats for six workers (i.e. there are six triangle edges per each tetrahedron)
+  tetraIndex =  floor(masterIndex/6.0);
+
   //This is the tetra that the given worker thread is to use the data for.
-  float tetraAcess1 = mod(masterIndex,4096.0)/4096.0;
-  float tetraAcess2 = floor(masterIndex/4096.0)/tetraTextureHeight;
+  float tetraAcess1 = mod(tetraIndex,4096.0)/4096.0;
+  float tetraAcess2 = floor(tetraIndex/4096.0)/tetraTextureHeight;
   vec4 tetra = texture2D(tetraTexture, vec2(tetraAcess1,tetraAcess2)).rgba;
   vertexIndexCorner1[0] = mod(tetra[0],4096.0)/4096.0;
   vertexIndexCorner1[1] = floor(tetra[0]/4096.0)/bufferTextureHeight;
@@ -75,7 +81,7 @@ void main()	{
   vertexIndexCorner3[1] = floor(tetra[2]/4096.0)/bufferTextureHeight;
   vertexIndexCorner4[0] = mod(tetra[3],4096.0)/4096.0;
   vertexIndexCorner4[1] = floor(tetra[3]/4096.0)/bufferTextureHeight;
-  cornerIndex = mod(masterIndex,6.0)*0.1;
+
 
 
   // Isosurfaces only exists if we have a scalar.

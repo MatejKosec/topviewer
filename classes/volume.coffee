@@ -64,8 +64,6 @@ class TopViewer.Volume
     @options.model.isosurfaceMaterial.tetraTextureHeight = tetraHeight
     @options.model.isosurfaceMaterial.bufferTextureHeight = height
 
-
-
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
       #The master index records which thread this is out of a global 6*tetraCount threads
