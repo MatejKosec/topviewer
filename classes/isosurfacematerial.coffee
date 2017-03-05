@@ -2,16 +2,15 @@
 
 class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
   constructor: (@model) ->
-    debugger
     options =
       uniforms:
         lightingBidirectional:
           value: 0
         tetraTextureHeight:
-          type: 'i'
+          type: 'f'
           value: 0
         bufferTextureHeight:
-          type: 'i'
+          type: 'f'
           value: 0
 
       defines:
@@ -29,14 +28,17 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 
 
 uniform sampler2D tetraTexture;
+
+uniform float bufferTextureHeight;
+uniform float tetraTextureHeight;
+//The master index is a form of worker index as used in opencl or CUDA
 attribute float masterIndex;
-uniform int bufferTextureHeight;
-uniform int tetraTextureHeight;
-attribute vec2 vertexIndexCorner1;
-attribute vec2 vertexIndexCorner2;
-attribute vec2 vertexIndexCorner3;
-attribute vec2 vertexIndexCorner4;
-attribute float cornerIndex;
+//The vertexIndexCorner values are now sampled from a texture (no longer attributes)
+vec2 vertexIndexCorner1;
+vec2 vertexIndexCorner2;
+vec2 vertexIndexCorner3;
+vec2 vertexIndexCorner4;
+float cornerIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
@@ -61,8 +63,19 @@ void main()	{
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
   scalar = -1.0;
-    vec4 tet = texture2D(tetraTexture, vec2(masterIndex*0.1, 0.1)).rgba;
-    tet[0] = tet[1] + bufferTextureHeight + tetraTextureHeight;
+  //This is the tetra that the given worker thread is to use the data for.
+  float tetraAcess1 = mod(masterIndex,4096.0)/4096.0;
+  float tetraAcess2 = floor(masterIndex/4096.0)/tetraTextureHeight;
+  vec4 tetra = texture2D(tetraTexture, vec2(tetraAcess1,tetraAcess2)).rgba;
+  vertexIndexCorner1[0] = mod(tetra[0],4096.0)/4096.0;
+  vertexIndexCorner1[1] = floor(tetra[0]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner2[0] = mod(tetra[1],4096.0)/4096.0;
+  vertexIndexCorner2[1] = floor(tetra[1]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner3[0] = mod(tetra[2],4096.0)/4096.0;
+  vertexIndexCorner3[1] = floor(tetra[2]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner4[0] = mod(tetra[3],4096.0)/4096.0;
+  vertexIndexCorner4[1] = floor(tetra[3]/4096.0)/bufferTextureHeight;
+  cornerIndex = mod(masterIndex,6.0)*0.1;
 
 
   // Isosurfaces only exists if we have a scalar.

@@ -72,7 +72,6 @@
         this.boundingBox.expandByPoint(new THREE.Vector3(this.nodes[i * 3], this.nodes[i * 3 + 1], this.nodes[i * 3 + 2]));
       }
       this.boundingSphere = this.boundingBox.getBoundingSphere();
-      debugger;
       this.basePositionsTexture = new THREE.DataTexture(this.basePositions, 4096, height, THREE.RGBFormat, THREE.FloatType);
       this.basePositionsTexture.needsUpdate = true;
       this.material = new TopViewer.ModelMaterial(this);
@@ -94,7 +93,6 @@
     }
 
     Model.prototype.addElements = function(elementsName, elementsType, elements) {
-      debugger;
       var collection, constructor;
       switch (elementsType) {
         case 4:

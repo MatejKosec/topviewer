@@ -73,39 +73,11 @@ class TopViewer.Volume
     masterIndexArray = new Float32Array tetraCount * 6
     for i in [0...masterIndexArray.length]
       masterIndexArray[i] = i
-      #Store the master indexes into an attribute buffer
+    #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
 
-    tetraCount = @options.elements.length / 4
-
-    # Each isosurface vertex needs access to all four tetra vertices.
-    for i in [0..3]
-      # The format of the array is, for each tetra: 6 * v[i]_x, v[i]_y
-      isosurfacesIndexArray = new Float32Array tetraCount * 12
-      isosurfacesIndexAttribute = new THREE.BufferAttribute isosurfacesIndexArray, 2
-
-      # Add each tetra vertex (first, second, third or fourth, depending on i) to all 6 isovertices.
-      for j in [0...tetraCount] #Repeating 1 element six times seems unnecessary...
-        for k in [0...6]
-          setVertexIndexCoordinates(isosurfacesIndexAttribute, j*6+k, @options.elements[j * 4 + i])
-
-      isosurfacesGeometry.addAttribute "vertexIndexCorner#{i+1}", isosurfacesIndexAttribute
-
-    # We also need to tell the vertices what their index is and if they are part of the main or additional face.
-    isosurfacesCornerIndexArray = new Float32Array tetraCount * 6
-    isosurfacesCornerIndexAttribute = new THREE.BufferAttribute isosurfacesCornerIndexArray, 1
-
-    for i in [0...tetraCount] #Why can't we compute this in the shader? Does not depend on data...
-      for k in [0...6]
-        isosurfacesCornerIndexArray[i * 6 + k] = k * 0.1
-
-    isosurfacesGeometry.addAttribute "cornerIndex", isosurfacesCornerIndexAttribute
-
-    isosurfacesGeometry.drawRange.count = tetraCount * 6
-
-
-    #isosurfacesGeometry.setDrawRange tetraCount
+    isosurfacesGeometry.setDrawRange(0,  tetraCount)
 
     # Finish creating geometry.
     @_updateGeometry()

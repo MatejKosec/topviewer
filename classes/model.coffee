@@ -69,7 +69,6 @@ class TopViewer.Model extends THREE.Object3D
       @boundingBox.expandByPoint new THREE.Vector3 @nodes[i * 3], @nodes[i * 3 + 1], @nodes[i * 3 + 2]
 
     @boundingSphere = @boundingBox.getBoundingSphere()
-    debugger
     @basePositionsTexture = new THREE.DataTexture @basePositions, 4096, height, THREE.RGBFormat, THREE.FloatType
     @basePositionsTexture.needsUpdate = true
 
@@ -102,7 +101,6 @@ class TopViewer.Model extends THREE.Object3D
     @_currentVectorFrames = {}
 
   addElements: (elementsName, elementsType, elements) ->
-    debugger
     switch elementsType
       when 4
         # Triangle (Tri_3)

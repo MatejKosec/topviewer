@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, height, i, isosurfacesCornerIndexArray, isosurfacesCornerIndexAttribute, isosurfacesGeometry, isosurfacesIndexArray, isosurfacesIndexAttribute, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, connectivity, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -25,7 +25,7 @@
           return linesCount++;
         }
       };
-      for (i = l = 0, ref = this.options.elements.length / 4; 0 <= ref ? l < ref : l > ref; i = 0 <= ref ? ++l : --l) {
+      for (i = j = 0, ref = this.options.elements.length / 4; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
         addLine(this.options.elements[i * 4], this.options.elements[i * 4 + 1]);
         addLine(this.options.elements[i * 4 + 1], this.options.elements[i * 4 + 2]);
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4]);
@@ -42,7 +42,7 @@
         if (!connectivity[a]) {
           continue;
         }
-        for (i = m = 0, ref1 = connectivity[a].length; 0 <= ref1 ? m < ref1 : m > ref1; i = 0 <= ref1 ? ++m : --m) {
+        for (i = k = 0, ref1 = connectivity[a].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
           setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a));
           setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i]);
           lineVertexIndex += 2;
@@ -64,31 +64,12 @@
       this.options.model.isosurfaceMaterial.bufferTextureHeight = height;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
-      for (i = n = 0, ref2 = masterIndexArray.length; 0 <= ref2 ? n < ref2 : n > ref2; i = 0 <= ref2 ? ++n : --n) {
+      for (i = l = 0, ref2 = masterIndexArray.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         masterIndexArray[i] = i;
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      tetraCount = this.options.elements.length / 4;
-      for (i = o = 0; o <= 3; i = ++o) {
-        isosurfacesIndexArray = new Float32Array(tetraCount * 12);
-        isosurfacesIndexAttribute = new THREE.BufferAttribute(isosurfacesIndexArray, 2);
-        for (j = p = 0, ref3 = tetraCount; 0 <= ref3 ? p < ref3 : p > ref3; j = 0 <= ref3 ? ++p : --p) {
-          for (k = q = 0; q < 6; k = ++q) {
-            setVertexIndexCoordinates(isosurfacesIndexAttribute, j * 6 + k, this.options.elements[j * 4 + i]);
-          }
-        }
-        isosurfacesGeometry.addAttribute("vertexIndexCorner" + (i + 1), isosurfacesIndexAttribute);
-      }
-      isosurfacesCornerIndexArray = new Float32Array(tetraCount * 6);
-      isosurfacesCornerIndexAttribute = new THREE.BufferAttribute(isosurfacesCornerIndexArray, 1);
-      for (i = r = 0, ref4 = tetraCount; 0 <= ref4 ? r < ref4 : r > ref4; i = 0 <= ref4 ? ++r : --r) {
-        for (k = s = 0; s < 6; k = ++s) {
-          isosurfacesCornerIndexArray[i * 6 + k] = k * 0.1;
-        }
-      }
-      isosurfacesGeometry.addAttribute("cornerIndex", isosurfacesCornerIndexAttribute);
-      isosurfacesGeometry.drawRange.count = tetraCount * 6;
+      isosurfacesGeometry.setDrawRange(0, tetraCount);
       this._updateGeometry();
       this.options.model.add(this.isosurfacesMesh);
       this.options.model.add(this.wireframeMesh);
