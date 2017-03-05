@@ -75,7 +75,7 @@ class TopViewer.Volume
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
 
-    isosurfacesGeometry.setDrawRange(0,  tetraCount)
+    isosurfacesGeometry.setDrawRange(0,  tetraCount*6)
 
     # Finish creating geometry.
     @_updateGeometry()

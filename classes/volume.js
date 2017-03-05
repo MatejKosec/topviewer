@@ -69,7 +69,7 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      isosurfacesGeometry.setDrawRange(0, tetraCount);
+      isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       this._updateGeometry();
       this.options.model.add(this.isosurfacesMesh);
       this.options.model.add(this.wireframeMesh);
