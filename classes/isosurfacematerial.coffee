@@ -201,6 +201,14 @@ void main()	{
         else if (cornerIndex < 0.45) {cornerPosition = cornerPositions[1]; scalar = cornerScalars[1];}
         else {cornerPosition = cornerPositions[2]; scalar = cornerScalars[2];}
 
+        if (cornerIndex < 0.05) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner1).xyz; scalar = cornerScalars[0];}
+        else if (cornerIndex < 0.15) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner2).xyz; scalar = cornerScalars[1];}
+        else if (cornerIndex < 0.25) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner3).xyz; scalar = cornerScalars[2];}
+        else if (cornerIndex < 0.35) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner4).xyz; scalar = cornerScalars[0];}
+        else if (cornerIndex < 0.45) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner2).xyz; scalar = cornerScalars[1];}
+        else {cornerPosition = cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner1).xyz; scalar = cornerScalars[2];}
+
+
         vec4 worldPosition = modelMatrix * vec4(cornerPosition, 1.0);
         gl_Position = projectionMatrix * viewMatrix * worldPosition;
 
