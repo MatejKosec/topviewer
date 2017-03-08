@@ -56,13 +56,14 @@ class TopViewer.Volume
     while @options.elements.length / 4 > 4096 * tetraHeight
       tetraHeight *= 2
     @options.model.tetraTexture = new THREE.DataTexture @options.elements, 4096,\
-      tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType
+      tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType, THREE.UVMapping, THREE.ClampToEdgeWrapping,\
+      THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
     @options.model.tetraTexture.needsUpdate = true
     debugger
 
     #Record the tetrahedron height and vertexbuffer height
-    @options.model.isosurfaceMaterial.tetraTextureHeight = tetraHeight
-    @options.model.isosurfaceMaterial.bufferTextureHeight = height
+    @options.model.isosurfaceMaterial.uniforms.tetraTextureHeight.value = tetraHeight
+    @options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height
 
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4

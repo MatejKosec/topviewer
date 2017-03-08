@@ -57,11 +57,11 @@
       while (this.options.elements.length / 4 > 4096 * tetraHeight) {
         tetraHeight *= 2;
       }
-      this.options.model.tetraTexture = new THREE.DataTexture(this.options.elements, 4096, tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType);
+      this.options.model.tetraTexture = new THREE.DataTexture(this.options.elements, 4096, tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
       this.options.model.tetraTexture.needsUpdate = true;
       debugger;
-      this.options.model.isosurfaceMaterial.tetraTextureHeight = tetraHeight;
-      this.options.model.isosurfaceMaterial.bufferTextureHeight = height;
+      this.options.model.isosurfaceMaterial.uniforms.tetraTextureHeight.value = tetraHeight;
+      this.options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
       for (i = l = 0, ref2 = masterIndexArray.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {

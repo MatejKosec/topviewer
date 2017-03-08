@@ -2,6 +2,7 @@
 
 class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
   constructor: (@model) ->
+    debugger
     options =
       uniforms:
         lightingBidirectional:

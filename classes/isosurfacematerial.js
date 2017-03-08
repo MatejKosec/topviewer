@@ -10,6 +10,7 @@
     function IsosurfaceMaterial(model) {
       var options;
       this.model = model;
+      debugger;
       options = {
         uniforms: {
           lightingBidirectional: {
