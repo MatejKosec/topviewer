@@ -55,9 +55,13 @@ class TopViewer.Volume
     tetraHeight=1
     while @options.elements.length / 4 > 4096 * tetraHeight
       tetraHeight *= 2
-    @options.model.tetraTexture = new THREE.DataTexture @options.elements, 4096,\
-      tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType, THREE.UVMapping, THREE.ClampToEdgeWrapping,\
-      THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
+    #Need to create a copy of the elements because webgl may not be able to deal with uvec2
+    floatElements = new Float32Array 4096*tetraHeight*4
+    for i in [0...@options.elements.length]
+      floatElements[i] = @options.elements[i]
+
+    @options.model.tetraTexture = new THREE.DataTexture floatElements, 4096,\
+      tetraHeight, THREE.RGBAFormat, THREE.FloatType
     @options.model.tetraTexture.needsUpdate = true
     debugger
 

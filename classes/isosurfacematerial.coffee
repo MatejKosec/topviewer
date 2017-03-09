@@ -8,10 +8,8 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         lightingBidirectional:
           value: 0
         tetraTextureHeight:
-          type: 'f'
           value: 0
         bufferTextureHeight:
-          type: 'f'
           value: 0
 
       defines:
@@ -74,14 +72,14 @@ void main()	{
   float tetraAcess1 = mod(tetraIndex,4096.0)/4096.0;
   float tetraAcess2 = floor(tetraIndex/4096.0)/tetraTextureHeight;
   vec4 tetra = texture2D(tetraTexture, vec2(tetraAcess1,tetraAcess2)).rgba;
-  vertexIndexCorner1[0] = mod(tetra[0],4096.0)/4096.0;
-  vertexIndexCorner1[1] = floor(tetra[0]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner2[0] = mod(tetra[1],4096.0)/4096.0;
-  vertexIndexCorner2[1] = floor(tetra[1]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner3[0] = mod(tetra[2],4096.0)/4096.0;
-  vertexIndexCorner3[1] = floor(tetra[2]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner4[0] = mod(tetra[3],4096.0)/4096.0;
-  vertexIndexCorner4[1] = floor(tetra[3]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner1.x = mod(tetra[0],4096.0)/4096.0;
+  vertexIndexCorner1.y = floor(tetra[0]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner2.x = mod(tetra[1],4096.0)/4096.0;
+  vertexIndexCorner2.y = floor(tetra[1]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner3.x = mod(tetra[2],4096.0)/4096.0;
+  vertexIndexCorner3.y = floor(tetra[2]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner4.x = mod(tetra[3],4096.0)/4096.0;
+  vertexIndexCorner4.y = floor(tetra[3]/4096.0)/bufferTextureHeight;
 
 
 
@@ -200,14 +198,6 @@ void main()	{
         else if (cornerIndex < 0.35) {cornerPosition = cornerPositions[0]; scalar = cornerScalars[0];}
         else if (cornerIndex < 0.45) {cornerPosition = cornerPositions[1]; scalar = cornerScalars[1];}
         else {cornerPosition = cornerPositions[2]; scalar = cornerScalars[2];}
-
-        if (cornerIndex < 0.05) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner1).xyz; scalar = cornerScalars[0];}
-        else if (cornerIndex < 0.15) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner2).xyz; scalar = cornerScalars[1];}
-        else if (cornerIndex < 0.25) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner3).xyz; scalar = cornerScalars[2];}
-        else if (cornerIndex < 0.35) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner4).xyz; scalar = cornerScalars[0];}
-        else if (cornerIndex < 0.45) {cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner2).xyz; scalar = cornerScalars[1];}
-        else {cornerPosition = cornerPosition = texture2D(basePositionsTexture, vertexIndexCorner1).xyz; scalar = cornerScalars[2];}
-
 
         vec4 worldPosition = modelMatrix * vec4(cornerPosition, 1.0);
         gl_Position = projectionMatrix * viewMatrix * worldPosition;

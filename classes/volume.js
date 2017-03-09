@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -57,14 +57,18 @@
       while (this.options.elements.length / 4 > 4096 * tetraHeight) {
         tetraHeight *= 2;
       }
-      this.options.model.tetraTexture = new THREE.DataTexture(this.options.elements, 4096, tetraHeight, THREE.RGBAFormat, THREE.UnsignedIntType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
+      floatElements = new Float32Array(4096 * tetraHeight * 4);
+      for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+        floatElements[i] = this.options.elements[i];
+      }
+      this.options.model.tetraTexture = new THREE.DataTexture(floatElements, 4096, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
       this.options.model.tetraTexture.needsUpdate = true;
       debugger;
       this.options.model.isosurfaceMaterial.uniforms.tetraTextureHeight.value = tetraHeight;
       this.options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
-      for (i = l = 0, ref2 = masterIndexArray.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+      for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
         masterIndexArray[i] = i;
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
