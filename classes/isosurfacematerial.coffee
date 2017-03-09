@@ -72,14 +72,14 @@ void main()	{
   float tetraAcess1 = mod(tetraIndex,4096.0)/4096.0;
   float tetraAcess2 = floor(tetraIndex/4096.0)/tetraTextureHeight;
   vec4 tetra = texture2D(tetraTexture, vec2(tetraAcess1,tetraAcess2)).rgba;
-  vertexIndexCorner1.x = mod(tetra[0],4096.0)/4096.0;
-  vertexIndexCorner1.y = floor(tetra[0]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner2.x = mod(tetra[1],4096.0)/4096.0;
-  vertexIndexCorner2.y = floor(tetra[1]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner3.x = mod(tetra[2],4096.0)/4096.0;
-  vertexIndexCorner3.y = floor(tetra[2]/4096.0)/bufferTextureHeight;
-  vertexIndexCorner4.x = mod(tetra[3],4096.0)/4096.0;
-  vertexIndexCorner4.y = floor(tetra[3]/4096.0)/bufferTextureHeight;
+  vertexIndexCorner1.x = mod(tetra.r,4096.0)/4096.0;
+  vertexIndexCorner1.y = floor(tetra.r/4096.0)/bufferTextureHeight;
+  vertexIndexCorner2.x = mod(tetra.g,4096.0)/4096.0;
+  vertexIndexCorner2.y = floor(tetra.g/4096.0)/bufferTextureHeight;
+  vertexIndexCorner3.x = mod(tetra.b,4096.0)/4096.0;
+  vertexIndexCorner3.y = floor(tetra.b/4096.0)/bufferTextureHeight;
+  vertexIndexCorner4.x = mod(tetra.a,4096.0)/4096.0;
+  vertexIndexCorner4.y = floor(tetra.a/4096.0)/bufferTextureHeight;
 
 
 
