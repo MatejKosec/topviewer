@@ -62,7 +62,7 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       wireframeGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      this.wireframeMesh.material.uniforms.BufferTextureHeight = height;
+      this.wireframeMesh.material.uniforms.BufferTextureHeight.value = height;
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
@@ -110,8 +110,8 @@
         this.isosurfacesMesh.visible = false;
         return;
       }
-      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
-      return this.isosurfacesMesh.visible = true;
+      this.wireframeMesh.visible = true;
+      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
     };
 
     return Volume;

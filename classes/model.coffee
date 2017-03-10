@@ -39,9 +39,10 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture = new THREE.DataTexture new Float32Array(4096), 4096, 1, THREE.AlphaFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter
   @noCurveTexture.needsUpdate = true
 
+
   constructor: (@options) ->
     super
-
+    debugger
     @matrixAutoUpdate = false
 
     @nodes = @options.nodes

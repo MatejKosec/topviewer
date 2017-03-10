@@ -53,7 +53,7 @@ class TopViewer.Volume
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
-    @.wireframeMesh.material.uniforms.BufferTextureHeight = height
+    @wireframeMesh.material.uniforms.BufferTextureHeight.value = height
     #@options.model.volumeWireframeMaterial.uniforms.BufferTextureHeight.value = height
 
     #wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
@@ -120,5 +120,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = true#@renderingControls.showIsosurfacesControl.value()
+    @wireframeMesh.visible = true#@renderingControls.showWireframeControl.value()
+    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()

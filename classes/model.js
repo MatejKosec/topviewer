@@ -48,6 +48,7 @@
       var height, i, j, k, l, ref;
       this.options = options;
       Model.__super__.constructor.apply(this, arguments);
+      debugger;
       this.matrixAutoUpdate = false;
       this.nodes = this.options.nodes;
       this.meshes = {};
