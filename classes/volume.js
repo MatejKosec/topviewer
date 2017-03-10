@@ -75,11 +75,11 @@
       for (i = m = 0, ref3 = this.options.elements.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
         floatElements[i] = this.options.elements[i];
       }
-      this.options.model.tetraTexture = new THREE.DataTexture(floatElements, 4096, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
-      this.options.model.tetraTexture.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, 4096, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
+      this.isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true;
       debugger;
-      this.options.model.isosurfaceMaterial.uniforms.tetraTextureHeight.value = tetraHeight;
-      this.options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height;
+      this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
+      this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
       for (i = n = 0, ref4 = masterIndexArray.length; 0 <= ref4 ? n < ref4 : n > ref4; i = 0 <= ref4 ? ++n : --n) {
@@ -110,8 +110,8 @@
         this.isosurfacesMesh.visible = false;
         return;
       }
-      this.wireframeMesh.visible = true;
-      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
+      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
+      return this.isosurfacesMesh.visible = true;
     };
 
     return Volume;

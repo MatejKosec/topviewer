@@ -11,6 +11,9 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 0
         bufferTextureHeight:
           value: 0
+        tetraTexture:
+          type: 't'
+          value:  new THREE.DataTexture (new Float32Array(4)), 1, 1, THREE.RGBAFormat, THREE.FloatType
 
       defines:
         USE_SHADOWMAP: ''
@@ -27,7 +30,6 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 
 
 uniform sampler2D tetraTexture;
-
 uniform float bufferTextureHeight;
 uniform float tetraTextureHeight;
 //The master index is a form of worker index as used in opencl or CUDA
@@ -69,9 +71,10 @@ void main()	{
   tetraIndex =  floor(masterIndex/6.0);
 
   //This is the tetra that the given worker thread is to use the data for.
-  float tetraAcess1 = mod(tetraIndex,4096.0)/4096.0;
-  float tetraAcess2 = floor(tetraIndex/4096.0)/tetraTextureHeight;
-  vec4 tetra = texture2D(tetraTexture, vec2(tetraAcess1,tetraAcess2)).rgba;
+  vec2 tetraAcess;
+  tetraAcess.x = mod(tetraIndex,4096.0)/4096.0;
+  tetraAcess.y = floor(tetraIndex/4096.0)/tetraTextureHeight;
+  vec4 tetra = texture2D(tetraTexture, tetraAcess).rgba;
   vertexIndexCorner1.x = mod(tetra.r,4096.0)/4096.0;
   vertexIndexCorner1.y = floor(tetra.r/4096.0)/bufferTextureHeight;
   vertexIndexCorner2.x = mod(tetra.g,4096.0)/4096.0;

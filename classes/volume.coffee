@@ -72,15 +72,15 @@ class TopViewer.Volume
     floatElements = new Float32Array 4096*tetraHeight*4
     for i in [0...@options.elements.length]
       floatElements[i] = @options.elements[i]
-
-    @options.model.tetraTexture = new THREE.DataTexture floatElements, 4096,\
+    #Bind the texture to the shader.
+    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, 4096,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
-    @options.model.tetraTexture.needsUpdate = true
+    @isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true
     debugger
 
     #Record the tetrahedron height and vertexbuffer height
-    @options.model.isosurfaceMaterial.uniforms.tetraTextureHeight.value = tetraHeight
-    @options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height
+    @isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight
+    @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
 
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
@@ -120,5 +120,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = true#@renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()
+    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
+    @isosurfacesMesh.visible = true#@renderingControls.showIsosurfacesControl.value()
