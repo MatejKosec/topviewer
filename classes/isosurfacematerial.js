@@ -24,7 +24,7 @@
           },
           tetraTexture: {
             type: 't',
-            value: new THREE.DataTexture(new Float32Array(4), 1, 1, THREE.RGBAFormat, THREE.FloatType)
+            value: null
           }
         },
         defines: {

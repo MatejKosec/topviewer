@@ -32,16 +32,6 @@ class TopViewer.Volume
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
 
-    wireframeIndexArray = new Float32Array linesCount * 4
-    wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
-    lineVertexIndex = 0
-    for a of connectivity
-      continue unless connectivity[a]
-      for i in [0...connectivity[a].length]
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
-        lineVertexIndex += 2
-
     masterIndexArray = new Float32Array linesCount * 2
     lineVertexIndex = 0
     for a of connectivity
@@ -54,9 +44,7 @@ class TopViewer.Volume
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
     @wireframeMesh.material.uniforms.BufferTextureHeight.value = height
-    #@options.model.volumeWireframeMaterial.uniforms.BufferTextureHeight.value = height
 
-    #wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
     # Create the isosurfaces mesh.
@@ -68,7 +56,7 @@ class TopViewer.Volume
     tetraHeight=1
     while @options.elements.length / 4 > 4096 * tetraHeight
       tetraHeight *= 2
-    #Need to create a copy of the elements because webgl may not be able to deal with uvec2
+    #Need to create a copy of the elements because webgl may not be able to deal with uvec2 (need floats)
     floatElements = new Float32Array 4096*tetraHeight*4
     for i in [0...@options.elements.length]
       floatElements[i] = @options.elements[i]
@@ -120,5 +108,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = true#@renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()
+    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
+    @isosurfacesMesh.visible = true#@renderingControls.showIsosurfacesControl.value()

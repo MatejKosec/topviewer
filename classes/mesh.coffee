@@ -46,7 +46,7 @@ class TopViewer.Mesh extends THREE.Mesh
     @backsideMesh.customDepthMaterial = @options.model.shadowMaterial
 
     # Create the wireframe mesh.
-    connectivity = {}
+    connectivity = []
     linesCount = 0
 
     addLine = (a, b) ->
@@ -65,20 +65,19 @@ class TopViewer.Mesh extends THREE.Mesh
     wireframeGeometry = new THREE.BufferGeometry()
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.wireframeMaterial
 
-    wireframeIndexArray = new Float32Array linesCount * 4
-    wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
-
-
+    masterIndexArray = new Float32Array linesCount * 2
     lineVertexIndex = 0
     for a of connectivity
       continue unless connectivity[a]
       for i in [0...connectivity[a].length]
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex, parseInt(a))
-        setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
+        masterIndexArray[lineVertexIndex] = parseInt(a)
+        masterIndexArray[lineVertexIndex+1] = connectivity[a][i]
         lineVertexIndex += 2
-
-    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    wireframeGeometry.setDrawRange(0, linesCount * 2)
+    #Store the master indexes into an attribute buffer
+    masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
+    wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
+    @wireframeMesh.material.uniforms.BufferTextureHeight.value = height
+    wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
 
     # Create the isolines mesh.

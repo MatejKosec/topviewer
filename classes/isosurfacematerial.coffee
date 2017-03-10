@@ -13,7 +13,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 0
         tetraTexture:
           type: 't'
-          value:  new THREE.DataTexture (new Float32Array(4)), 1, 1, THREE.RGBAFormat, THREE.FloatType
+          value:  null
 
       defines:
         USE_SHADOWMAP: ''
