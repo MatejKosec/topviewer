@@ -10,8 +10,14 @@
     function WireframeMaterial(model) {
       this.model = model;
       WireframeMaterial.__super__.constructor.call(this, this.model, {
-        vertexShader: TopViewer.ShaderChunks.commonVertex + "\n" + TopViewer.ShaderChunks.positionsMaterialVertex + "\n" + TopViewer.ShaderChunks.vertexMaterialVertex + "\n\nattribute vec2 vertexIndex;\n\nvoid main()	{\n  vec4 positionData = texture2D(basePositionsTexture, vertexIndex);\n  vec3 vertexPosition = positionData.xyz;\n\n  if (displacementFactor > 0.0) {\n    positionData = texture2D(displacementsTexture, vertexIndex);\n    vec4 positionDataNext = texture2D(displacementsTextureNext, vertexIndex);\n    positionData = mix(positionData, positionDataNext, frameProgress);\n\n    vertexPosition += positionData.xyz * displacementFactor;\n  }\n\n  " + TopViewer.ShaderChunks.vertexMaterialScalar + "\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);\n}",
-        fragmentShader: TopViewer.Shaders.wireframeFragmentShader
+        vertexShader: TopViewer.ShaderChunks.commonVertex + "\n" + TopViewer.ShaderChunks.positionsMaterialVertex + "\n" + TopViewer.ShaderChunks.vertexMaterialVertex + "\n\nuniform float BufferTextureHeight;\nattribute float masterIndex;\n\n\n\nvoid main()	{\n  vec2 vertexIndex;\n  vertexIndex.x = mod(masterIndex,4096.0)/4096.0;\n  vertexIndex.y = floor(masterIndex/4096.0)/BufferTextureHeight;\n  vec4 positionData = texture2D(basePositionsTexture, vertexIndex);\n  vec3 vertexPosition = positionData.xyz;\n\n  if (displacementFactor > 0.0) {\n    positionData = texture2D(displacementsTexture, vertexIndex);\n    vec4 positionDataNext = texture2D(displacementsTextureNext, vertexIndex);\n    positionData = mix(positionData, positionDataNext, frameProgress);\n\n    vertexPosition += positionData.xyz * displacementFactor;\n  }\n\n  " + TopViewer.ShaderChunks.vertexMaterialScalar + "\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);\n}",
+        fragmentShader: TopViewer.Shaders.wireframeFragmentShader,
+        uniforms: {
+          BufferTextureHeight: {
+            type: 'f',
+            value: 0
+          }
+        }
       });
     }
 

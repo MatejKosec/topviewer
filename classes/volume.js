@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
+      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, n, ref, ref1, ref2, ref3, ref4, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry, wireframeIndexArray, wireframeIndexAttribute;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
@@ -48,8 +48,22 @@
           lineVertexIndex += 2;
         }
       }
-      wireframeGeometry.addAttribute('vertexIndex', wireframeIndexAttribute);
-      wireframeGeometry.setDrawRange(0, linesCount * 2);
+      masterIndexArray = new Float32Array(linesCount * 2);
+      lineVertexIndex = 0;
+      for (a in connectivity) {
+        if (!connectivity[a]) {
+          continue;
+        }
+        for (i = l = 0, ref2 = connectivity[a].length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+          masterIndexArray[lineVertexIndex] = parseInt(a);
+          masterIndexArray[lineVertexIndex + 1] = connectivity[a][i];
+          lineVertexIndex += 2;
+        }
+      }
+      masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
+      wireframeGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      this.wireframeMesh.material.uniforms.BufferTextureHeight = height;
+      wireframeGeometry.setDrawRange(0, lineVertexIndex);
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
@@ -58,7 +72,7 @@
         tetraHeight *= 2;
       }
       floatElements = new Float32Array(4096 * tetraHeight * 4);
-      for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+      for (i = m = 0, ref3 = this.options.elements.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
         floatElements[i] = this.options.elements[i];
       }
       this.options.model.tetraTexture = new THREE.DataTexture(floatElements, 4096, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
@@ -68,7 +82,7 @@
       this.options.model.isosurfaceMaterial.uniforms.bufferTextureHeight.value = height;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
-      for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+      for (i = n = 0, ref4 = masterIndexArray.length; 0 <= ref4 ? n < ref4 : n > ref4; i = 0 <= ref4 ? ++n : --n) {
         masterIndexArray[i] = i;
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
@@ -96,8 +110,8 @@
         this.isosurfacesMesh.visible = false;
         return;
       }
-      this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
-      return this.isosurfacesMesh.visible = true;
+      this.wireframeMesh.visible = true;
+      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
     };
 
     return Volume;

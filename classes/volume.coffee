@@ -34,7 +34,6 @@ class TopViewer.Volume
 
     wireframeIndexArray = new Float32Array linesCount * 4
     wireframeIndexAttribute = new THREE.BufferAttribute wireframeIndexArray, 2
-
     lineVertexIndex = 0
     for a of connectivity
       continue unless connectivity[a]
@@ -43,8 +42,22 @@ class TopViewer.Volume
         setVertexIndexCoordinates(wireframeIndexAttribute, lineVertexIndex + 1, connectivity[a][i])
         lineVertexIndex += 2
 
-    wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
-    wireframeGeometry.setDrawRange(0, linesCount * 2)
+    masterIndexArray = new Float32Array linesCount * 2
+    lineVertexIndex = 0
+    for a of connectivity
+      continue unless connectivity[a]
+      for i in [0...connectivity[a].length]
+        masterIndexArray[lineVertexIndex] = parseInt(a)
+        masterIndexArray[lineVertexIndex+1] = connectivity[a][i]
+        lineVertexIndex += 2
+    #Store the master indexes into an attribute buffer
+    masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
+    wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
+    @.wireframeMesh.material.uniforms.BufferTextureHeight = height
+    #@options.model.volumeWireframeMaterial.uniforms.BufferTextureHeight.value = height
+
+    #wireframeGeometry.addAttribute 'vertexIndex', wireframeIndexAttribute
+    wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
@@ -107,5 +120,5 @@ class TopViewer.Volume
       @isosurfacesMesh.visible = false
       return
 
-    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = true #@renderingControls.showIsosurfacesControl.value()
+    @wireframeMesh.visible = true#@renderingControls.showWireframeControl.value()
+    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()
