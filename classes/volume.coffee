@@ -3,7 +3,8 @@
 class TopViewer.Volume
   constructor: (@options) ->
     height = @options.model.basePositionsTexture.image.height
-
+    #gl_context = @options.engine.renderer.context
+    #height = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE)
     setVertexIndexCoordinates = (attribute, i, index) ->
       attribute.setX i, index % 4096 / 4096
       attribute.setY i, Math.floor(index / 4096) / height
@@ -31,7 +32,7 @@ class TopViewer.Volume
     wireframeGeometry = new THREE.BufferGeometry()
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
-
+    debugger
     masterIndexArray = new Float32Array linesCount * 2
     lineVertexIndex = 0
     for a of connectivity

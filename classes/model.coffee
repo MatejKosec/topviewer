@@ -42,7 +42,6 @@ class TopViewer.Model extends THREE.Object3D
 
   constructor: (@options) ->
     super
-    debugger
     @matrixAutoUpdate = false
 
     @nodes = @options.nodes

@@ -11,8 +11,7 @@ class TopViewer.WireframeMaterial extends TopViewer.VertexMaterial
 
 uniform float BufferTextureHeight;
 attribute float masterIndex;
-
-
+float BufferTextureWidth;
 
 void main()	{
   vec2 vertexIndex;

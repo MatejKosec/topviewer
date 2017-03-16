@@ -1,7 +1,7 @@
 {
   "main_script": "topviewer.js",
   "icon": "icon.jpg",
-  "width": 800,
+  "width": 890,
   "height": 500,
   "animation": true,
   "resize": "free",
@@ -215,7 +215,7 @@
   "version": "1.0.0",
   "description": "A specialized 3D model viewer for the TOP/DOMDEC format.",
   "keywords": [ "three", "3d", "animation" ],
-  "author": "Matej Jan <matej@stanford.edu>",
+  "author": "Matej Jan <matej@stanford.edu>, Matej Kosec <mkosec@stanford.edu>",
   "fileTypes": ["top", "xpost"],
   "directory": "top"
 }
