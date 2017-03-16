@@ -45,7 +45,7 @@
     Model.noCurveTexture.needsUpdate = true;
 
     function Model(options) {
-      var height, i, j, k, l, ref;
+      var gl_context, height, i, j, k, l, ref;
       this.options = options;
       Model.__super__.constructor.apply(this, arguments);
       this.matrixAutoUpdate = false;
@@ -59,12 +59,15 @@
           frameTime: -1
         }
       ];
+      debugger;
+      gl_context = this.options.engine.renderer.context;
+      this.maxTextureWidth = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE);
       this.boundingBox = new THREE.Box3;
       height = 1;
-      while (this.nodes.length / 3 > 4096 * height) {
+      while (this.nodes.length / 3 > this.maxTextureWidth * height) {
         height *= 2;
       }
-      this.basePositions = new Float32Array(4096 * height * 3);
+      this.basePositions = new Float32Array(this.maxTextureWidth * height * 3);
       for (i = k = 0, ref = this.nodes.length / 3; 0 <= ref ? k < ref : k > ref; i = 0 <= ref ? ++k : --k) {
         for (j = l = 0; l <= 2; j = ++l) {
           this.basePositions[i * 3 + j] = this.nodes[i * 3 + j];
@@ -72,7 +75,7 @@
         this.boundingBox.expandByPoint(new THREE.Vector3(this.nodes[i * 3], this.nodes[i * 3 + 1], this.nodes[i * 3 + 2]));
       }
       this.boundingSphere = this.boundingBox.getBoundingSphere();
-      this.basePositionsTexture = new THREE.DataTexture(this.basePositions, 4096, height, THREE.RGBFormat, THREE.FloatType);
+      this.basePositionsTexture = new THREE.DataTexture(this.basePositions, this.maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType);
       this.basePositionsTexture.needsUpdate = true;
       this.material = new TopViewer.ModelMaterial(this);
       this.backsideMaterial = new TopViewer.ModelMaterial(this);
@@ -134,14 +137,14 @@
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         frame = ref1[l];
         height = 1;
-        while (frame.scalars.length > 4096 * height) {
+        while (frame.scalars.length > this.maxTextureWidth * height) {
           height *= 2;
         }
-        array = new Float32Array(4096 * height);
+        array = new Float32Array(this.maxTextureWidth * height);
         for (i = m = 0, ref2 = frame.scalars.length; 0 <= ref2 ? m < ref2 : m > ref2; i = 0 <= ref2 ? ++m : --m) {
           array[i] = frame.scalars[i];
         }
-        frame.texture = new THREE.DataTexture(array, 4096, height, THREE.AlphaFormat, THREE.FloatType);
+        frame.texture = new THREE.DataTexture(array, this.maxTextureWidth, height, THREE.AlphaFormat, THREE.FloatType);
         results.push(frame.texture.needsUpdate = true);
       }
       return results;
@@ -171,14 +174,14 @@
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         frame = ref1[l];
         height = 1;
-        while (frame.vectors.length / 3 > 4096 * height) {
+        while (frame.vectors.length / 3 > this.maxTextureWidth * height) {
           height *= 2;
         }
-        array = new Float32Array(4096 * height * 3);
+        array = new Float32Array(this.maxTextureWidth * height * 3);
         for (i = m = 0, ref2 = frame.vectors.length; 0 <= ref2 ? m < ref2 : m > ref2; i = 0 <= ref2 ? ++m : --m) {
           array[i] = frame.vectors[i];
         }
-        frame.texture = new THREE.DataTexture(array, 4096, height, THREE.RGBFormat, THREE.FloatType);
+        frame.texture = new THREE.DataTexture(array, this.maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType);
         results.push(frame.texture.needsUpdate = true);
       }
       return results;

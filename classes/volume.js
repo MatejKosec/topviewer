@@ -3,13 +3,10 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraCount, tetraHeight, wireframeGeometry;
+      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
-      setVertexIndexCoordinates = function(attribute, i, index) {
-        attribute.setX(i, index % 4096 / 4096);
-        return attribute.setY(i, Math.floor(index / 4096) / height);
-      };
+      width = this.options.model.basePositionsTexture.image.width;
       connectivity = [];
       linesCount = 0;
       addLine = function(a, b) {
@@ -50,24 +47,30 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       wireframeGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      this.wireframeMesh.material.uniforms.BufferTextureHeight.value = height;
+      this.wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
+      this.wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
+      debugger;
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
       tetraHeight = 1;
-      while (this.options.elements.length / 4 > 4096 * tetraHeight) {
+      tetraWidth = this.maxTextureWidth;
+      while (this.options.elements.length / 4 > tetraWidth * tetraHeight) {
         tetraHeight *= 2;
       }
-      floatElements = new Float32Array(4096 * tetraHeight * 4);
+      floatElements = new Float32Array(tetraWidth * tetraHeight * 4);
       for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         floatElements[i] = this.options.elements[i];
       }
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, 4096, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
       this.isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true;
       debugger;
       this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
+      this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
+      this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
+      debugger;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
       for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {

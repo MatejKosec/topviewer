@@ -54,14 +54,16 @@ class TopViewer.Model extends THREE.Object3D
     @frames = [
       frameTime: -1
     ]
-
+    debugger
+    gl_context = @options.engine.renderer.context
+    @maxTextureWidth = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE)
     @boundingBox = new THREE.Box3
 
     height = 1
-    while @nodes.length / 3 > 4096 * height
+    while @nodes.length / 3 > @maxTextureWidth * height
       height *= 2
 
-    @basePositions = new Float32Array 4096 * height * 3
+    @basePositions = new Float32Array @maxTextureWidth * height * 3
     for i in [0...@nodes.length/3]
       for j in [0..2]
         @basePositions[i * 3 + j] = @nodes[i * 3 + j]
@@ -69,7 +71,7 @@ class TopViewer.Model extends THREE.Object3D
       @boundingBox.expandByPoint new THREE.Vector3 @nodes[i * 3], @nodes[i * 3 + 1], @nodes[i * 3 + 2]
 
     @boundingSphere = @boundingBox.getBoundingSphere()
-    @basePositionsTexture = new THREE.DataTexture @basePositions, 4096, height, THREE.RGBFormat, THREE.FloatType
+    @basePositionsTexture = new THREE.DataTexture @basePositions, @maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType
     @basePositionsTexture.needsUpdate = true
 
     # This is the basic material for rendering surfaces of meshes.
@@ -143,12 +145,12 @@ class TopViewer.Model extends THREE.Object3D
     
     for frame in scalar.frames
       height = 1
-      while frame.scalars.length > 4096 * height
+      while frame.scalars.length > @maxTextureWidth * height
         height *= 2
 
-      array = new Float32Array 4096 * height
+      array = new Float32Array @maxTextureWidth * height
       array[i] = frame.scalars[i] for i in [0...frame.scalars.length]
-      frame.texture = new THREE.DataTexture array, 4096, height, THREE.AlphaFormat, THREE.FloatType
+      frame.texture = new THREE.DataTexture array, @maxTextureWidth, height, THREE.AlphaFormat, THREE.FloatType
       frame.texture.needsUpdate = true
 
   addVector: (vectorName, vector) ->
@@ -175,12 +177,12 @@ class TopViewer.Model extends THREE.Object3D
 
     for frame in vector.frames
       height = 1
-      while frame.vectors.length / 3 > 4096 * height
+      while frame.vectors.length / 3 > @maxTextureWidth * height
         height *= 2
 
-      array = new Float32Array 4096 * height * 3
+      array = new Float32Array @maxTextureWidth * height * 3
       array[i] = frame.vectors[i] for i in [0...frame.vectors.length]
-      frame.texture = new THREE.DataTexture array, 4096, height, THREE.RGBFormat, THREE.FloatType
+      frame.texture = new THREE.DataTexture array, @maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType
       frame.texture.needsUpdate = true
 
   _updateFrames: ->

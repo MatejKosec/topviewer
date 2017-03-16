@@ -3,11 +3,7 @@
 class TopViewer.Volume
   constructor: (@options) ->
     height = @options.model.basePositionsTexture.image.height
-    #gl_context = @options.engine.renderer.context
-    #height = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE)
-    setVertexIndexCoordinates = (attribute, i, index) ->
-      attribute.setX i, index % 4096 / 4096
-      attribute.setY i, Math.floor(index / 4096) / height
+    width  = @options.model.basePositionsTexture.image.width
 
     #Create the 3D wireframe 
     connectivity = []
@@ -44,7 +40,9 @@ class TopViewer.Volume
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
-    @wireframeMesh.material.uniforms.BufferTextureHeight.value = height
+    @wireframeMesh.material.uniforms.bufferTextureHeight.value = height
+    @wireframeMesh.material.uniforms.bufferTextureWidth.value = width
+    debugger
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
@@ -55,22 +53,25 @@ class TopViewer.Volume
 
     #Create a texture for the tetraheadra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
     tetraHeight=1
-    while @options.elements.length / 4 > 4096 * tetraHeight
+    tetraWidth =@maxTextureWidth
+    while @options.elements.length / 4 > tetraWidth  * tetraHeight
       tetraHeight *= 2
     #Need to create a copy of the elements because webgl may not be able to deal with uvec2 (need floats)
-    floatElements = new Float32Array 4096*tetraHeight*4
+    floatElements = new Float32Array tetraWidth*tetraHeight*4
     for i in [0...@options.elements.length]
       floatElements[i] = @options.elements[i]
     #Bind the texture to the shader.
-    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, 4096,\
+    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
     @isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true
     debugger
 
     #Record the tetrahedron height and vertexbuffer height
     @isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight
+    @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
-
+    @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
+    debugger
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
       #The master index records which thread this is out of a global 6*tetraCount threads

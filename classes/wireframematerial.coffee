@@ -9,14 +9,16 @@ class TopViewer.WireframeMaterial extends TopViewer.VertexMaterial
 #{TopViewer.ShaderChunks.positionsMaterialVertex}
 #{TopViewer.ShaderChunks.vertexMaterialVertex}
 
-uniform float BufferTextureHeight;
+uniform float bufferTextureHeight;
+uniform float bufferTextureWidth;
 attribute float masterIndex;
-float BufferTextureWidth;
 
 void main()	{
+  //The vertex coordinates are stored in a 2D texture. Here compute the x,y texture coordinates
+  //at which to access the texture to get the x,y,z coords of the underlying texture
   vec2 vertexIndex;
-  vertexIndex.x = mod(masterIndex,4096.0)/4096.0;
-  vertexIndex.y = floor(masterIndex/4096.0)/BufferTextureHeight;
+  vertexIndex.x = mod(masterIndex,bufferTextureWidth)/bufferTextureWidth;
+  vertexIndex.y = floor(masterIndex/bufferTextureWidth)/bufferTextureHeight;
   vec4 positionData = texture2D(basePositionsTexture, vertexIndex);
   vec3 vertexPosition = positionData.xyz;
 
@@ -36,6 +38,9 @@ void main()	{
 
       fragmentShader: TopViewer.Shaders.wireframeFragmentShader
       uniforms:
-          BufferTextureHeight:
+          bufferTextureHeight:
+            type: 'f'
+            value: 0
+          bufferTextureWidth:
             type: 'f'
             value: 0

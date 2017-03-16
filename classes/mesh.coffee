@@ -3,7 +3,7 @@
 class TopViewer.Mesh extends THREE.Mesh
   constructor: (@options) ->
     super new THREE.BufferGeometry(), @options.model.material
-
+    width = @options.model.basePositionsTexture.image.width
     # Create the surface mesh. We send in all three triangle indices so we can calculate the normal in the shader.
     indexArrays = []
     indexAttributes = []
@@ -18,8 +18,8 @@ class TopViewer.Mesh extends THREE.Mesh
     height = @options.model.basePositionsTexture.image.height
 
     setVertexIndexCoordinates = (attribute, i, index) ->
-      attribute.setX i, index % 4096 / 4096
-      attribute.setY i, Math.floor(index / 4096) / height
+      attribute.setX i, index % width / width
+      attribute.setY i, Math.floor(index / width) / height
 
     for i in [0...@options.elements.length]
       cornerInTriangle = i % 3
@@ -76,8 +76,10 @@ class TopViewer.Mesh extends THREE.Mesh
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
-    @wireframeMesh.material.uniforms.BufferTextureHeight.value = height
+    @wireframeMesh.material.uniforms.bufferTextureHeight.value = height
+    @wireframeMesh.material.uniforms.bufferTextureWidth.value = width
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
+    debugger
 
 
     # Create the isolines mesh.

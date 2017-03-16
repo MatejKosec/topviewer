@@ -8,9 +8,10 @@
     extend(Mesh, superClass);
 
     function Mesh(options) {
-      var a, addLine, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, wireframeGeometry;
+      var a, addLine, baseIndex, connectivity, cornerInTriangle, cornerIndexArray, cornerIndexAttribute, faceCount, height, i, indexArrays, indexAttributes, isolinesGeometry, isolinesIndexArray, isolinesIndexAttribute, isolinesTypeArray, isolinesTypeAttribute, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, n, o, p, q, r, ref, ref1, ref2, ref3, ref4, s, setVertexIndexCoordinates, t, width, wireframeGeometry;
       this.options = options;
       Mesh.__super__.constructor.call(this, new THREE.BufferGeometry(), this.options.model.material);
+      width = this.options.model.basePositionsTexture.image.width;
       indexArrays = [];
       indexAttributes = [];
       for (i = l = 0; l <= 2; i = ++l) {
@@ -21,8 +22,8 @@
       cornerIndexAttribute = new THREE.BufferAttribute(cornerIndexArray, 1);
       height = this.options.model.basePositionsTexture.image.height;
       setVertexIndexCoordinates = function(attribute, i, index) {
-        attribute.setX(i, index % 4096 / 4096);
-        return attribute.setY(i, Math.floor(index / 4096) / height);
+        attribute.setX(i, index % width / width);
+        return attribute.setY(i, Math.floor(index / width) / height);
       };
       for (i = m = 0, ref = this.options.elements.length; 0 <= ref ? m < ref : m > ref; i = 0 <= ref ? ++m : --m) {
         cornerInTriangle = i % 3;
@@ -76,8 +77,10 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       wireframeGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      this.wireframeMesh.material.uniforms.BufferTextureHeight.value = height;
+      this.wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
+      this.wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
+      debugger;
       isolinesGeometry = new THREE.BufferGeometry();
       this.isolinesMesh = new THREE.LineSegments(isolinesGeometry, this.options.model.isolineMaterial);
       faceCount = this.options.elements.length / 3;

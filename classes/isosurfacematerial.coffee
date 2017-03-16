@@ -9,7 +9,11 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 0
         tetraTextureHeight:
           value: 0
+        tetraTextureWidth:
+          value: 0
         bufferTextureHeight:
+          value: 0
+        bufferTextureWidth:
           value: 0
         tetraTexture:
           type: 't'
@@ -31,7 +35,9 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 
 uniform sampler2D tetraTexture;
 uniform float bufferTextureHeight;
+uniform float bufferTextureWidth;
 uniform float tetraTextureHeight;
+uniform float tetraTextureWidth;
 //The master index is a form of worker index as used in opencl or CUDA
 attribute float masterIndex;
 //The vertexIndexCorner values are now sampled from a texture (no longer attributes)
@@ -72,17 +78,17 @@ void main()	{
 
   //This is the tetra that the given worker thread is to use the data for.
   vec2 tetraAcess;
-  tetraAcess.x = mod(tetraIndex,4096.0)/4096.0;
-  tetraAcess.y = floor(tetraIndex/4096.0)/tetraTextureHeight;
+  tetraAcess.x = mod(tetraIndex,tetraTextureWidth)/tetraTextureWidth;
+  tetraAcess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
   vec4 tetra = texture2D(tetraTexture, tetraAcess).rgba;
-  vertexIndexCorner1.x = mod(tetra.r,4096.0)/4096.0;
-  vertexIndexCorner1.y = floor(tetra.r/4096.0)/bufferTextureHeight;
-  vertexIndexCorner2.x = mod(tetra.g,4096.0)/4096.0;
-  vertexIndexCorner2.y = floor(tetra.g/4096.0)/bufferTextureHeight;
-  vertexIndexCorner3.x = mod(tetra.b,4096.0)/4096.0;
-  vertexIndexCorner3.y = floor(tetra.b/4096.0)/bufferTextureHeight;
-  vertexIndexCorner4.x = mod(tetra.a,4096.0)/4096.0;
-  vertexIndexCorner4.y = floor(tetra.a/4096.0)/bufferTextureHeight;
+  vertexIndexCorner1.x = mod(tetra.r,bufferTextureWidth)/bufferTextureWidth;
+  vertexIndexCorner1.y = floor(tetra.r/bufferTextureWidth)/bufferTextureHeight;
+  vertexIndexCorner2.x = mod(tetra.g,bufferTextureWidth)/bufferTextureWidth;
+  vertexIndexCorner2.y = floor(tetra.g/bufferTextureWidth)/bufferTextureHeight;
+  vertexIndexCorner3.x = mod(tetra.b,bufferTextureWidth)/bufferTextureWidth;
+  vertexIndexCorner3.y = floor(tetra.b/bufferTextureWidth)/bufferTextureHeight;
+  vertexIndexCorner4.x = mod(tetra.a,bufferTextureWidth)/bufferTextureWidth;
+  vertexIndexCorner4.y = floor(tetra.a/bufferTextureWidth)/bufferTextureHeight;
 
 
 
