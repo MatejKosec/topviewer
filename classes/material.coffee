@@ -32,8 +32,8 @@ class TopViewer.PositionsMaterial extends THREE.RawShaderMaterial
 
 class TopViewer.VertexMaterial extends TopViewer.PositionsMaterial
   constructor: (@model, options) ->
+    debugger
     options.uniforms or= {}
-
     _.extend options.uniforms,
       # Base vertex colors can be set to a constant color or it can come from scalar results. Scalars are transformed
       # using the curve function and then mapped onto a color gradient using the provided value range.

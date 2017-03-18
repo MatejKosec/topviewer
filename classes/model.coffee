@@ -39,6 +39,9 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture = new THREE.DataTexture new Float32Array(4096), 4096, 1, THREE.AlphaFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter
   @noCurveTexture.needsUpdate = true
 
+  @noTetraTexture = new THREE.DataTexture new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType
+  @noTetraTexture.needUpdate = true
+
 
   constructor: (@options) ->
     super
@@ -103,6 +106,7 @@ class TopViewer.Model extends THREE.Object3D
     @_currentVectorFrames = {}
 
   addElements: (elementsName, elementsType, elements) ->
+    debugger
     switch elementsType
       when 4
         # Triangle (Tri_3)
@@ -125,6 +129,7 @@ class TopViewer.Model extends THREE.Object3D
       engine: @options.engine
       
   addScalar: (scalarName, scalar) ->
+    debugger
     # See if we already have this scalar or we're just getting new frames.
     if @scalars[scalarName]
       # Add new frames to the existing scalar.

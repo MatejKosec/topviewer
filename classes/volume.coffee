@@ -52,8 +52,9 @@ class TopViewer.Volume
     @isosurfacesMesh.receiveShadows = true
 
     #Create a texture for the tetraheadra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
+    debugger
     tetraHeight=1
-    tetraWidth =@maxTextureWidth
+    tetraWidth =  @options.model.maxTextureWidth
     while @options.elements.length / 4 > tetraWidth  * tetraHeight
       tetraHeight *= 2
     #Need to create a copy of the elements because webgl may not be able to deal with uvec2 (need floats)
@@ -63,7 +64,7 @@ class TopViewer.Volume
     #Bind the texture to the shader.
     @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
-    @isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true
+    @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
     debugger
 
     #Record the tetrahedron height and vertexbuffer height
@@ -71,6 +72,7 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
+    @isosurfacesMesh.material.needsUpdate = true
     debugger
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
@@ -111,4 +113,4 @@ class TopViewer.Volume
       return
 
     @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = true#@renderingControls.showIsosurfacesControl.value()
+    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()

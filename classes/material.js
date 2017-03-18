@@ -42,6 +42,7 @@
 
     function VertexMaterial(model, options) {
       this.model = model;
+      debugger;
       options.uniforms || (options.uniforms = {});
       _.extend(options.uniforms, {
         vertexColor: {

@@ -54,8 +54,9 @@
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
+      debugger;
       tetraHeight = 1;
-      tetraWidth = this.maxTextureWidth;
+      tetraWidth = this.options.model.maxTextureWidth;
       while (this.options.elements.length / 4 > tetraWidth * tetraHeight) {
         tetraHeight *= 2;
       }
@@ -64,12 +65,13 @@
         floatElements[i] = this.options.elements[i];
       }
       this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
-      this.isosurfacesMesh.material.uniforms.tetraTexture.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       debugger;
       this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
+      this.isosurfacesMesh.material.needsUpdate = true;
       debugger;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
@@ -102,7 +104,7 @@
         return;
       }
       this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
-      return this.isosurfacesMesh.visible = true;
+      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
     };
 
     return Volume;

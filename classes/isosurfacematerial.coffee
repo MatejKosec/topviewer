@@ -17,7 +17,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 0
         tetraTexture:
           type: 't'
-          value:  null
+          value: null
 
       defines:
         USE_SHADOWMAP: ''

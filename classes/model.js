@@ -44,6 +44,10 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
+    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType);
+
+    Model.noTetraTexture.needUpdate = true;
+
     function Model(options) {
       var gl_context, height, i, j, k, l, ref;
       this.options = options;
@@ -96,6 +100,7 @@
     }
 
     Model.prototype.addElements = function(elementsName, elementsType, elements) {
+      debugger;
       var collection, constructor;
       switch (elementsType) {
         case 4:
@@ -119,6 +124,7 @@
     };
 
     Model.prototype.addScalar = function(scalarName, scalar) {
+      debugger;
       var array, frame, height, i, k, l, len, len1, m, ref, ref1, ref2, results;
       if (this.scalars[scalarName]) {
         ref = scalar.frames;

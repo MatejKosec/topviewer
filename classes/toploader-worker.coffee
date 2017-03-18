@@ -191,8 +191,8 @@ class TopParser
         @currentTetIndex = 0
         @currentElements =
           elements:
-            4: new Uint32Array 1000 * 3 #Temperarily allocate space for 1000 elements
-            5: new Uint32Array 1000 * 4 #Temperarily allocate space for 1000 elements
+            4: new Uint32Array 1000 * 3 #Temporarily allocate space for 1000 elements
+            5: new Uint32Array 1000 * 4 #Temporarily allocate space for 1000 elements
           nodesName: parts[3]
 
         return
