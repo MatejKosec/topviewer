@@ -39,9 +39,6 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture = new THREE.DataTexture new Float32Array(4096), 4096, 1, THREE.AlphaFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter
   @noCurveTexture.needsUpdate = true
 
-  @noTetraTexture = new THREE.DataTexture new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType
-  @noTetraTexture.needUpdate = true
-
 
   constructor: (@options) ->
     super

@@ -93,6 +93,7 @@
       }, THREE.UniformsLib.lights);
       options.defines || (options.defines = {});
       _.extend(options.defines, {
+        version: '4.50',
         USE_SHADOWMAP: ''
       });
       _.extend(options, {

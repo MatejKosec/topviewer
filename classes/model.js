@@ -44,10 +44,6 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
-    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType);
-
-    Model.noTetraTexture.needUpdate = true;
-
     function Model(options) {
       var gl_context, height, i, j, k, l, ref;
       this.options = options;

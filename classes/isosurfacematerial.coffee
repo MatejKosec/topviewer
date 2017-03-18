@@ -20,6 +20,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: null
 
       defines:
+        version: '4.50'
         USE_SHADOWMAP: ''
 
       side: THREE.DoubleSide
@@ -40,13 +41,6 @@ uniform float tetraTextureHeight;
 uniform float tetraTextureWidth;
 //The master index is a form of worker index as used in opencl or CUDA
 attribute float masterIndex;
-//The vertexIndexCorner values are now sampled from a texture (no longer attributes)
-vec2 vertexIndexCorner1;
-vec2 vertexIndexCorner2;
-vec2 vertexIndexCorner3;
-vec2 vertexIndexCorner4;
-float cornerIndex;
-float tetraIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
@@ -70,9 +64,21 @@ void main()	{
 
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
+
+  //The vertexIndexCorner values are now sampled from a texture (no longer attributes)
+  vec2 vertexIndexCorner1;
+  vec2 vertexIndexCorner2;
+  vec2 vertexIndexCorner3;
+  vec2 vertexIndexCorner4;
+  float cornerIndex;
+  float tetraIndex;
+
+
   scalar = -1.0;
+
   //The corner index is also just a function of the worker index (mod 6)
   cornerIndex = mod(masterIndex,6.0)*0.1;
+
   //The tetra index repeats for six workers (i.e. there are six triangle edges per each tetrahedron)
   tetraIndex =  floor(masterIndex/6.0);
 
@@ -81,6 +87,8 @@ void main()	{
   tetraAcess.x = mod(tetraIndex,tetraTextureWidth)/tetraTextureWidth;
   tetraAcess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
   vec4 tetra = texture2D(tetraTexture, tetraAcess).rgba;
+
+  //Compute where to axess the basePositionstexture for a given tetra
   vertexIndexCorner1.x = mod(tetra.r,bufferTextureWidth)/bufferTextureWidth;
   vertexIndexCorner1.y = floor(tetra.r/bufferTextureWidth)/bufferTextureHeight;
   vertexIndexCorner2.x = mod(tetra.g,bufferTextureWidth)/bufferTextureWidth;
@@ -94,9 +102,9 @@ void main()	{
 
   // Isosurfaces only exists if we have a scalar.
   if (scalarsRange > 0.0) {
-    #{TopViewer.ShaderChunks.isovalueMaterialVertexSetup 4}
+      #{TopViewer.ShaderChunks.isovalueMaterialVertexSetup 4}
 
-    #{TopViewer.ShaderChunks.isovalueMaterialIsovalueIteration 4}
+      #{TopViewer.ShaderChunks.isovalueMaterialIsovalueIteration 4}
       if (aboveCount==0 || aboveCount==4) {
         // None of the triangles need to show.
         continue;

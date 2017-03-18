@@ -61,23 +61,11 @@ class TopViewer.Volume
     floatElements = new Float32Array tetraWidth*tetraHeight*4
     for i in [0...@options.elements.length]
       floatElements[i] = @options.elements[i]
-    #Bind the texture to the shader.
-    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
-      tetraHeight, THREE.RGBAFormat, THREE.FloatType
-    @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
-    debugger
 
-    #Record the tetrahedron height and vertexbuffer height
-    @isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight
-    @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
-    @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
-    @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
-    @isosurfacesMesh.material.needsUpdate = true
-    debugger
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
-      #The master index records which thread this is out of a global 6*tetraCount threads
-      #6 sequential threads collaborate on the isosurface for the same triangle
+    #The master index records which thread this is out of a global 6*tetraCount threads
+    #6 sequential threads collaborate on the isosurface for the same triangle
     masterIndexArray = new Float32Array tetraCount * 6
     for i in [0...masterIndexArray.length]
       masterIndexArray[i] = i
@@ -85,6 +73,19 @@ class TopViewer.Volume
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
 
+    #Update values in the shader and add the new texture
+    #Record the tetrahedron height and vertexbuffer height
+    @isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight
+    @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
+    @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
+    @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
+    @isosurfacesMesh.material.needsUpdate = true
+    #Bind the texture to the shader.
+    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
+      tetraHeight, THREE.RGBAFormat, THREE.FloatType
+    @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
+
+    #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
     isosurfacesGeometry.setDrawRange(0,  tetraCount*6)
 
     # Finish creating geometry.

@@ -85,7 +85,9 @@ class TopViewer.SurfaceMaterial extends TopViewer.VertexMaterial
     options.defines or= {}
 
     _.extend options.defines,
+      version: '4.50'
       USE_SHADOWMAP: ''
+
 
     _.extend options,
       side: THREE.FrontSide

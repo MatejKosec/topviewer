@@ -64,15 +64,6 @@
       for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         floatElements[i] = this.options.elements[i];
       }
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
-      debugger;
-      this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
-      this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
-      this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
-      this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
-      this.isosurfacesMesh.material.needsUpdate = true;
-      debugger;
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
       for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
@@ -80,6 +71,13 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
+      this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
+      this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
+      this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
+      this.isosurfacesMesh.material.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       this._updateGeometry();
       this.options.model.add(this.isosurfacesMesh);
