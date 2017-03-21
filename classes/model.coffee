@@ -89,7 +89,9 @@ class TopViewer.Model extends THREE.Object3D
     @isolineMaterial = new TopViewer.IsolineMaterial @
 
     @volumeWireframeMaterial = new TopViewer.WireframeMaterial @
+    debugger
     @isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
+    debugger
 
     @fieldMaterial = new TopViewer.FieldMaterial @
 

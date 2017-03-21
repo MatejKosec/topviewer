@@ -85,7 +85,9 @@
       this.wireframeMaterial = new TopViewer.WireframeMaterial(this);
       this.isolineMaterial = new TopViewer.IsolineMaterial(this);
       this.volumeWireframeMaterial = new TopViewer.WireframeMaterial(this);
+      debugger;
       this.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
+      debugger;
       this.fieldMaterial = new TopViewer.FieldMaterial(this);
       this.colorScalar = null;
       if (this.nodes.length) {

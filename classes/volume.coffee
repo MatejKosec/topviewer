@@ -57,6 +57,7 @@ class TopViewer.Volume
     tetraWidth =  @options.model.maxTextureWidth
     while @options.elements.length / 4 > tetraWidth  * tetraHeight
       tetraHeight *= 2
+    if tetraHeight>tetraWidth then throw 'Too many elements to render. Failed in volume.coffee'
     #Need to create a copy of the elements because webgl may not be able to deal with uvec2 (need floats)
     floatElements = new Float32Array tetraWidth*tetraHeight*4
     for i in [0...@options.elements.length]

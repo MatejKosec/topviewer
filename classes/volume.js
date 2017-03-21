@@ -60,6 +60,9 @@
       while (this.options.elements.length / 4 > tetraWidth * tetraHeight) {
         tetraHeight *= 2;
       }
+      if (tetraHeight > tetraWidth) {
+        throw 'Too many elements to render. Failed in volume.coffee';
+      }
       floatElements = new Float32Array(tetraWidth * tetraHeight * 4);
       for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         floatElements[i] = this.options.elements[i];

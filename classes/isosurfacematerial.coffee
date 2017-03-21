@@ -17,10 +17,10 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 0
         tetraTexture:
           type: 't'
-          value: null
+          #This is just a dummy texture to avoid webgl warnings that texture is not loaded etc.
+          value:  new THREE.DataTexture new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType
 
       defines:
-        version: '4.50'
         USE_SHADOWMAP: ''
 
       side: THREE.DoubleSide
@@ -41,6 +41,13 @@ uniform float tetraTextureHeight;
 uniform float tetraTextureWidth;
 //The master index is a form of worker index as used in opencl or CUDA
 attribute float masterIndex;
+//The vertexIndexCorner values are now sampled from a texture (no longer attributes)
+vec2 vertexIndexCorner1;
+vec2 vertexIndexCorner2;
+vec2 vertexIndexCorner3;
+vec2 vertexIndexCorner4;
+float cornerIndex;
+float tetraIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
@@ -65,13 +72,7 @@ void main()	{
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
 
-  //The vertexIndexCorner values are now sampled from a texture (no longer attributes)
-  vec2 vertexIndexCorner1;
-  vec2 vertexIndexCorner2;
-  vec2 vertexIndexCorner3;
-  vec2 vertexIndexCorner4;
-  float cornerIndex;
-  float tetraIndex;
+
 
 
   scalar = -1.0;
@@ -122,66 +123,89 @@ void main()	{
         // lie somewhere on the line between one vertex that is above and one that is below. The left-right combination
         // stores which vertices these are. They are carefuly selected so that all triangles face into the same
         // direction of the gradient.
-        int case = 0;
-        if (above[3]) case += 1;
-        if (above[2]) case += 2;
-        if (above[1]) case += 4;
-        if (above[0]) case += 8;
+        int caseInt = 0;
+        if (above[3]) caseInt += 1;
+        if (above[2]) caseInt += 2;
+        if (above[1]) caseInt += 4;
+        if (above[0]) caseInt += 8;
 
-        if (case==1) {
+        if (caseInt==1) {
           #{@_setupCase [0,1,2], [3,3,3]}
-        } else if (case==2) {
+        } else if (caseInt==2) {
           #{@_setupCase [0,3,1], [2,2,2]}
-        } else if (case==3) {
+        } else if (caseInt==3) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,0,1], [2,3,3]}
           } else {
             #{@_setupCase [1,0,1], [2,2,3]}
           }
 
-        } else if (case==4) {
+        } else if (caseInt==4) {
           #{@_setupCase [0,2,3], [1,1,1]}
-        } else if (case==5) {
+        } else if (caseInt==5) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,1,0], [1,2,3]}
           } else {
             #{@_setupCase [0,1,2], [3,2,3]}
           }
-        } else if (case==6) {
+        } else if (caseInt==6) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,1,0], [2,3,1]}
           } else {
             #{@_setupCase [2,1,0], [3,3,2]}
           }
-        } else if (case==7) {
+        } else if (caseInt==7) {
           #{@_setupCase [1,2,3], [0,0,0]}
-        } else if (case==8) {
+        } else if (caseInt==8) {
           #{@_setupCase [1,3,2], [0,0,0]}
-        } else if (case==9) {
+        } else if (caseInt==9) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,1,0], [1,3,2]}
           } else {
             #{@_setupCase [1,2,0], [3,3,2]}
           }
-        } else if (case==10) {
+        } else if (caseInt==10) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,1,0], [3,2,1]}
           } else {
             #{@_setupCase [2,1,0], [3,2,3]}
           }
-        } else if (case==11) {
+        } else if (caseInt==11) {
           #{@_setupCase [0,3,2], [1,1,1]}
-        } else if (case==12) {
+        } else if (caseInt==12) {
           if (cornerIndex < 0.25) {
             #{@_setupCase [0,1,0], [2,3,3]}
           } else {
             #{@_setupCase [0,1,1], [2,2,3]}
           }
-        } else if (case==13) {
+        } else if (caseInt==13) {
           #{@_setupCase [0,1,3], [2,2,2]}
-        } else if (case==14) {
+        } else if (caseInt==14) {
           #{@_setupCase [0,2,1], [3,3,3]}
         } else {
+          cornerLeftPositions[0] = vec3(0);
+          cornerLeftPositions[1] = vec3(0);
+          cornerLeftPositions[2] = vec3(0);
+
+          cornerRightPositions[0] = vec3(0);
+          cornerRightPositions[1] = vec3(0);
+          cornerRightPositions[2] = vec3(0);
+
+          cornerLeftCurvedScalars[0] = 0.0;
+          cornerLeftCurvedScalars[1] = 0.0;
+          cornerLeftCurvedScalars[2] = 0.0;
+
+          cornerRightCurvedScalars[0] = 0.0;
+          cornerRightCurvedScalars[1] = 0.0;
+          cornerRightCurvedScalars[2] = 0.0;
+
+          cornerLeftVertexColorScalars[0] = 0.0;
+          cornerLeftVertexColorScalars[1] = 0.0;
+          cornerLeftVertexColorScalars[2] = 0.0;
+
+          cornerRightVertexColorScalars[0] = 0.0;
+          cornerRightVertexColorScalars[1] = 0.0;
+          cornerRightVertexColorScalars[2] = 0.0;
           continue;
         }
 
