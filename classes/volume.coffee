@@ -80,7 +80,6 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
-    @isosurfacesMesh.material.needsUpdate = true
     #Bind the texture to the shader.
     @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
@@ -88,6 +87,8 @@ class TopViewer.Volume
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
     isosurfacesGeometry.setDrawRange(0,  tetraCount*6)
+
+    debugger
 
     # Finish creating geometry.
     @_updateGeometry()

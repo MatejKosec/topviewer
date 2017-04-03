@@ -78,10 +78,10 @@
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
-      this.isosurfacesMesh.material.needsUpdate = true;
       this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
       this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
+      debugger;
       this._updateGeometry();
       this.options.model.add(this.isosurfacesMesh);
       this.options.model.add(this.wireframeMesh);

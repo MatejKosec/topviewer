@@ -68,7 +68,10 @@
     };
 
     Engine.prototype.resize = function(resizeData) {
+      debugger;
       this.renderer.setSize(this.options.app.canvas.width, this.options.app.canvas.height);
+      log("Requested render size: " + this.options.app.canvas.width + ", " + this.options.app.canvas.height);
+      log("Maximum viewport dimensions: " + (this.renderer.context.getParameter(this.renderer.context.MAX_VIEWPORT_DIMS)));
       this.renderer.setViewport(0, 0, this.renderer.context.drawingBufferWidth, this.renderer.context.drawingBufferHeight);
       return this.camera.setViewOffset(this.options.app.sage2_width, this.options.app.sage2_height, resizeData.leftViewOffset, resizeData.topViewOffset, resizeData.localWidth, resizeData.localHeight);
     };

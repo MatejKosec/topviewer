@@ -87,7 +87,7 @@ void main()	{
   vec2 tetraAcess;
   tetraAcess.x = mod(tetraIndex,tetraTextureWidth)/tetraTextureWidth;
   tetraAcess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
-  vec4 tetra = texture2D(tetraTexture, tetraAcess).rgba;
+  vec4 tetra = vec4(texture2D(tetraTexture, tetraAcess).rgba);
 
   //Compute where to axess the basePositionstexture for a given tetra
   vertexIndexCorner1.x = mod(tetra.r,bufferTextureWidth)/bufferTextureWidth;

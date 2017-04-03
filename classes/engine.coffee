@@ -84,11 +84,13 @@ class TopViewer.Engine
     @playbackControls.destroy()
 
   resize: (resizeData) ->
+    debugger
     @renderer.setSize @options.app.canvas.width, @options.app.canvas.height
+    log "Requested render size: #{@options.app.canvas.width}, #{@options.app.canvas.height}"
+    # The canvas width and height might be too big for what WebGL lets us work with, so print out the maximum
+    # allowed size of the viewpoer to console and the requested
 
-    # The canvas width and height might be too big for what WebGL lets us work with. It has a limit at 4096 * 4096 total
-    # number of pixels. For that reason the WebGL context we get returned might be actually smaller than what we asked
-    # for with setSize. Thus we need to correct the viewport to the actual numbers. (hmm, hardware dependent???)
+    log "Maximum viewport dimensions: #{@renderer.context.getParameter(@renderer.context.MAX_VIEWPORT_DIMS)}"
     @renderer.setViewport 0, 0, @renderer.context.drawingBufferWidth, @renderer.context.drawingBufferHeight
 
     @camera.setViewOffset @options.app.sage2_width, @options.app.sage2_height,
