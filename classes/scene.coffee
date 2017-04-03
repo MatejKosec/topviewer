@@ -79,7 +79,7 @@ class TopViewer.Scene extends THREE.Scene
     @_recomputeNormalizationMatrix()
 
   updateTranslation: ->
-    center = @sceneBoundingBox.getCenter().clone()
+    center = @sceneBoundingBox.center().clone()
 
     if @_centerDistance
       relativeChange = @_centerDistance / center.length()
@@ -94,7 +94,7 @@ class TopViewer.Scene extends THREE.Scene
     @_updateFloor()
 
   _updateFloor: ->
-    center = @sceneBoundingBox.getCenter().clone()
+    center = @sceneBoundingBox.center().clone()
     center.negate()
 
     # Move floor underneath all meshes.

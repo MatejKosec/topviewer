@@ -80,7 +80,7 @@
 
     Scene.prototype.updateTranslation = function() {
       var center, relativeChange;
-      center = this.sceneBoundingBox.getCenter().clone();
+      center = this.sceneBoundingBox.center().clone();
       if (this._centerDistance) {
         relativeChange = this._centerDistance / center.length();
         if ((0.5 < relativeChange && relativeChange < 1.5)) {
@@ -96,7 +96,7 @@
 
     Scene.prototype._updateFloor = function() {
       var center, minY;
-      center = this.sceneBoundingBox.getCenter().clone();
+      center = this.sceneBoundingBox.center().clone();
       center.negate();
       minY = (this.sceneBoundingBox.min.y + center.y) * this._scaleFactor;
       return this.floor.position.y = minY - 0.001;
