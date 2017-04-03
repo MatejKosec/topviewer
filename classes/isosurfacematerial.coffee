@@ -16,9 +16,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         bufferTextureWidth:
           value: 0
         tetraTexture:
-          type: 't'
-          #This is just a dummy texture to avoid webgl warnings that texture is not loaded etc.
-          value:  new THREE.DataTexture new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType
+          value:  TopViewer.Model.noTetraTexture
 
       defines:
         USE_SHADOWMAP: ''

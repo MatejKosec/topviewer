@@ -68,7 +68,6 @@
     };
 
     Engine.prototype.resize = function(resizeData) {
-      debugger;
       this.renderer.setSize(this.options.app.canvas.width, this.options.app.canvas.height);
       log("Requested render size: " + this.options.app.canvas.width + ", " + this.options.app.canvas.height);
       log("Maximum viewport dimensions: " + (this.renderer.context.getParameter(this.renderer.context.MAX_VIEWPORT_DIMS)));

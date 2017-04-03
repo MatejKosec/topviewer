@@ -84,12 +84,10 @@ class TopViewer.Engine
     @playbackControls.destroy()
 
   resize: (resizeData) ->
-    debugger
     @renderer.setSize @options.app.canvas.width, @options.app.canvas.height
     log "Requested render size: #{@options.app.canvas.width}, #{@options.app.canvas.height}"
     # The canvas width and height might be too big for what WebGL lets us work with, so print out the maximum
-    # allowed size of the viewpoer to console and the requested
-
+    # allowed size of the viewport to console
     log "Maximum viewport dimensions: #{@renderer.context.getParameter(@renderer.context.MAX_VIEWPORT_DIMS)}"
     @renderer.setViewport 0, 0, @renderer.context.drawingBufferWidth, @renderer.context.drawingBufferHeight
 

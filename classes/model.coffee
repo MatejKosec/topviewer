@@ -39,6 +39,10 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture = new THREE.DataTexture new Float32Array(4096), 4096, 1, THREE.AlphaFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter
   @noCurveTexture.needsUpdate = true
 
+  #Create a dummy array for the tetra elements (to be filled later when isosurfaces are needed
+  @noTetraTexture= new THREE.DataTexture new Float32Array(4), 1, 1, THREE.RGBAFormat, THREE.FloatType
+  @noTetraTexture.needsUpdate = true
+
 
   constructor: (@options) ->
     super
@@ -54,7 +58,6 @@ class TopViewer.Model extends THREE.Object3D
     @frames = [
       frameTime: -1
     ]
-    debugger
     gl_context = @options.engine.renderer.context
     @maxTextureWidth = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE)
     @boundingBox = new THREE.Box3
@@ -89,9 +92,7 @@ class TopViewer.Model extends THREE.Object3D
     @isolineMaterial = new TopViewer.IsolineMaterial @
 
     @volumeWireframeMaterial = new TopViewer.WireframeMaterial @
-    debugger
     @isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
-    debugger
 
     @fieldMaterial = new TopViewer.FieldMaterial @
 
@@ -128,7 +129,6 @@ class TopViewer.Model extends THREE.Object3D
       engine: @options.engine
       
   addScalar: (scalarName, scalar) ->
-    debugger
     # See if we already have this scalar or we're just getting new frames.
     if @scalars[scalarName]
       # Add new frames to the existing scalar.

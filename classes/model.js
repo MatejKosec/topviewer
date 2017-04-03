@@ -44,6 +44,10 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
+    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4), 1, 1, THREE.RGBAFormat, THREE.FloatType);
+
+    Model.noTetraTexture.needsUpdate = true;
+
     function Model(options) {
       var gl_context, height, i, j, k, l, ref;
       this.options = options;
@@ -59,7 +63,6 @@
           frameTime: -1
         }
       ];
-      debugger;
       gl_context = this.options.engine.renderer.context;
       this.maxTextureWidth = gl_context.getParameter(gl_context.MAX_TEXTURE_SIZE);
       this.boundingBox = new THREE.Box3;
@@ -85,9 +88,7 @@
       this.wireframeMaterial = new TopViewer.WireframeMaterial(this);
       this.isolineMaterial = new TopViewer.IsolineMaterial(this);
       this.volumeWireframeMaterial = new TopViewer.WireframeMaterial(this);
-      debugger;
       this.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
-      debugger;
       this.fieldMaterial = new TopViewer.FieldMaterial(this);
       this.colorScalar = null;
       if (this.nodes.length) {
@@ -122,7 +123,6 @@
     };
 
     Model.prototype.addScalar = function(scalarName, scalar) {
-      debugger;
       var array, frame, height, i, k, l, len, len1, m, ref, ref1, ref2, results;
       if (this.scalars[scalarName]) {
         ref = scalar.frames;

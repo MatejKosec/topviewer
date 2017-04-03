@@ -7,6 +7,7 @@
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
+      debugger;
       connectivity = [];
       linesCount = 0;
       addLine = function(a, b) {

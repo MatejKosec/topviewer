@@ -4,7 +4,7 @@ class TopViewer.Volume
   constructor: (@options) ->
     height = @options.model.basePositionsTexture.image.height
     width  = @options.model.basePositionsTexture.image.width
-
+    debugger
     #Create the 3D wireframe 
     connectivity = []
     linesCount = 0
@@ -51,7 +51,7 @@ class TopViewer.Volume
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
     @isosurfacesMesh.receiveShadows = true
 
-    #Create a texture for the tetraheadra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
+    #Create a texture for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
     debugger
     tetraHeight=1
     tetraWidth =  @options.model.maxTextureWidth
