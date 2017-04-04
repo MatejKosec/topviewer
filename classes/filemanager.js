@@ -130,6 +130,7 @@
     };
 
     FileManager.prototype._addObjects = function(objects) {
+      debugger;
       var base, base1, base2, elementsInstance, elementsName, frame, i, len, limits, nodesInstance, nodesName, ref, ref1, ref2, ref3, ref4, scalar, scalarName, scalarNodesName, scalars, vector, vectorName, vectorNodesName, vectors;
       ref = objects.nodes;
       for (nodesName in ref) {
@@ -188,6 +189,7 @@
 
     FileManager.prototype._processObjects = function() {
       var elements, elementsInstance, elementsName, elementsType, nodesInstance, nodesName, ref, ref1, ref2, ref3, ref4, results, scalar, scalarName, scalarNodesName, scalars, vector, vectorName, vectorNodesName, vectors;
+      log("Creating models");
       ref = this.objects.nodes;
       for (nodesName in ref) {
         nodesInstance = ref[nodesName];
@@ -197,6 +199,7 @@
         });
         delete this.objects.nodes[nodesName];
       }
+      debugger;
       ref1 = this.objects.elements;
       for (elementsName in ref1) {
         elementsInstance = ref1[elementsName];

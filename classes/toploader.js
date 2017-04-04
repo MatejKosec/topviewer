@@ -5,6 +5,7 @@
     function TopLoader() {}
 
     TopLoader.prototype.load = function(options) {
+      debugger;
       var worker;
       worker = new Worker('/uploads/apps/top_viewer/classes/toploader-worker.js');
       worker.onmessage = (function(_this) {

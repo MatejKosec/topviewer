@@ -120,6 +120,7 @@ class TopViewer.FileManager extends TopViewer.UIArea
       methodName: 'load'
 
   _addObjects: (objects) ->
+    debugger
     # Add nodes.
     for nodesName, nodesInstance of objects.nodes
       @objects.nodes[nodesName] = nodesInstance
@@ -161,6 +162,7 @@ class TopViewer.FileManager extends TopViewer.UIArea
 
   _processObjects: ->
     # Create all the models from nodes.
+    log "Creating models"
     for nodesName, nodesInstance of @objects.nodes
       @models[nodesName] = new TopViewer.Model
         engine: @options.engine
@@ -169,6 +171,7 @@ class TopViewer.FileManager extends TopViewer.UIArea
       delete @objects.nodes[nodesName]
 
     # Create meshes and volumes from elements.
+    debugger
     for elementsName, elementsInstance of @objects.elements
       if @models[elementsInstance.nodesName]
         for elementsType, elements of elementsInstance.elements

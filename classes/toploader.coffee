@@ -2,6 +2,7 @@
 
 class TopViewer.TopLoader
   load: (options) ->
+    debugger
     worker = new Worker '/uploads/apps/top_viewer/classes/toploader-worker.js'
 
     worker.onmessage = (message) =>
