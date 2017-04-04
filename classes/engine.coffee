@@ -129,6 +129,7 @@ class TopViewer.Engine
 
     @renderer.render @scene, @camera
 
+
     @_frameCount++
     @_frameTime += elapsedTime
 

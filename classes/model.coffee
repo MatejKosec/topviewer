@@ -40,7 +40,7 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture.needsUpdate = true
 
   #Create a dummy array for the tetra elements (to be filled later when isosurfaces are needed
-  @noTetraTexture= new THREE.DataTexture new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType
+  @noTetraTexture= new THREE.DataTexture new Float32Array(4096*4096*4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType
   @noTetraTexture.needsUpdate = true
 
 
@@ -111,11 +111,13 @@ class TopViewer.Model extends THREE.Object3D
     switch elementsType
       when 4
         # Triangle (Tri_3)
+        log "Adding triangles"
         collection = @meshes
         constructor = TopViewer.Mesh
 
       when 5
         # Tetrahedron (Tetra_4)
+        log "Adding tetrahedra"
         collection = @volumes
         constructor = TopViewer.Volume
 

@@ -44,7 +44,7 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
-    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType);
+    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType);
 
     Model.noTetraTexture.needsUpdate = true;
 
@@ -105,10 +105,12 @@
       var collection, constructor;
       switch (elementsType) {
         case 4:
+          log("Adding triangles");
           collection = this.meshes;
           constructor = TopViewer.Mesh;
           break;
         case 5:
+          log("Adding tetrahedra");
           collection = this.volumes;
           constructor = TopViewer.Volume;
           break;

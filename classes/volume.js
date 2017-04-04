@@ -52,7 +52,6 @@
       this.wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
       debugger;
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
-      log("" + this.options.model.isosurfaceMaterial);
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
@@ -82,7 +81,8 @@
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
       this.isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1;
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
+      this.options.model.tetraTexture = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value = this.options.model.tetraTexture;
       this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       debugger;

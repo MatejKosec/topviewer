@@ -16,7 +16,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         bufferTextureWidth:
           value: 1
         tetraTexture:
-          value:  TopViewer.Model.noTetraTexture
+          value:  unless @model.tetraTexture then TopViewer.Model.noTetraTexture else @model.tetraTexture
 
       defines:
         USE_SHADOWMAP: ''

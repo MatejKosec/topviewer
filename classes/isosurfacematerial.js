@@ -29,7 +29,7 @@
             value: 1
           },
           tetraTexture: {
-            value: TopViewer.Model.noTetraTexture
+            value: !this.model.tetraTexture ? TopViewer.Model.noTetraTexture : this.model.tetraTexture
           }
         },
         defines: {

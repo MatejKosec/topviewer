@@ -45,10 +45,6 @@ class TopViewer.Volume
     debugger
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
-    #The isosurface material should be created here, not in model.coffee as the usually executres on different
-    #workers.
-    #@options.model.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
-    log "#{@options.model.isosurfaceMaterial}"
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
@@ -86,8 +82,9 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
     @isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1
     #Bind the texture to the shader.
-    @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
+    @options.model.tetraTexture = new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
+    @isosurfacesMesh.material.uniforms.tetraTexture.value = @options.model.tetraTexture
     @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
