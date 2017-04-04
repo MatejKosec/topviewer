@@ -8,13 +8,13 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         lightingBidirectional:
           value: 0
         tetraTextureHeight:
-          value: 0
+          value: 1
         tetraTextureWidth:
-          value: 0
+          value: 1
         bufferTextureHeight:
-          value: 0
+          value: 1
         bufferTextureWidth:
-          value: 0
+          value: 1
         tetraTexture:
           value:  TopViewer.Model.noTetraTexture
 
@@ -182,8 +182,8 @@ void main()	{
           #{@_setupCase [0,2,1], [3,3,3]}
         } else {
           cornerLeftPositions[0] = vec3(0);
-          cornerLeftPositions[1] = vec3(0);
-          cornerLeftPositions[2] = vec3(0);
+          cornerLeftPositions[1] = vec3(2);
+          cornerLeftPositions[2] = vec3(3);
 
           cornerRightPositions[0] = vec3(0);
           cornerRightPositions[1] = vec3(0);

@@ -44,7 +44,7 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
-    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4), 1, 1, THREE.RGBAFormat, THREE.FloatType);
+    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType);
 
     Model.noTetraTexture.needsUpdate = true;
 
@@ -89,6 +89,7 @@
       this.isolineMaterial = new TopViewer.IsolineMaterial(this);
       this.volumeWireframeMaterial = new TopViewer.WireframeMaterial(this);
       this.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
+      log('Created isosurfaces material');
       this.fieldMaterial = new TopViewer.FieldMaterial(this);
       this.colorScalar = null;
       if (this.nodes.length) {
@@ -96,6 +97,7 @@
       }
       this._updateFrames();
       this._currentVectorFrames = {};
+      debugger;
     }
 
     Model.prototype.addElements = function(elementsName, elementsType, elements) {

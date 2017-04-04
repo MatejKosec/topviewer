@@ -45,7 +45,10 @@ class TopViewer.Volume
     debugger
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
-
+    #The isosurface material should be created here, not in model.coffee as the usually executres on different
+    #workers.
+    #@options.model.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
+    log "#{@options.model.isosurfaceMaterial}"
     # Create the isosurfaces mesh.
     isosurfacesGeometry = new THREE.BufferGeometry()
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
@@ -73,6 +76,7 @@ class TopViewer.Volume
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
+    log "Reached isosurfaces"
 
     #Update values in the shader and add the new texture
     #Record the tetrahedron height and vertexbuffer height
@@ -80,6 +84,7 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
+    @isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1
     #Bind the texture to the shader.
     @isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
