@@ -45,9 +45,16 @@ class TopViewer.Volume
     debugger
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
-    # Create the isosurfaces mesh.
+
+    # Create a new isosurface material for the current element group. This is necessary as there are multiple
+    # groups of elements with different tetraTextures
+    isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
+    @options.model.isosurfaceMaterials.push isosurfaceMaterial
+    log 'Created isosurfaces material'
+
+    # Create the isosurfaces mesh
     isosurfacesGeometry = new THREE.BufferGeometry()
-    @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, @options.model.isosurfaceMaterial
+    @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, isosurfaceMaterial
     @isosurfacesMesh.receiveShadows = true
 
     #Create a texture for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
@@ -80,11 +87,13 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
+    # Override isosurface material to always have bidirectional lighting, because normals get
+    # arbitrary positioned and there is no real meaning/consistency to the lighting.
     @isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1
     #Bind the texture to the shader.
-    @options.model.tetraTexture = new THREE.DataTexture floatElements, tetraWidth,\
+
+    @isosurfacesMesh.material.uniforms.tetraTexture.value =  new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
-    @isosurfacesMesh.material.uniforms.tetraTexture.value = @options.model.tetraTexture
     @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
@@ -114,8 +123,8 @@ class TopViewer.Volume
     # We can only draw the mesh when it's been added and we have the rendering controls.
     unless @renderingControls
       @wireframeMesh.visible = false
-      @isosurfacesMesh.visible = false
+      @isosurfacesMesh.visible = true #false
       return
 
     @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()
+    @isosurfacesMesh.visible = true #@renderingControls.showIsosurfacesControl.value()

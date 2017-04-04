@@ -88,8 +88,7 @@
       this.wireframeMaterial = new TopViewer.WireframeMaterial(this);
       this.isolineMaterial = new TopViewer.IsolineMaterial(this);
       this.volumeWireframeMaterial = new TopViewer.WireframeMaterial(this);
-      this.isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
-      log('Created isosurfaces material');
+      this.isosurfaceMaterials = [];
       this.fieldMaterial = new TopViewer.FieldMaterial(this);
       this.colorScalar = null;
       if (this.nodes.length) {
@@ -267,9 +266,10 @@
     };
 
     Model.prototype.showFrame = function(frameTime, nextFrameTime, frameProgress) {
-      var collection, displacementsTexture, displacementsTextureNext, frame, frameIndex, isovalueMaterial, isovalueMaterials, k, l, len, len1, len10, len2, len3, len4, len5, len6, len7, len8, len9, m, material, n, name, nextFrame, o, object, p, positionMaterials, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, renderingControls, results, s, scalar, scalarData, selectedScalar, surfaceMaterial, surfaceMaterials, t, testFrame, time, u, v, vector, vectorTexture, vectorTextureNext, wireframeMaterial, wireframeMaterials;
+      var collection, displacementsTexture, displacementsTextureNext, frame, frameIndex, i, isovalueMaterial, isovalueMaterials, k, l, len, len1, len10, len2, len3, len4, len5, len6, len7, len8, len9, m, material, n, name, nextFrame, o, object, p, positionMaterials, q, r, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, renderingControls, results, s, scalar, scalarData, selectedScalar, surfaceMaterial, surfaceMaterials, t, testFrame, time, u, v, vector, vectorTexture, vectorTextureNext, w, wireframeMaterial, wireframeMaterials, x, y, z;
       frame = null;
       nextFrame = null;
+      debugger;
       for (frameIndex = k = 0, ref = this.frames.length; 0 <= ref ? k < ref : k > ref; frameIndex = 0 <= ref ? ++k : --k) {
         testFrame = this.frames[frameIndex];
         time = testFrame.time;
@@ -288,18 +288,25 @@
         nextFrame = frame;
       }
       renderingControls = this.options.engine.renderingControls;
-      positionMaterials = [this.material, this.shadowMaterial, this.wireframeMaterial, this.volumeWireframeMaterial, this.isolineMaterial, this.isosurfaceMaterial, this.fieldMaterial];
+      positionMaterials = [this.material, this.shadowMaterial, this.wireframeMaterial, this.volumeWireframeMaterial, this.isolineMaterial, this.fieldMaterial];
+      for (i = l = 0, ref1 = this.isosurfaceMaterials.length; 0 <= ref1 ? l < ref1 : l > ref1; i = 0 <= ref1 ? ++l : --l) {
+        positionMaterials.push(this.isosurfaceMaterials[i]);
+      }
       surfaceMaterials = [
         {
           material: this.material,
           colorsControl: renderingControls.meshesSurfaceColorsControl,
           opacityControl: renderingControls.meshesSurfaceOpacityControl
-        }, {
-          material: this.isosurfaceMaterial,
-          colorsControl: renderingControls.volumesIsosurfacesColorsControl,
-          opacityControl: renderingControls.volumesIsosurfacesOpacityControl
         }
       ];
+      debugger;
+      for (i = m = 0, ref2 = this.isosurfaceMaterials.length; 0 <= ref2 ? m < ref2 : m > ref2; i = 0 <= ref2 ? ++m : --m) {
+        surfaceMaterials.push({
+          material: this.isosurfaceMaterials[i],
+          colorsControl: renderingControls.volumesIsosurfacesColorsControl,
+          opacityControl: renderingControls.volumesIsosurfacesOpacityControl
+        });
+      }
       wireframeMaterials = [
         {
           material: this.wireframeMaterial,
@@ -321,13 +328,17 @@
           scalarControl: renderingControls.meshesIsolinesScalarControl,
           colorsControl: renderingControls.meshesIsolinesColorsControl,
           opacityControl: renderingControls.meshesIsolinesOpacityControl
-        }, {
-          material: this.isosurfaceMaterial,
+        }
+      ];
+      debugger;
+      for (i = n = 0, ref3 = this.isosurfaceMaterials.length; 0 <= ref3 ? n < ref3 : n > ref3; i = 0 <= ref3 ? ++n : --n) {
+        isovalueMaterials.push({
+          material: this.isosurfaceMaterials[i],
           scalarControl: renderingControls.volumesIsosurfacesScalarControl,
           colorsControl: renderingControls.volumesIsosurfacesColorsControl,
           opacityControl: renderingControls.volumesIsosurfacesOpacityControl
-        }
-      ];
+        });
+      }
       switch (renderingControls.meshesSurfaceSidesControl.value) {
         case TopViewer.RenderingControls.MeshSurfaceSides.SingleFront:
           this.material.side = THREE.FrontSide;
@@ -353,22 +364,22 @@
       }
       displacementsTexture = this.constructor.noDisplacementsTexture;
       displacementsTextureNext = this.constructor.noDisplacementsTexture;
-      ref1 = frame.vectors;
-      for (l = 0, len = ref1.length; l < len; l++) {
-        vector = ref1[l];
+      ref4 = frame.vectors;
+      for (o = 0, len = ref4.length; o < len; o++) {
+        vector = ref4[o];
         if (this.vectors[vector.vectorName].options.vector === renderingControls.vectorsDisplacementVectorControl.value) {
           displacementsTexture = vector.vectorFrame.texture;
         }
       }
-      ref2 = nextFrame.vectors;
-      for (m = 0, len1 = ref2.length; m < len1; m++) {
-        vector = ref2[m];
+      ref5 = nextFrame.vectors;
+      for (p = 0, len1 = ref5.length; p < len1; p++) {
+        vector = ref5[p];
         if (this.vectors[vector.vectorName].options.vector === renderingControls.vectorsDisplacementVectorControl.value) {
           displacementsTextureNext = vector.vectorFrame.texture;
         }
       }
-      for (n = 0, len2 = positionMaterials.length; n < len2; n++) {
-        material = positionMaterials[n];
+      for (q = 0, len2 = positionMaterials.length; q < len2; q++) {
+        material = positionMaterials[q];
         material.uniforms.frameProgress.value = frameProgress;
         material.uniforms.displacementsTexture.value = displacementsTexture;
         material.uniforms.displacementsTextureNext.value = displacementsTextureNext;
@@ -376,8 +387,8 @@
         time = performance.now() / 1000;
         material.uniforms.time.value = time;
       }
-      for (o = 0, len3 = surfaceMaterials.length; o < len3; o++) {
-        surfaceMaterial = surfaceMaterials[o];
+      for (r = 0, len3 = surfaceMaterials.length; r < len3; r++) {
+        surfaceMaterial = surfaceMaterials[r];
         switch (surfaceMaterial.colorsControl.typeControl.value) {
           case TopViewer.RenderingControls.VertexColorsType.Color:
             surfaceMaterial.material.uniforms.vertexColor.value = surfaceMaterial.colorsControl.colorControl.value;
@@ -392,8 +403,8 @@
         surfaceMaterial.material.transparent = surfaceMaterial.material.uniforms.opacity.value !== 1;
         surfaceMaterial.material.uniforms.lightingBidirectional.value = renderingControls.bidirectionalLightControl.value() ? 1 : 0;
       }
-      for (p = 0, len4 = wireframeMaterials.length; p < len4; p++) {
-        wireframeMaterial = wireframeMaterials[p];
+      for (s = 0, len4 = wireframeMaterials.length; s < len4; s++) {
+        wireframeMaterial = wireframeMaterials[s];
         switch (wireframeMaterial.colorsControl.typeControl.value) {
           case TopViewer.RenderingControls.VertexColorsType.Color:
             wireframeMaterial.material.uniforms.vertexColor.value = wireframeMaterial.colorsControl.colorControl.value;
@@ -407,12 +418,12 @@
         wireframeMaterial.material.uniforms.opacity.value = wireframeMaterial.opacityControl.value;
         wireframeMaterial.material.transparent = wireframeMaterial.material.uniforms.opacity.value !== 1;
       }
-      for (q = 0, len5 = isovalueMaterials.length; q < len5; q++) {
-        isovalueMaterial = isovalueMaterials[q];
+      for (t = 0, len5 = isovalueMaterials.length; t < len5; t++) {
+        isovalueMaterial = isovalueMaterials[t];
         selectedScalar = isovalueMaterial.scalarControl.value;
-        ref3 = frame.scalars;
-        for (r = 0, len6 = ref3.length; r < len6; r++) {
-          scalar = ref3[r];
+        ref6 = frame.scalars;
+        for (u = 0, len6 = ref6.length; u < len6; u++) {
+          scalar = ref6[u];
           scalarData = this.scalars[scalar.scalarName];
           if (scalarData === selectedScalar) {
             isovalueMaterial.material.uniforms.scalarsTexture.value = scalar.scalarFrame.texture;
@@ -422,9 +433,9 @@
             isovalueMaterial.material.uniforms.isovalues.value = scalarData.renderingControls.curveTransformControl.isovaluesControl.value;
           }
         }
-        ref4 = nextFrame.scalars;
-        for (s = 0, len7 = ref4.length; s < len7; s++) {
-          scalar = ref4[s];
+        ref7 = nextFrame.scalars;
+        for (v = 0, len7 = ref7.length; v < len7; v++) {
+          scalar = ref7[v];
           if (this.scalars[scalar.scalarName] === selectedScalar) {
             isovalueMaterial.material.uniforms.scalarsTextureNext.value = scalar.scalarFrame.texture;
           }
@@ -442,20 +453,22 @@
         isovalueMaterial.material.uniforms.opacity.value = isovalueMaterial.opacityControl.value;
         isovalueMaterial.material.transparent = isovalueMaterial.material.uniforms.opacity.value !== 1;
       }
-      this.isosurfaceMaterial.uniforms.lightingBidirectional.value = 1;
+      for (i = w = 0, ref8 = this.isosurfaceMaterials.length; 0 <= ref8 ? w < ref8 : w > ref8; i = 0 <= ref8 ? ++w : --w) {
+        this.isosurfaceMaterials[i].uniforms.lightingBidirectional.value = 1;
+      }
       this.fieldMaterial.uniforms.unitLength.value = renderingControls.vectorsFieldLengthControl.value;
       vectorTexture = this.constructor.noDisplacementsTexture;
       vectorTextureNext = this.constructor.noDisplacementsTexture;
-      ref5 = frame.vectors;
-      for (t = 0, len8 = ref5.length; t < len8; t++) {
-        vector = ref5[t];
+      ref9 = frame.vectors;
+      for (x = 0, len8 = ref9.length; x < len8; x++) {
+        vector = ref9[x];
         if (this.vectors[vector.vectorName].options.vector === renderingControls.vectorsFieldVectorControl.value) {
           vectorTexture = vector.vectorFrame.texture;
         }
       }
-      ref6 = nextFrame.vectors;
-      for (u = 0, len9 = ref6.length; u < len9; u++) {
-        vector = ref6[u];
+      ref10 = nextFrame.vectors;
+      for (y = 0, len9 = ref10.length; y < len9; y++) {
+        vector = ref10[y];
         if (this.vectors[vector.vectorName].options.vector === renderingControls.vectorsFieldVectorControl.value) {
           vectorTextureNext = vector.vectorFrame.texture;
         }
@@ -463,10 +476,10 @@
       this.fieldMaterial.uniforms.vectorTexture.value = vectorTexture;
       this.fieldMaterial.uniforms.vectorTextureNext.value = vectorTextureNext;
       this.fieldMaterial.transparent = true;
-      ref7 = [this.meshes, this.volumes, this.vectors];
+      ref11 = [this.meshes, this.volumes, this.vectors];
       results = [];
-      for (v = 0, len10 = ref7.length; v < len10; v++) {
-        collection = ref7[v];
+      for (z = 0, len10 = ref11.length; z < len10; z++) {
+        collection = ref11[z];
         results.push((function() {
           var results1;
           results1 = [];

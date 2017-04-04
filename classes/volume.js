@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, floatElements, height, i, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
+      var a, addLine, connectivity, floatElements, height, i, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
@@ -52,8 +52,11 @@
       this.wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
       debugger;
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
+      isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
+      this.options.model.isosurfaceMaterials.push(isosurfaceMaterial);
+      log('Created isosurfaces material');
       isosurfacesGeometry = new THREE.BufferGeometry();
-      this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, this.options.model.isosurfaceMaterial);
+      this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
       debugger;
       tetraHeight = 1;
@@ -81,8 +84,7 @@
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
       this.isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1;
-      this.options.model.tetraTexture = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value = this.options.model.tetraTexture;
+      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
       this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       debugger;
@@ -105,11 +107,11 @@
     Volume.prototype.showFrame = function() {
       if (!this.renderingControls) {
         this.wireframeMesh.visible = false;
-        this.isosurfacesMesh.visible = false;
+        this.isosurfacesMesh.visible = true;
         return;
       }
       this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
-      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
+      return this.isosurfacesMesh.visible = true;
     };
 
     return Volume;

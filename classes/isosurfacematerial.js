@@ -10,7 +10,6 @@
     function IsosurfaceMaterial(model) {
       var options;
       this.model = model;
-      debugger;
       options = {
         uniforms: {
           lightingBidirectional: {
@@ -29,7 +28,7 @@
             value: 1
           },
           tetraTexture: {
-            value: !this.model.tetraTexture ? TopViewer.Model.noTetraTexture : this.model.tetraTexture
+            value: TopViewer.Model.noTetraTexture
           }
         },
         defines: {

@@ -92,8 +92,10 @@ class TopViewer.Model extends THREE.Object3D
     @isolineMaterial = new TopViewer.IsolineMaterial @
 
     @volumeWireframeMaterial = new TopViewer.WireframeMaterial @
-    @isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
-    log 'Created isosurfaces material'
+    #There will be an array of isosurface materials (one for each element group)
+    @isosurfaceMaterials = []
+    #@isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
+    #log 'Created isosurfaces material'
     @fieldMaterial = new TopViewer.FieldMaterial @
 
     @colorScalar = null
@@ -238,6 +240,7 @@ class TopViewer.Model extends THREE.Object3D
     # Find the frame and next frame for the given time. Frame with time -1 is always present.
     frame = null
     nextFrame = null
+    debugger
 
     for frameIndex in [0...@frames.length]
       testFrame = @frames[frameIndex]
@@ -255,17 +258,20 @@ class TopViewer.Model extends THREE.Object3D
 
     renderingControls = @options.engine.renderingControls
 
-    positionMaterials = [@material, @shadowMaterial, @wireframeMaterial, @volumeWireframeMaterial, @isolineMaterial, @isosurfaceMaterial, @fieldMaterial]
+    positionMaterials = [@material, @shadowMaterial, @wireframeMaterial, @volumeWireframeMaterial, @isolineMaterial, @fieldMaterial]
+    positionMaterials.push @isosurfaceMaterials[i] for i in [0...@isosurfaceMaterials.length]
 
     surfaceMaterials = [
       material: @material
       colorsControl: renderingControls.meshesSurfaceColorsControl
       opacityControl: renderingControls.meshesSurfaceOpacityControl
-    ,
-      material: @isosurfaceMaterial
-      colorsControl: renderingControls.volumesIsosurfacesColorsControl
-      opacityControl: renderingControls.volumesIsosurfacesOpacityControl
     ]
+    debugger
+    for i in [0...@isosurfaceMaterials.length]
+      surfaceMaterials.push
+        material: @isosurfaceMaterials[i]
+        colorsControl: renderingControls.volumesIsosurfacesColorsControl
+        opacityControl: renderingControls.volumesIsosurfacesOpacityControl
 
     wireframeMaterials = [
       material: @wireframeMaterial
@@ -286,12 +292,14 @@ class TopViewer.Model extends THREE.Object3D
       scalarControl: renderingControls.meshesIsolinesScalarControl
       colorsControl: renderingControls.meshesIsolinesColorsControl
       opacityControl: renderingControls.meshesIsolinesOpacityControl
-    ,
-      material: @isosurfaceMaterial
-      scalarControl: renderingControls.volumesIsosurfacesScalarControl
-      colorsControl: renderingControls.volumesIsosurfacesColorsControl
-      opacityControl: renderingControls.volumesIsosurfacesOpacityControl
     ]
+    debugger
+    for i in [0...@isosurfaceMaterials.length]
+      isovalueMaterials.push
+        material: @isosurfaceMaterials[i]
+        scalarControl: renderingControls.volumesIsosurfacesScalarControl
+        colorsControl: renderingControls.volumesIsosurfacesColorsControl
+        opacityControl: renderingControls.volumesIsosurfacesOpacityControl
 
     # Determine the type of mesh surface rendering.
     switch renderingControls.meshesSurfaceSidesControl.value 
@@ -423,9 +431,10 @@ class TopViewer.Model extends THREE.Object3D
       isovalueMaterial.material.uniforms.opacity.value = isovalueMaterial.opacityControl.value
       isovalueMaterial.material.transparent = isovalueMaterial.material.uniforms.opacity.value isnt 1
 
+
     # Override isosurface material to always have bidirectional lighting, because normals get
     # arbitrary positioned and there is no real meaning/consistency to the lighting.
-    @isosurfaceMaterial.uniforms.lightingBidirectional.value = 1
+    @isosurfaceMaterials[i].uniforms.lightingBidirectional.value = 1 for i in [0...@isosurfaceMaterials.length]
 
     # Set field material unit length.
     @fieldMaterial.uniforms.unitLength.value = renderingControls.vectorsFieldLengthControl.value

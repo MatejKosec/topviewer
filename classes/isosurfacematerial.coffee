@@ -2,7 +2,6 @@
 
 class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
   constructor: (@model) ->
-    debugger
     options =
       uniforms:
         lightingBidirectional:
@@ -16,7 +15,7 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         bufferTextureWidth:
           value: 1
         tetraTexture:
-          value:  unless @model.tetraTexture then TopViewer.Model.noTetraTexture else @model.tetraTexture
+          value: TopViewer.Model.noTetraTexture
 
       defines:
         USE_SHADOWMAP: ''
