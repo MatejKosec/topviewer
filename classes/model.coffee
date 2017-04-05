@@ -40,7 +40,7 @@ class TopViewer.Model extends THREE.Object3D
   @noCurveTexture.needsUpdate = true
 
   #Create a dummy array for the tetra elements (to be filled later when isosurfaces are needed
-  @noTetraTexture= new THREE.DataTexture new Float32Array(4096*4096*4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType
+  @noTetraTexture= new THREE.DataTexture new Float32Array(4096*4*16*4), 4096*4, 16, THREE.RGBAFormat, THREE.FloatType
   @noTetraTexture.needsUpdate = true
 
 
@@ -94,7 +94,6 @@ class TopViewer.Model extends THREE.Object3D
     @volumeWireframeMaterial = new TopViewer.WireframeMaterial @
     #There will be an array of isosurface materials (one for each element group)
     @isosurfaceMaterials = []
-    #@isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
     #log 'Created isosurfaces material'
     @fieldMaterial = new TopViewer.FieldMaterial @
 
@@ -240,7 +239,6 @@ class TopViewer.Model extends THREE.Object3D
     # Find the frame and next frame for the given time. Frame with time -1 is always present.
     frame = null
     nextFrame = null
-    debugger
 
     for frameIndex in [0...@frames.length]
       testFrame = @frames[frameIndex]

@@ -5,7 +5,7 @@ class TopViewer.Volume
     height = @options.model.basePositionsTexture.image.height
     width  = @options.model.basePositionsTexture.image.width
     debugger
-    #Create the 3D wireframe 
+    #Create the 3D wireframe
     connectivity = []
     linesCount = 0
 
@@ -50,7 +50,7 @@ class TopViewer.Volume
     # groups of elements with different tetraTextures
     isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
     @options.model.isosurfaceMaterials.push isosurfaceMaterial
-    log 'Created isosurfaces material'
+    log 'Created new isosurfaces material'
 
     # Create the isosurfaces mesh
     isosurfacesGeometry = new THREE.BufferGeometry()
@@ -64,10 +64,9 @@ class TopViewer.Volume
     while @options.elements.length / 4 > tetraWidth  * tetraHeight
       tetraHeight *= 2
     if tetraHeight>tetraWidth then throw 'Too many elements to render. Failed in volume.coffee'
-    #Need to create a copy of the elements because webgl may not be able to deal with uvec2 (need floats)
+    #Need to create a copy of the elements because webgl may not be able to deal with uvec (need floats)
     floatElements = new Float32Array tetraWidth*tetraHeight*4
-    for i in [0...@options.elements.length]
-      floatElements[i] = @options.elements[i]
+    floatElements[i] = @options.elements[i] for i in [0...@options.elements.length]
 
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
@@ -79,7 +78,6 @@ class TopViewer.Volume
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
-    log "Reached isosurfaces"
 
     #Update values in the shader and add the new texture
     #Record the tetrahedron height and vertexbuffer height
@@ -87,14 +85,14 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
-    # Override isosurface material to always have bidirectional lighting, because normals get
-    # arbitrary positioned and there is no real meaning/consistency to the lighting.
-    @isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1
     #Bind the texture to the shader.
-
     @isosurfacesMesh.material.uniforms.tetraTexture.value =  new THREE.DataTexture floatElements, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType
     @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
+
+    #Need to also set the basePoistionTexture again (bug fix)
+    @isosurfacesMesh.material.uniforms.basePositionsTexture.value = @options.model.basePositionsTexture
+    #@isosurfacesMesh.material.uniforms.basePositionsTexture.value.needsUpdate = true
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
     isosurfacesGeometry.setDrawRange(0,  tetraCount*6)
@@ -116,15 +114,15 @@ class TopViewer.Volume
     @_updateBounds @isosurfacesMesh, @options.model
 
   _updateBounds: (mesh, model) ->
-    mesh.geometry.boundingBox = @options.model.boundingBox
-    mesh.geometry.boundingSphere = @options.model.boundingSphere
+    mesh.geometry.boundingBox = model.boundingBox
+    mesh.geometry.boundingSphere = model.boundingSphere
 
   showFrame: () ->
     # We can only draw the mesh when it's been added and we have the rendering controls.
     unless @renderingControls
       @wireframeMesh.visible = false
-      @isosurfacesMesh.visible = true #false
+      @isosurfacesMesh.visible = false
       return
 
     @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
-    @isosurfacesMesh.visible = true #@renderingControls.showIsosurfacesControl.value()
+    @isosurfacesMesh.visible = @renderingControls.showIsosurfacesControl.value()

@@ -54,7 +54,7 @@
       wireframeGeometry.setDrawRange(0, lineVertexIndex);
       isosurfaceMaterial = new TopViewer.IsosurfaceMaterial(this);
       this.options.model.isosurfaceMaterials.push(isosurfaceMaterial);
-      log('Created isosurfaces material');
+      log('Created new isosurfaces material');
       isosurfacesGeometry = new THREE.BufferGeometry();
       this.isosurfacesMesh = new THREE.Mesh(isosurfacesGeometry, isosurfaceMaterial);
       this.isosurfacesMesh.receiveShadows = true;
@@ -78,14 +78,13 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
-      log("Reached isosurfaces");
       this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
-      this.isosurfacesMesh.material.uniforms.lightingBidirectional.value = 1;
       this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType);
       this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.basePositionsTexture.value = this.options.model.basePositionsTexture;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       debugger;
       this._updateGeometry();
@@ -100,18 +99,18 @@
     };
 
     Volume.prototype._updateBounds = function(mesh, model) {
-      mesh.geometry.boundingBox = this.options.model.boundingBox;
-      return mesh.geometry.boundingSphere = this.options.model.boundingSphere;
+      mesh.geometry.boundingBox = model.boundingBox;
+      return mesh.geometry.boundingSphere = model.boundingSphere;
     };
 
     Volume.prototype.showFrame = function() {
       if (!this.renderingControls) {
         this.wireframeMesh.visible = false;
-        this.isosurfacesMesh.visible = true;
+        this.isosurfacesMesh.visible = false;
         return;
       }
       this.wireframeMesh.visible = this.renderingControls.showWireframeControl.value();
-      return this.isosurfacesMesh.visible = true;
+      return this.isosurfacesMesh.visible = this.renderingControls.showIsosurfacesControl.value();
     };
 
     return Volume;

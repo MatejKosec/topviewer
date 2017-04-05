@@ -44,7 +44,7 @@
 
     Model.noCurveTexture.needsUpdate = true;
 
-    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4096 * 4096 * 4), 4096, 4096, THREE.RGBAFormat, THREE.FloatType);
+    Model.noTetraTexture = new THREE.DataTexture(new Float32Array(4096 * 4 * 16 * 4), 4096 * 4, 16, THREE.RGBAFormat, THREE.FloatType);
 
     Model.noTetraTexture.needsUpdate = true;
 
@@ -269,7 +269,6 @@
       var collection, displacementsTexture, displacementsTextureNext, frame, frameIndex, i, isovalueMaterial, isovalueMaterials, k, l, len, len1, len10, len2, len3, len4, len5, len6, len7, len8, len9, m, material, n, name, nextFrame, o, object, p, positionMaterials, q, r, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, renderingControls, results, s, scalar, scalarData, selectedScalar, surfaceMaterial, surfaceMaterials, t, testFrame, time, u, v, vector, vectorTexture, vectorTextureNext, w, wireframeMaterial, wireframeMaterials, x, y, z;
       frame = null;
       nextFrame = null;
-      debugger;
       for (frameIndex = k = 0, ref = this.frames.length; 0 <= ref ? k < ref : k > ref; frameIndex = 0 <= ref ? ++k : --k) {
         testFrame = this.frames[frameIndex];
         time = testFrame.time;
