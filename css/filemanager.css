@@ -32,6 +32,7 @@
   display: none;
 }
 .top-viewer .file-manager .files .file .file-container .toggle .checkbox-control .file-size {
+  color: #fafafa;
   display: inline-block;
   width: 25%;
   text-align: right;

@@ -7,12 +7,12 @@
 
   p
     font-family "Ubuntu Condensed", sans-serif
-    font-size 1.6em
+    font-size 1.2em
     margin 0.3em
 
   button
     background none
-    border none
+    border dotted
     padding 0
     color white
     opacity 0.7
@@ -27,7 +27,7 @@
       opacity 0.9
 
     &:focus
-      outline none
+      outline dotted
 
   ul
     list-style none
@@ -41,15 +41,17 @@
     margin-bottom 0
 
   .panel
-    border 1px solid rgba(200, 200, 225, 0.5)
+    border 1px solid white
     margin 0.4em
     padding 0.4em 0.4em 0
-    width 20em
+    width 15em
 
     > .toggle
       > .checkbox-control
         font-size 1.2em
         text-transform uppercase
+        text-align center
+        color white
 
         .value
           display none
@@ -57,18 +59,19 @@
     &.contents-visible
       > .toggle
         > .checkbox-control
-          border-bottom 1px solid rgba(200, 200, 225, 0.5)
+          border-bottom 1px solid white
           margin-bottom 0.5em
 
       padding 0.4em
 
     .sub-panel
       margin 0.3em
-      border-bottom 1px solid rgba(200, 200, 225, 0.5)
+      border-bottom 1px solid white
 
       .title
-        font-size 1.6em
-        font-style italic
+        font-size 1.2em
+        font-style bold
+        color white
         margin 0.5em 0 0.3em
         padding-bottom 0.1em
 
@@ -86,13 +89,13 @@
 
     .value
       display inline-block
-      font-size 1.6em
+      font-size 1.2em
 
     .slider
       display inline-block
       position relative
       width 10em
-      height 1.5em
+      height 1.0em
       opacity 1
       //transition all 0.2s
 
@@ -115,9 +118,9 @@
             position absolute
             top 0
             left 0
-            width 1.1em
-            height 1.1em
-            transform translate(-50%, -55%) scale(0.7)
+            width 1.0em
+            height 1.0em
+            transform translate(-50%, -50%) scale(0.8)
             border-radius 100%
             background rgba(255, 255, 255, 0.5)
             //transition all 0.2s
@@ -125,7 +128,7 @@
       &.hover
         .track
           .thumb::before
-            transform translate(-50%, -55%)
+            transform translate(-50%, -50%)
             background rgba(255, 255, 255, 0.7)
             box-shadow 0 0 0.2em rgba(0, 0, 0, 0.3)
 
@@ -134,7 +137,7 @@
         opacity 1
 
   .checkbox-control
-    font-size 1.6em
+    font-size 1.2em
 
     .value
       position relative
@@ -202,9 +205,9 @@
         position absolute
         top 100%
         left 0
-        border 1px solid rgba(200, 200, 225, 0.5)
+        border 1px solid white
         background hsla(234, 8%, 20%, 0.9)
-        font-size 1.6em
+        font-size 1.2em
         z-index 1
         box-shadow 0 0.4em 0.5em rgba(0,0,0,0.3)
 
@@ -230,7 +233,7 @@
       display block
       width 1.5em
       height 1.5em
-      border 1px solid rgba(200, 200, 225, 0.5)
+      border 1px solid white
 
     .toggle-container
       position relative
@@ -248,7 +251,7 @@
         left 3.5em
         width 11.2em
         padding 0.5em
-        border 1px solid rgba(200, 200, 225, 0.5)
+        border 1px solid white
         background hsla(234, 8%, 20%, 0.9)
         z-index 1
         box-shadow 0 0.4em 0.5em rgba(0,0,0,0.3)
@@ -277,7 +280,7 @@
 
             .name
               display inline-block
-              font-size 1.6em
+              font-size 1.2em
               width 0.8em
               text-align right
 
@@ -294,21 +297,21 @@
     padding 0.5em
 
     .histogram-canvas
-      width 10em
+      width 8em
       height 2.5em
-      border rgba(255,255,255,0.2) solid 1px
+      border white solid 1px
       margin-bottom 0.5em
 
     .isovalues-slider-area
-      position absolute
-      top 1.2em
+      position static
+      top 1.4em
       left 11em
 
       .slider-control
-        padding 0
+        padding 0.5em
 
         .slider
-          width 6em
+          width 8em
 
     .curve-area
       display inline-block
@@ -317,18 +320,18 @@
       .curve-canvas
         position relative
         z-index 1
-        width 10em
-        height 10em
-        border rgba(255,255,255,0.2) solid 1px
+        width 8em
+        height 8em
+        border white solid 1px
 
       .spectrogram-canvas
         position absolute
         left 0
         top 0
-        width 10em
-        height 10em
+        width 8em
+        height 8em
 
     .isovalues-canvas
-      width 6em
-      height 10em
+      width 4em
+      height 8em
       margin-left 0.5em

@@ -7,12 +7,12 @@
 }
 .top-viewer p {
   font-family: "Ubuntu Condensed", sans-serif;
-  font-size: 1.6em;
+  font-size: 1.2em;
   margin: 0.3em;
 }
 .top-viewer button {
   background: none;
-  border: none;
+  border: dotted;
   padding: 0;
   color: #fff;
   opacity: 0.7;
@@ -27,7 +27,7 @@
   opacity: 0.9;
 }
 .top-viewer button:focus {
-  outline: none;
+  outline: dotted;
 }
 .top-viewer ul {
   list-style: none;
@@ -40,14 +40,16 @@
   margin-bottom: 0;
 }
 .top-viewer .panel {
-  border: 1px solid rgba(200,200,225,0.5);
+  border: 1px solid #fff;
   margin: 0.4em;
   padding: 0.4em 0.4em 0;
-  width: 20em;
+  width: 15em;
 }
 .top-viewer .panel > .toggle > .checkbox-control {
   font-size: 1.2em;
   text-transform: uppercase;
+  text-align: center;
+  color: #fff;
 }
 .top-viewer .panel > .toggle > .checkbox-control .value {
   display: none;
@@ -56,16 +58,17 @@
   padding: 0.4em;
 }
 .top-viewer .panel.contents-visible > .toggle > .checkbox-control {
-  border-bottom: 1px solid rgba(200,200,225,0.5);
+  border-bottom: 1px solid #fff;
   margin-bottom: 0.5em;
 }
 .top-viewer .panel .sub-panel {
   margin: 0.3em;
-  border-bottom: 1px solid rgba(200,200,225,0.5);
+  border-bottom: 1px solid #fff;
 }
 .top-viewer .panel .sub-panel .title {
-  font-size: 1.6em;
-  font-style: italic;
+  font-size: 1.2em;
+  font-style: bold;
+  color: #fff;
   margin: 0.5em 0 0.3em;
   padding-bottom: 0.1em;
 }
@@ -82,13 +85,13 @@
 }
 .top-viewer .slider-control .value {
   display: inline-block;
-  font-size: 1.6em;
+  font-size: 1.2em;
 }
 .top-viewer .slider-control .slider {
   display: inline-block;
   position: relative;
   width: 10em;
-  height: 1.5em;
+  height: 1em;
   opacity: 1;
 }
 .top-viewer .slider-control .slider .track {
@@ -110,14 +113,14 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 1.1em;
-  height: 1.1em;
-  transform: translate(-50%, -55%) scale(0.7);
+  width: 1em;
+  height: 1em;
+  transform: translate(-50%, -50%) scale(0.8);
   border-radius: 100%;
   background: rgba(255,255,255,0.5);
 }
 .top-viewer .slider-control .slider.hover .track .thumb::before {
-  transform: translate(-50%, -55%);
+  transform: translate(-50%, -50%);
   background: rgba(255,255,255,0.7);
   box-shadow: 0 0 0.2em rgba(0,0,0,0.3);
 }
@@ -125,7 +128,7 @@
   opacity: 1;
 }
 .top-viewer .checkbox-control {
-  font-size: 1.6em;
+  font-size: 1.2em;
 }
 .top-viewer .checkbox-control .value {
   position: relative;
@@ -188,9 +191,9 @@
   position: absolute;
   top: 100%;
   left: 0;
-  border: 1px solid rgba(200,200,225,0.5);
+  border: 1px solid #fff;
   background: rgba(47,48,55,0.9);
-  font-size: 1.6em;
+  font-size: 1.2em;
   z-index: 1;
   box-shadow: 0 0.4em 0.5em rgba(0,0,0,0.3);
 }
@@ -214,7 +217,7 @@
   display: block;
   width: 1.5em;
   height: 1.5em;
-  border: 1px solid rgba(200,200,225,0.5);
+  border: 1px solid #fff;
 }
 .top-viewer .color-control .toggle-container {
   position: relative;
@@ -231,7 +234,7 @@
   left: 3.5em;
   width: 11.2em;
   padding: 0.5em;
-  border: 1px solid rgba(200,200,225,0.5);
+  border: 1px solid #fff;
   background: rgba(47,48,55,0.9);
   z-index: 1;
   box-shadow: 0 0.4em 0.5em rgba(0,0,0,0.3);
@@ -260,7 +263,7 @@
 }
 .top-viewer .color-control .toggle-container .contents .color-sliders .slider-area .name {
   display: inline-block;
-  font-size: 1.6em;
+  font-size: 1.2em;
   width: 0.8em;
   text-align: right;
 }
@@ -277,21 +280,21 @@
   padding: 0.5em;
 }
 .top-viewer .curve-transform-control .histogram-canvas {
-  width: 10em;
+  width: 8em;
   height: 2.5em;
-  border: rgba(255,255,255,0.2) solid 1px;
+  border: #fff solid 1px;
   margin-bottom: 0.5em;
 }
 .top-viewer .curve-transform-control .isovalues-slider-area {
-  position: absolute;
-  top: 1.2em;
+  position: static;
+  top: 1.4em;
   left: 11em;
 }
 .top-viewer .curve-transform-control .isovalues-slider-area .slider-control {
-  padding: 0;
+  padding: 0.5em;
 }
 .top-viewer .curve-transform-control .isovalues-slider-area .slider-control .slider {
-  width: 6em;
+  width: 8em;
 }
 .top-viewer .curve-transform-control .curve-area {
   display: inline-block;
@@ -300,19 +303,19 @@
 .top-viewer .curve-transform-control .curve-area .curve-canvas {
   position: relative;
   z-index: 1;
-  width: 10em;
-  height: 10em;
-  border: rgba(255,255,255,0.2) solid 1px;
+  width: 8em;
+  height: 8em;
+  border: #fff solid 1px;
 }
 .top-viewer .curve-transform-control .curve-area .spectrogram-canvas {
   position: absolute;
   left: 0;
   top: 0;
-  width: 10em;
-  height: 10em;
+  width: 8em;
+  height: 8em;
 }
 .top-viewer .curve-transform-control .isovalues-canvas {
-  width: 6em;
-  height: 10em;
+  width: 4em;
+  height: 8em;
   margin-left: 0.5em;
 }
