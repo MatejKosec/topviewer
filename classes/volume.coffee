@@ -74,11 +74,10 @@ class TopViewer.Volume
     #6 sequential threads collaborate on the isosurface for the same triangle
     masterIndexArray = new Float32Array tetraCount * 6
     for i in [0...masterIndexArray.length]
-      masterIndexArray[i] = i
+      masterIndexArray[i] = i+1
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
-    log masterIndexArray.length
 
     #Update values in the shader and add the new texture
     #Record the tetrahedron height and vertexbuffer height
@@ -93,7 +92,7 @@ class TopViewer.Volume
 
     #Need to also set the basePoistionTexture again (bug fix)
     @isosurfacesMesh.material.uniforms.basePositionsTexture.value = @options.model.basePositionsTexture
-    #@isosurfacesMesh.material.uniforms.basePositionsTexture.value.needsUpdate = true
+    @isosurfacesMesh.material.uniforms.basePositionsTexture.value.needsUpdate = true
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
     isosurfacesGeometry.setDrawRange(0,  tetraCount*6)

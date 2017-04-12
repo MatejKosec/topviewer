@@ -55,6 +55,7 @@ varying float scalar;
 uniform vec3 vertexColor;
 uniform sampler2D vertexScalarsCurveTexture;
 uniform sampler2D vertexScalarsGradientTexture;
+float varying_opacity;
 uniform float opacity;
 
 varying float scalar;
@@ -67,11 +68,16 @@ varying float scalar;
   if (scalar >= 0.0) {
     // Transform the scalar with the curve.
     float curvedScalar = texture2D(vertexScalarsCurveTexture, vec2(scalar, 0)).a;
+    varying_opacity=opacity;
 
     // Map the curved scalar to the gradient texture.
     baseColor = texture2D(vertexScalarsGradientTexture, vec2(curvedScalar, 0)).rgb;
-  } else {
+  }else if (scalar < -2.0){
     baseColor = vertexColor;
+    varying_opacity = 0.0;
+  }else {
+    baseColor = vertexColor;
+    varying_opacity = opacity;
   }
 """
 

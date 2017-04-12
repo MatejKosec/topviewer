@@ -38,7 +38,7 @@ class TopViewer.Engine
     @cameraControls = new THREE.OrbitControls @camera, @options.app.element
     @cameraControls.minDistance = 0.01
     @cameraControls.maxDistance = 10
-    @cameraControls.zoomSpeed = 0.5
+    @cameraControls.zoomSpeed = 0.7
     @cameraControls.rotateSpeed = 2
     @cameraControls.autoRotate = false
     @cameraControls.center.copy cameraState.center
@@ -47,7 +47,7 @@ class TopViewer.Engine
     @rotateControls.minDistance = 0.01
     @rotateControls.maxDistance = 10
     @rotateControls.rotateSpeed = 1
-    @rotateControls.autoRotate = true
+    @rotateControls.autoRotate = false
     @updateRotateControls()
 
     @activeControls = @cameraControls

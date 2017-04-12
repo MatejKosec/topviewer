@@ -33,7 +33,7 @@
       this.cameraControls = new THREE.OrbitControls(this.camera, this.options.app.element);
       this.cameraControls.minDistance = 0.01;
       this.cameraControls.maxDistance = 10;
-      this.cameraControls.zoomSpeed = 0.5;
+      this.cameraControls.zoomSpeed = 0.7;
       this.cameraControls.rotateSpeed = 2;
       this.cameraControls.autoRotate = false;
       this.cameraControls.center.copy(cameraState.center);
@@ -41,7 +41,7 @@
       this.rotateControls.minDistance = 0.01;
       this.rotateControls.maxDistance = 10;
       this.rotateControls.rotateSpeed = 1;
-      this.rotateControls.autoRotate = true;
+      this.rotateControls.autoRotate = false;
       this.updateRotateControls();
       this.activeControls = this.cameraControls;
       this.lightingPresets = [new TopViewer.LightingSetup('Angled light', new THREE.Vector3(0.8, 1, 0.9)), new TopViewer.LightingSetup('Top light', new THREE.Vector3(0.1, 1, 0.2)), new TopViewer.LightingSetup('Front light', new THREE.Vector3(0.2, 0.1, 1)), new TopViewer.LightingSetup('Side light', new THREE.Vector3(1, 0.1, 0.2))];
