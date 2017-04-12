@@ -44,7 +44,7 @@
       this.rotateControls.autoRotate = false;
       this.updateRotateControls();
       this.activeControls = this.cameraControls;
-      this.lightingPresets = [new TopViewer.LightingSetup('Angled light', new THREE.Vector3(0.8, 1, 0.9).normalize()), new TopViewer.LightingSetup('Top light', new THREE.Vector3(0.1, 1, 0.2).normalize()), new TopViewer.LightingSetup('Front light', new THREE.Vector3(0.2, 0.1, 1).normalize()), new TopViewer.LightingSetup('Side light', new THREE.Vector3(1, 0.1, 0.2).normalize())];
+      this.lightingPresets = [new TopViewer.LightingSetup('Angled light', new THREE.Vector3(0.8, 1, 0.9)), new TopViewer.LightingSetup('Top light', new THREE.Vector3(0.1, 1, 0.2)), new TopViewer.LightingSetup('Front light', new THREE.Vector3(0.2, 0.1, 1)), new TopViewer.LightingSetup('Side light', new THREE.Vector3(1, 0.1, 0.2))];
       this.gradients = [new TopViewer.Gradient("Spectrum", this.options.resourcesPath + "gradients/spectrum.png"), new TopViewer.Gradient("Monochrome", this.options.resourcesPath + "gradients/monochrome.png"), new TopViewer.Gradient("Dual", this.options.resourcesPath + "gradients/dual.png"), new TopViewer.Gradient("Fire", this.options.resourcesPath + "gradients/heat.png"), new TopViewer.Gradient("Classic", this.options.resourcesPath + "gradients/xpost.png")];
       this.uiAreas = [];
       this.animation = new TopViewer.Animation({

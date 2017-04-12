@@ -2,7 +2,7 @@
   "main_script": "topviewer.js",
   "icon": "icon.jpg",
   "width": 890,
-  "height": 490
+  "height": 490,
   "animation": true,
   "resize": "free",
   "dependencies": [

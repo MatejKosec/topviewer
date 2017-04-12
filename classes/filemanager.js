@@ -29,7 +29,6 @@
           });
         };
       })(this));
-      debugger;
       this.$filesArea = $("<ul class='files'></ul>");
       new TopViewer.ToggleContainer(this, {
         $parent: this.$manager,

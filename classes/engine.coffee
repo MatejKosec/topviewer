@@ -53,10 +53,10 @@ class TopViewer.Engine
     @activeControls = @cameraControls
 
     @lightingPresets = [
-      new TopViewer.LightingSetup 'Angled light', new THREE.Vector3(0.8, 1, 0.9).normalize()
-      new TopViewer.LightingSetup 'Top light', new THREE.Vector3(0.1, 1, 0.2).normalize()
-      new TopViewer.LightingSetup 'Front light', new THREE.Vector3(0.2, 0.1, 1).normalize()
-      new TopViewer.LightingSetup 'Side light', new THREE.Vector3(1, 0.1, 0.2).normalize()
+      new TopViewer.LightingSetup 'Angled light', new THREE.Vector3(0.8, 1, 0.9)
+      new TopViewer.LightingSetup 'Top light', new THREE.Vector3(0.1, 1, 0.2)
+      new TopViewer.LightingSetup 'Front light', new THREE.Vector3(0.2, 0.1, 1)
+      new TopViewer.LightingSetup 'Side light', new THREE.Vector3(1, 0.1, 0.2)
     ]
 
     @gradients = [

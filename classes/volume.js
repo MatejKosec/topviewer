@@ -78,6 +78,7 @@
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      log(masterIndexArray.length);
       this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;

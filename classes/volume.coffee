@@ -78,6 +78,7 @@ class TopViewer.Volume
     #Store the master indexes into an attribute buffer
     masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
     isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
+    log masterIndexArray.length
 
     #Update values in the shader and add the new texture
     #Record the tetrahedron height and vertexbuffer height
