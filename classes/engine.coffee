@@ -47,7 +47,7 @@ class TopViewer.Engine
     @rotateControls.minDistance = 0.01
     @rotateControls.maxDistance = 10
     @rotateControls.rotateSpeed = 1
-    @rotateControls.autoRotate = false
+    @rotateControls.autoRotate = true
     @updateRotateControls()
 
     @activeControls = @cameraControls
