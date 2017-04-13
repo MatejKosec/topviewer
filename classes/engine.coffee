@@ -7,7 +7,7 @@ class TopViewer.Engine
       engine: @
       resourcesPath: @options.resourcesPath
 
-    @camera = new THREE.PerspectiveCamera(45, @options.app.sage2_width / @options.app.sage2_height, 0.001, 20)
+    @camera = new THREE.PerspectiveCamera(45, @options.app.sage2_width / @options.app.sage2_height, 0.00001, 20)
 
     cameraState = @options.app.state.camera
     @camera.position.copy cameraState.position
@@ -24,6 +24,7 @@ class TopViewer.Engine
     @renderer.shadowMap.enabled = true
     @renderer.shadowMap.type = THREE.PCFSoftShadowMap
     @renderer.shadowMap.renderSingleSided = false
+    @renderer.logarithmicDepthBuffer = true
 
     @$appWindow = @options.$appWindow
     @$appWindow.append @renderer.domElement

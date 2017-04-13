@@ -103,7 +103,7 @@ void main()	{
       #{TopViewer.ShaderChunks.isovalueMaterialVertexSetup 4}
 
       #{TopViewer.ShaderChunks.isovalueMaterialIsovalueIteration 4}
-      if (aboveCount==0 || aboveCount==4) {
+      if (aboveCount==0 || aboveCount==4 || masterIndex>999990.0) {
         // None of the triangles need to show.
         continue;
       } else if (aboveCount != 2 && cornerIndex > 0.25) {

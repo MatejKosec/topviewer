@@ -76,6 +76,7 @@ class TopViewer.Model extends THREE.Object3D
     @boundingSphere = @boundingBox.getBoundingSphere()
     @basePositionsTexture = new THREE.DataTexture @basePositions, @maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType,\
     THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
+    
     @basePositionsTexture.needsUpdate = true
 
     # This is the basic material for rendering surfaces of meshes.

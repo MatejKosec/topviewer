@@ -9,7 +9,7 @@
         engine: this,
         resourcesPath: this.options.resourcesPath
       });
-      this.camera = new THREE.PerspectiveCamera(45, this.options.app.sage2_width / this.options.app.sage2_height, 0.001, 20);
+      this.camera = new THREE.PerspectiveCamera(45, this.options.app.sage2_width / this.options.app.sage2_height, 0.00001, 20);
       cameraState = this.options.app.state.camera;
       this.camera.position.copy(cameraState.position);
       this.camera.rotation.set(cameraState.rotation._x, cameraState.rotation._y, cameraState.rotation._z, cameraState.rotation._order);
@@ -23,6 +23,7 @@
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       this.renderer.shadowMap.renderSingleSided = false;
+      this.renderer.logarithmicDepthBuffer = true;
       this.$appWindow = this.options.$appWindow;
       this.$appWindow.append(this.renderer.domElement);
       this._proxyCamera = new THREE.PerspectiveCamera(45, this.options.width / this.options.height, 0.01, 20);
