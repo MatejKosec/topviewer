@@ -87,12 +87,14 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
     #Bind the texture to the shader.
     @isosurfacesMesh.material.uniforms.tetraTexture.value =  new THREE.DataTexture floatElements, tetraWidth,\
-      tetraHeight, THREE.RGBAFormat, THREE.FloatType
+      tetraHeight, THREE.RGBAFormat, THREE.FloatType,  THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
     @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
 
     #Need to also set the basePoistionTexture again (bug fix)
     @isosurfacesMesh.material.uniforms.basePositionsTexture.value = @options.model.basePositionsTexture
     @isosurfacesMesh.material.uniforms.basePositionsTexture.value.needsUpdate = true
+
+    @isosurfacesMesh.material.vertexShader = "#version 300 es \n" + @isosurfacesMesh.material.vertexShader
 
     #Set the draw range to two triangles per each tetra (6 vertexes time tetra count)
     isosurfacesGeometry.setDrawRange(0,  tetraCount*6)

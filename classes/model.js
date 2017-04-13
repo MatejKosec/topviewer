@@ -78,7 +78,7 @@
         this.boundingBox.expandByPoint(new THREE.Vector3(this.nodes[i * 3], this.nodes[i * 3 + 1], this.nodes[i * 3 + 2]));
       }
       this.boundingSphere = this.boundingBox.getBoundingSphere();
-      this.basePositionsTexture = new THREE.DataTexture(this.basePositions, this.maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType);
+      this.basePositionsTexture = new THREE.DataTexture(this.basePositions, this.maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
       this.basePositionsTexture.needsUpdate = true;
       this.material = new TopViewer.ModelMaterial(this);
       this.backsideMaterial = new TopViewer.ModelMaterial(this);

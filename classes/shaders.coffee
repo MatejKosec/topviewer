@@ -61,6 +61,6 @@ void main()	{
   light = mix(light, vec3(1.0), ambientLightColor);
 
   // Finally apply the light to the base color and output it with desired opacity.
-  gl_FragColor = vec4(baseColor * light, varying_opacity);
+  gl_FragColor = vec4(baseColor * light, opacity);
 }
 """

@@ -13,9 +13,9 @@
 
     ShaderChunks.vertexMaterialScalar = "// Caclulate the scalar value at the vertex, if needed.\nif (vertexScalarsRange > 0.0) {\n  // Interpolate scalar value.\n  scalar = texture2D(vertexScalarsTexture, vertexIndex).a;\n  float scalarNext = texture2D(vertexScalarsTextureNext, vertexIndex).a;\n  scalar = mix(scalar, scalarNext, frameProgress);\n\n  // Bring the scalar to the 0-1 range.\n  scalar = clamp((scalar - vertexScalarsMin) / vertexScalarsRange, 0.01, 0.99);\n} else {\n  scalar = -1.0;\n}";
 
-    ShaderChunks.vertexMaterialFragment = "uniform vec3 vertexColor;\nuniform sampler2D vertexScalarsCurveTexture;\nuniform sampler2D vertexScalarsGradientTexture;\nfloat varying_opacity;\nuniform float opacity;\n\nvarying float scalar;";
+    ShaderChunks.vertexMaterialFragment = "uniform vec3 vertexColor;\nuniform sampler2D vertexScalarsCurveTexture;\nuniform sampler2D vertexScalarsGradientTexture;\nuniform float opacity;\n\nvarying float scalar;";
 
-    ShaderChunks.vertexMaterialBaseColor = "// Determine the base color, either from the scalar or as a constant.\nvec3 baseColor;\n\nif (scalar >= 0.0) {\n  // Transform the scalar with the curve.\n  float curvedScalar = texture2D(vertexScalarsCurveTexture, vec2(scalar, 0)).a;\n  varying_opacity=opacity;\n\n  // Map the curved scalar to the gradient texture.\n  baseColor = texture2D(vertexScalarsGradientTexture, vec2(curvedScalar, 0)).rgb;\n}else if (scalar < -2.0){\n  baseColor = vertexColor;\n  varying_opacity = 0.0;\n}else {\n  baseColor = vertexColor;\n  varying_opacity = opacity;\n}";
+    ShaderChunks.vertexMaterialBaseColor = "// Determine the base color, either from the scalar or as a constant.\nvec3 baseColor;\n\nif (scalar >= 0.0) {\n  // Transform the scalar with the curve.\n  float curvedScalar = texture2D(vertexScalarsCurveTexture, vec2(scalar, 0)).a;\n\n  // Map the curved scalar to the gradient texture.\n  baseColor = texture2D(vertexScalarsGradientTexture, vec2(curvedScalar, 0)).rgb;\n} else {\n  baseColor = vertexColor;\n}";
 
     ShaderChunks.surfaceMaterialVertex = "uniform float lightingNormalFactor;\n\nvarying vec3 normalEye;";
 
@@ -36,7 +36,7 @@
     };
 
     ShaderChunks.isovalueMaterialIsovalueIteration = function(vertexCount) {
-      return "// Distribute n isovalues evenly in the range between 0 and 1.\nfloat isovalueStep = 1.0 / float(isovalues + 1);\n\nfor (int isosurfaceIndex=0; isosurfaceIndex < maxIsovalues; isosurfaceIndex++) {\n  if (isosurfaceIndex >= isovalues) break;\n\n  float isovalue = isovalueStep * float(isosurfaceIndex + 1);\n\n  // Calculate how many vertices have their curved scalar above the isovalue.\n  bool above[" + vertexCount + "];\n  int aboveCount = 0;\n\n  for (int i=0; i<" + vertexCount + "; i++) {\n    above[i] = curvedScalars[i] > isovalue;\n    if (above[i]) aboveCount++;\n  }";
+      return "// Distribute n isovalues evenly in the range between 0 and 1.\nfloat isovalueStep = 1.0 / float(isovalues + 1);\n\nfor (int isosurfaceIndex=0; isosurfaceIndex < maxIsovalues; isosurfaceIndex++) {\n  if (isosurfaceIndex >= isovalues) break;\n\n  float isovalue = isovalueStep * float(isosurfaceIndex + 1);\n\n  // Calculate how many vertices have their curved scalar above the isovalue.\n  bool above[" + vertexCount + "];\n  int aboveCount = 0;\n\n  for (int i=0; i<" + vertexCount + "+1; i++) {\n    above[i] = curvedScalars[i] > isovalue;\n    if (above[i]) aboveCount++;\n  }";
     };
 
     return ShaderChunks;
