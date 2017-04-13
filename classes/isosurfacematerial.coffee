@@ -17,6 +17,8 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
         tetraTexture:
           value: TopViewer.Model.noTetraTexture
 
+      defines:
+        USE_SHADOWMAP: ''
 
       side: THREE.DoubleSide
       lights: true

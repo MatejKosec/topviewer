@@ -74,7 +74,7 @@
       tetraCount = this.options.elements.length / 4;
       masterIndexArray = new Float32Array(tetraCount * 6);
       for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
-        masterIndexArray[i] = i + 1;
+        masterIndexArray[i] = i;
       }
       masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
       isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
@@ -85,8 +85,6 @@
       this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
       this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
       this.isosurfacesMesh.material.uniforms.basePositionsTexture.value = this.options.model.basePositionsTexture;
-      this.isosurfacesMesh.material.uniforms.basePositionsTexture.value.needsUpdate = true;
-      this.isosurfacesMesh.material.vertexShader = "#version 300 es \n" + this.isosurfacesMesh.material.vertexShader;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       debugger;
       this._updateGeometry();

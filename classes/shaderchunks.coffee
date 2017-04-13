@@ -155,7 +155,7 @@ const int maxIsovalues = 9;
       bool above[#{vertexCount}];
       int aboveCount = 0;
 
-      for (int i=0; i<#{vertexCount}+1; i++) {
+      for (int i=0; i<#{vertexCount}; i++) {
         above[i] = curvedScalars[i] > isovalue;
         if (above[i]) aboveCount++;
       }
