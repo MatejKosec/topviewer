@@ -64,20 +64,24 @@ class TopViewer.Volume
     @isosurfacesMesh = new THREE.Mesh isosurfacesGeometry, isosurfaceMaterial
     @isosurfacesMesh.receiveShadows = true
 
-    #Create a texture for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value)
+    #Create a 2 texturs for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value for x coordinate in
+    # the basePositions texture and 1 RGBA value for the y coordinate in the basePositions texture)
     debugger
-    tetraHeight=1
+    tetraHeight= 1
     tetraWidth =  @options.model.maxTextureWidth
     while @options.elements.length / 4 > tetraWidth  * tetraHeight
       tetraHeight *= 2
     if tetraHeight>tetraWidth then throw 'Too many elements to render. Failed in volume.coffee'
+    #The first texture will contain x-coordinates
+    tetraTextureArray_X = new Float32Array tetraWidth*tetraHeight*4
+    tetraTextureArray_X[i] = (@options.elements[i]%width)/width for i in [0...@options.elements.length]
+    #The second texture will contain y-coordinates
+    tetraTextureArray_Y = new Float32Array tetraWidth*tetraHeight*4
+    tetraTextureArray_Y[i] = Math.floor(@options.elements[i]/width)/height for i in [0...@options.elements.length]
 
     #Then create a masterIndex such that there are 6 threads launched per each tetrahedron.
     tetraCount = @options.elements.length / 4
 
-    #Need to create a copy of the elements as floats. But this introuduces bugs on large files (if more than 60 mio points)
-    floatElements = new Float32Array tetraWidth*tetraHeight*4
-    floatElements[i] = @options.elements[i] for i in [0...@options.elements.length]
     #The master index records which thread this is out of a global 6*tetraCount threads
     #6 sequential threads collaborate on the isosurface for the same triangle. But since
     #webgl1.0 does not support  integer attributes and we are using integers too large to
@@ -106,9 +110,12 @@ class TopViewer.Volume
     @isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height
     @isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width
     #Bind the texture to the shader.
-    @isosurfacesMesh.material.uniforms.tetraTexture.value =  new THREE.DataTexture floatElements, tetraWidth,\
+    @isosurfacesMesh.material.uniforms.tetraTextureX.value =  new THREE.DataTexture tetraTextureArray_X, tetraWidth,\
       tetraHeight, THREE.RGBAFormat, THREE.FloatType,  THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
-    @isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true
+    @isosurfacesMesh.material.uniforms.tetraTextureY.value =  new THREE.DataTexture tetraTextureArray_Y, tetraWidth,\
+      tetraHeight, THREE.RGBAFormat, THREE.FloatType,  THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
+    @isosurfacesMesh.material.uniforms.tetraTextureX.value.needsUpdate = true
+    @isosurfacesMesh.material.uniforms.tetraTextureY.value.needsUpdate = true
 
     #Need to also set the basePoistionTexture again (bug fix)
     @isosurfacesMesh.material.uniforms.basePositionsTexture.value = @options.model.basePositionsTexture

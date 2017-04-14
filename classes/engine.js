@@ -9,7 +9,7 @@
         engine: this,
         resourcesPath: this.options.resourcesPath
       });
-      this.camera = new THREE.PerspectiveCamera(45, this.options.app.sage2_width / this.options.app.sage2_height, 0.00001, 20);
+      this.camera = new THREE.PerspectiveCamera(45, this.options.app.sage2_width / this.options.app.sage2_height, 0.0001, 20);
       cameraState = this.options.app.state.camera;
       this.camera.position.copy(cameraState.position);
       this.camera.rotation.set(cameraState.rotation._x, cameraState.rotation._y, cameraState.rotation._z, cameraState.rotation._order);
@@ -25,20 +25,20 @@
       this.renderer.shadowMap.renderSingleSided = false;
       this.$appWindow = this.options.$appWindow;
       this.$appWindow.append(this.renderer.domElement);
-      this._proxyCamera = new THREE.PerspectiveCamera(45, this.options.width / this.options.height, 0.01, 20);
+      this._proxyCamera = new THREE.PerspectiveCamera(45, this.options.width / this.options.height, 0.0001, 20);
       objectState = this.options.app.state.object;
       this._proxyCamera.position.copy(objectState.position);
       this._proxyCamera.rotation.set(objectState.rotation._x, objectState.rotation._y, objectState.rotation._z, objectState.rotation._order);
       this._proxyCamera.scale.set(objectState.scale.x, objectState.scale.y, objectState.scale.z);
       this.cameraControls = new THREE.OrbitControls(this.camera, this.options.app.element);
-      this.cameraControls.minDistance = 0.01;
+      this.cameraControls.minDistance = 0.001;
       this.cameraControls.maxDistance = 10;
       this.cameraControls.zoomSpeed = 0.7;
       this.cameraControls.rotateSpeed = 2;
       this.cameraControls.autoRotate = false;
       this.cameraControls.center.copy(cameraState.center);
       this.rotateControls = new THREE.OrbitControls(this._proxyCamera, this.options.app.element);
-      this.rotateControls.minDistance = 0.01;
+      this.rotateControls.minDistance = 0.001;
       this.rotateControls.maxDistance = 10;
       this.rotateControls.rotateSpeed = 1;
       this.rotateControls.autoRotate = false;

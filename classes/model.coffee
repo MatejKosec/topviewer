@@ -76,7 +76,7 @@ class TopViewer.Model extends THREE.Object3D
     @boundingSphere = @boundingBox.getBoundingSphere()
     @basePositionsTexture = new THREE.DataTexture @basePositions, @maxTextureWidth, height, THREE.RGBFormat, THREE.FloatType,\
     THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter
-    
+
     @basePositionsTexture.needsUpdate = true
 
     # This is the basic material for rendering surfaces of meshes.
@@ -266,7 +266,7 @@ class TopViewer.Model extends THREE.Object3D
       colorsControl: renderingControls.meshesSurfaceColorsControl
       opacityControl: renderingControls.meshesSurfaceOpacityControl
     ]
-    debugger
+
     for i in [0...@isosurfaceMaterials.length]
       surfaceMaterials.push
         material: @isosurfaceMaterials[i]
@@ -293,7 +293,7 @@ class TopViewer.Model extends THREE.Object3D
       colorsControl: renderingControls.meshesIsolinesColorsControl
       opacityControl: renderingControls.meshesIsolinesOpacityControl
     ]
-    debugger
+
     for i in [0...@isosurfaceMaterials.length]
       isovalueMaterials.push
         material: @isosurfaceMaterials[i]

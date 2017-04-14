@@ -14,7 +14,9 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
           value: 1
         bufferTextureWidth:
           value: 1
-        tetraTexture:
+        tetraTextureX:
+          value: TopViewer.Model.noTetraTexture
+        tetraTextureY:
           value: TopViewer.Model.noTetraTexture
 
       defines:
@@ -31,7 +33,8 @@ class TopViewer.IsosurfaceMaterial extends TopViewer.IsovalueMaterial
 #{TopViewer.ShaderChunks.surfaceMaterialVertex}
 
 
-uniform sampler2D tetraTexture;
+uniform sampler2D tetraTextureX;
+uniform sampler2D tetraTextureY;
 uniform float bufferTextureHeight;
 uniform float bufferTextureWidth;
 uniform float tetraTextureHeight;
@@ -84,17 +87,18 @@ void main()	{
   //tetraAccess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
 
 
-  vec4 tetra = vec4(texture2D(tetraTexture, tetraAccess).rgba);
+  vec4 tetraX = vec4(texture2D(tetraTextureX, tetraAccess).rgba);
+  vec4 tetraY = vec4(texture2D(tetraTextureY, tetraAccess).rgba);
 
-  //Compute where to axess the basePositionstexture for a given tetra
-  vertexIndexCorner1.x = mod(tetra.r,bufferTextureWidth)/bufferTextureWidth;
-  vertexIndexCorner1.y = floor(tetra.r/bufferTextureWidth)/bufferTextureHeight;
-  vertexIndexCorner2.x = mod(tetra.g,bufferTextureWidth)/bufferTextureWidth;
-  vertexIndexCorner2.y = floor(tetra.g/bufferTextureWidth)/bufferTextureHeight;
-  vertexIndexCorner3.x = mod(tetra.b,bufferTextureWidth)/bufferTextureWidth;
-  vertexIndexCorner3.y = floor(tetra.b/bufferTextureWidth)/bufferTextureHeight;
-  vertexIndexCorner4.x = mod(tetra.a,bufferTextureWidth)/bufferTextureWidth;
-  vertexIndexCorner4.y = floor(tetra.a/bufferTextureWidth)/bufferTextureHeight;
+  //Compute where to access the basePositionstexture for a given tetra
+  vertexIndexCorner1.x = tetraX.r;
+  vertexIndexCorner1.y = tetraY.r;
+  vertexIndexCorner2.x = tetraX.g;
+  vertexIndexCorner2.y = tetraY.g;
+  vertexIndexCorner3.x = tetraX.b;
+  vertexIndexCorner3.y = tetraY.b;
+  vertexIndexCorner4.x = tetraX.a;
+  vertexIndexCorner4.y = tetraY.a;
 
 
 

@@ -298,7 +298,6 @@
           opacityControl: renderingControls.meshesSurfaceOpacityControl
         }
       ];
-      debugger;
       for (i = m = 0, ref2 = this.isosurfaceMaterials.length; 0 <= ref2 ? m < ref2 : m > ref2; i = 0 <= ref2 ? ++m : --m) {
         surfaceMaterials.push({
           material: this.isosurfaceMaterials[i],
@@ -329,7 +328,6 @@
           opacityControl: renderingControls.meshesIsolinesOpacityControl
         }
       ];
-      debugger;
       for (i = n = 0, ref3 = this.isosurfaceMaterials.length; 0 <= ref3 ? n < ref3 : n > ref3; i = 0 <= ref3 ? ++n : --n) {
         isovalueMaterials.push({
           material: this.isosurfaceMaterials[i],

@@ -7,7 +7,7 @@ class TopViewer.Engine
       engine: @
       resourcesPath: @options.resourcesPath
 
-    @camera = new THREE.PerspectiveCamera(45, @options.app.sage2_width / @options.app.sage2_height, 0.00001, 20)
+    @camera = new THREE.PerspectiveCamera(45, @options.app.sage2_width / @options.app.sage2_height, 0.0001, 20)
 
     cameraState = @options.app.state.camera
     @camera.position.copy cameraState.position
@@ -28,7 +28,7 @@ class TopViewer.Engine
     @$appWindow = @options.$appWindow
     @$appWindow.append @renderer.domElement
 
-    @_proxyCamera = new THREE.PerspectiveCamera(45, @options.width / @options.height, 0.01, 20)
+    @_proxyCamera = new THREE.PerspectiveCamera(45, @options.width / @options.height, 0.0001, 20)
 
     objectState = @options.app.state.object
     @_proxyCamera.position.copy objectState.position
@@ -36,7 +36,7 @@ class TopViewer.Engine
     @_proxyCamera.scale.set objectState.scale.x, objectState.scale.y, objectState.scale.z
 
     @cameraControls = new THREE.OrbitControls @camera, @options.app.element
-    @cameraControls.minDistance = 0.01
+    @cameraControls.minDistance = 0.001
     @cameraControls.maxDistance = 10
     @cameraControls.zoomSpeed = 0.7
     @cameraControls.rotateSpeed = 2
@@ -44,7 +44,7 @@ class TopViewer.Engine
     @cameraControls.center.copy cameraState.center
 
     @rotateControls = new THREE.OrbitControls @_proxyCamera, @options.app.element
-    @rotateControls.minDistance = 0.01
+    @rotateControls.minDistance = 0.001
     @rotateControls.maxDistance = 10
     @rotateControls.rotateSpeed = 1
     @rotateControls.autoRotate = false

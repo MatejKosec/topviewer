@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, floatElements, height, i, index, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireframeGeometry;
+      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, height, i, index, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, n, ref, ref1, ref2, ref3, ref4, setVertexIndexCoordinates, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraTextureArray_X, tetraTextureArray_Y, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireframeGeometry;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
@@ -71,16 +71,20 @@
       if (tetraHeight > tetraWidth) {
         throw 'Too many elements to render. Failed in volume.coffee';
       }
-      tetraCount = this.options.elements.length / 4;
-      floatElements = new Float32Array(tetraWidth * tetraHeight * 4);
+      tetraTextureArray_X = new Float32Array(tetraWidth * tetraHeight * 4);
       for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
-        floatElements[i] = this.options.elements[i];
+        tetraTextureArray_X[i] = (this.options.elements[i] % width) / width;
       }
+      tetraTextureArray_Y = new Float32Array(tetraWidth * tetraHeight * 4);
+      for (i = m = 0, ref3 = this.options.elements.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+        tetraTextureArray_Y[i] = Math.floor(this.options.elements[i] / width) / height;
+      }
+      tetraCount = this.options.elements.length / 4;
       tetraAccessArray = new Float32Array(tetraCount * 12);
       tetraAccessAttribute = new THREE.BufferAttribute(tetraAccessArray, 2);
       cornerIndexArray = new Float32Array(tetraCount * 6);
       cornerIndexAttribute = new THREE.BufferAttribute(cornerIndexArray, 1);
-      for (i = m = 0, ref3 = tetraAccessArray.length / 2; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+      for (i = n = 0, ref4 = tetraAccessArray.length / 2; 0 <= ref4 ? n < ref4 : n > ref4; i = 0 <= ref4 ? ++n : --n) {
         index = Math.floor(i / 6.0);
         setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight);
         cornerIndexArray[i] = (i % 6.0) * 0.1;
@@ -91,8 +95,10 @@
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
       this.isosurfacesMesh.material.uniforms.bufferTextureWidth.value = width;
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value = new THREE.DataTexture(floatElements, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
-      this.isosurfacesMesh.material.uniforms.tetraTexture.value.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.tetraTextureX.value = new THREE.DataTexture(tetraTextureArray_X, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
+      this.isosurfacesMesh.material.uniforms.tetraTextureY.value = new THREE.DataTexture(tetraTextureArray_Y, tetraWidth, tetraHeight, THREE.RGBAFormat, THREE.FloatType, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
+      this.isosurfacesMesh.material.uniforms.tetraTextureX.value.needsUpdate = true;
+      this.isosurfacesMesh.material.uniforms.tetraTextureY.value.needsUpdate = true;
       this.isosurfacesMesh.material.uniforms.basePositionsTexture.value = this.options.model.basePositionsTexture;
       isosurfacesGeometry.setDrawRange(0, tetraCount * 6);
       debugger;
