@@ -3,13 +3,17 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, floatElements, height, i, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
+      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, floatElements, height, i, index, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
       debugger;
       connectivity = [];
       linesCount = 0;
+      setVertexIndexCoordinates = function(attribute, i, index, width, height) {
+        attribute.setX(i, index % width / width);
+        return attribute.setY(i, Math.floor(index / width) / height);
+      };
       addLine = function(a, b) {
         var ref;
         if (a > b) {
@@ -67,17 +71,22 @@
       if (tetraHeight > tetraWidth) {
         throw 'Too many elements to render. Failed in volume.coffee';
       }
+      tetraCount = this.options.elements.length / 4;
       floatElements = new Float32Array(tetraWidth * tetraHeight * 4);
       for (i = l = 0, ref2 = this.options.elements.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
         floatElements[i] = this.options.elements[i];
       }
-      tetraCount = this.options.elements.length / 4;
-      masterIndexArray = new Float32Array(tetraCount * 6);
-      for (i = m = 0, ref3 = masterIndexArray.length; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
-        masterIndexArray[i] = i;
+      tetraAccessArray = new Float32Array(tetraCount * 12);
+      tetraAccessAttribute = new THREE.BufferAttribute(tetraAccessArray, 2);
+      cornerIndexArray = new Float32Array(tetraCount * 6);
+      cornerIndexAttribute = new THREE.BufferAttribute(cornerIndexArray, 1);
+      for (i = m = 0, ref3 = tetraAccessArray.length / 2; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+        index = Math.floor(i / 6.0);
+        setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight);
+        cornerIndexArray[i] = (i % 6.0) * 0.1;
       }
-      masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
-      isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      isosurfacesGeometry.addAttribute("tetraAccess", tetraAccessAttribute);
+      isosurfacesGeometry.addAttribute("cornerIndex", cornerIndexAttribute);
       this.isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
       this.isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
       this.isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;

@@ -24,7 +24,6 @@ class TopViewer.Engine
     @renderer.shadowMap.enabled = true
     @renderer.shadowMap.type = THREE.PCFSoftShadowMap
     @renderer.shadowMap.renderSingleSided = false
-    @renderer.logarithmicDepthBuffer = true
 
     @$appWindow = @options.$appWindow
     @$appWindow.append @renderer.domElement
