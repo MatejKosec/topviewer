@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, floatElements, height, i, index, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, masterIndexArray, masterIndexAttribute, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraWidth, width, wireframeGeometry;
+      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, floatElements, height, i, index, isosurfaceMaterial, isosurfacesGeometry, j, k, l, lineVertexIndex, linesCount, m, ref, ref1, ref2, ref3, setVertexIndexCoordinates, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireframeGeometry;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
@@ -38,20 +38,20 @@
       wireframeGeometry = new THREE.BufferGeometry();
       this.wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
       debugger;
-      masterIndexArray = new Float32Array(linesCount * 2);
+      vertexIndexArray = new Float32Array(linesCount * 4);
+      vertexIndexAttribute = new THREE.BufferAttribute(vertexIndexArray, 2);
       lineVertexIndex = 0;
       for (a in connectivity) {
         if (!connectivity[a]) {
           continue;
         }
         for (i = k = 0, ref1 = connectivity[a].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-          masterIndexArray[lineVertexIndex] = parseInt(a);
-          masterIndexArray[lineVertexIndex + 1] = connectivity[a][i];
+          setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex, parseInt(a), width, height);
+          setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex + 1, connectivity[a][i], width, height);
           lineVertexIndex += 2;
         }
       }
-      masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
-      wireframeGeometry.addAttribute("masterIndex", masterIndexAttribute);
+      wireframeGeometry.addAttribute("vertexIndex", vertexIndexAttribute);
       this.wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
       this.wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
       debugger;

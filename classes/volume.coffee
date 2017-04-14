@@ -33,17 +33,20 @@ class TopViewer.Volume
     #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
     @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
     debugger
-    masterIndexArray = new Float32Array linesCount * 2
+    #The master index will directly hold the textureAccess coordinates for the buffer texture (so 2 components per point, 
+    #at 2 points per line = 4 per line)
+    vertexIndexArray = new Float32Array linesCount * 4
+    #Store the vertexindexes into an attribute buffer
+    vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
     lineVertexIndex = 0
     for a of connectivity
       continue unless connectivity[a]
       for i in [0...connectivity[a].length]
-        masterIndexArray[lineVertexIndex] = parseInt(a)
-        masterIndexArray[lineVertexIndex+1] = connectivity[a][i]
+        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex, parseInt(a), width, height)
+        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex + 1, connectivity[a][i], width, height)
         lineVertexIndex += 2
-    #Store the master indexes into an attribute buffer
-    masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
-    wireframeGeometry.addAttribute "masterIndex", masterIndexAttribute
+    #Update geometry and material uniforms
+    wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
     @wireframeMesh.material.uniforms.bufferTextureHeight.value = height
     @wireframeMesh.material.uniforms.bufferTextureWidth.value = width
     debugger
