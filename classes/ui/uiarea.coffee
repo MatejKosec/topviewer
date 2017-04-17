@@ -8,7 +8,7 @@ class TopViewer.UIArea
 
     @$rootElement = null
 
-    @_throttledMouseMoveHandler = _.throttle @_mouseMoveHandler, 10
+    @_throttledMouseMoveHandler = _.throttle @_mouseMoveHandler, 100
     @_throttledInitialize = _.throttle @initialize, 100, leading: false
 
   destroy: ->

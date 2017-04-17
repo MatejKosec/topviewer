@@ -7,7 +7,7 @@
       this._controls = [];
       this._hoveredStack = [];
       this.$rootElement = null;
-      this._throttledMouseMoveHandler = _.throttle(this._mouseMoveHandler, 10);
+      this._throttledMouseMoveHandler = _.throttle(this._mouseMoveHandler, 100);
       this._throttledInitialize = _.throttle(this.initialize, 100, {
         leading: false
       });
