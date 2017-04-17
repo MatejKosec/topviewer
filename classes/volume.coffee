@@ -29,29 +29,47 @@ class TopViewer.Volume
       addLine(@options.elements[i*4+1], @options.elements[i*4+3])
       addLine(@options.elements[i*4+2], @options.elements[i*4+3])
 
-    wireframeGeometry = new THREE.BufferGeometry()
-    #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
-    @wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
-    debugger
-    #The master index will directly hold the textureAccess coordinates for the buffer texture (so 2 components per point, 
-    #at 2 points per line = 4 per line)
-    vertexIndexArray = new Float32Array linesCount * 4
-    #Store the vertexindexes into an attribute buffer
-    vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
-    lineVertexIndex = 0
-    for a of connectivity
-      continue unless connectivity[a]
-      for i in [0...connectivity[a].length]
-        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex, parseInt(a), width, height)
-        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex + 1, connectivity[a][i], width, height)
-        lineVertexIndex += 2
-    #Update geometry and material uniforms
-    wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
-    @wireframeMesh.material.uniforms.bufferTextureHeight.value = height
-    @wireframeMesh.material.uniforms.bufferTextureWidth.value = width
-    debugger
+    #Split the wireframe geometry in 50mio lines per geometry
+    @wireframeMeshes = []
+    splitAt = 5000000
+    globalLineVertexIndex= 0
+    wireSplits = Math.ceil(linesCount/splitAt)
+    a_old = 0 #save connectivity iteration index
+    for ws in [0...wireSplits]
+      # Define a variable which states how many wires we are processing per tetra split
+      if ws == wireSplits-1 then localLinesCount = linesCount-ws*splitAt else localLinesCount=splitAt
+      wireframeGeometry = new THREE.BufferGeometry()
+      #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
+      wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
+      @wireframeMeshes.push wireframeMesh
+      debugger
+      #The master index will directly hold the textureAccess coordinates for the buffer texture (so 2 components per point,
+      #at 2 points per line = 4 per line)
+      vertexIndexArray = new Float32Array localLinesCount * 4
+      #Store the vertexindexes into an attribute buffer
+      vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
+      localLineVertexIndex = 0
+      loopVertexIndex = 0;
+      for a in [a_old...connectivity.length]
+        continue unless connectivity[a]
+        for i in [0...connectivity[a].length]
+          if ((loopVertexIndex >= globalLineVertexIndex-1) and (localLineVertexIndex<=localLinesCount*2))
+            setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex, parseInt(a), width, height)
+            setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex + 1, connectivity[a][i], width, height)
+            globalLineVertexIndex += 2
+            localLineVertexIndex  += 2
+            loopVertexIndex += 2;
+          else
+            loopVertexIndex += 2;
+      a_old = a-1 #Start here on next wireframe construciton
+      #Update geometry and material uniforms
+      wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
+      wireframeMesh.material.uniforms.bufferTextureHeight.value = height
+      wireframeMesh.material.uniforms.bufferTextureWidth.value = width
+      wireframeGeometry.setDrawRange(0, localLinesCount*2)
+      debugger
 
-    wireframeGeometry.setDrawRange(0, lineVertexIndex)
+
 
     #There may be more isosurface meshes for a single set of tetrahedra if the number of tetrahedra exceeds 20mio
     # Create a new isosurface material for the current element group. This is necessary as there are multiple
@@ -66,7 +84,7 @@ class TopViewer.Volume
 
 
     #Also, we cannot have attributes of more than 1GB, so the indexes need to be split about every 20mio tetrahadera
-    splitAt = 20000000
+    splitAt = 5000000
     tetraSplits = Math.ceil(tetraCount/splitAt)
     for ks in [0...tetraSplits]
       # Define a variable which states how many tetrahedra we are processing
@@ -132,13 +150,14 @@ class TopViewer.Volume
 
     # Add the meshes to the model. Add wireframe last for better draw order when both are transparent.
     @options.model.add @isosurfaceMeshes[i] for i in [0...@isosurfaceMeshes.length]
-    @options.model.add @wireframeMesh
+    @options.model.add @wireframeMeshes[i]  for i in [0...@wireframeMeshes.length]
 
     # Add the mesh to rendering controls.
     @options.engine.renderingControls.addVolume @options.name, @
 
   _updateGeometry: ->
-    @_updateBounds @wireframeMesh, @options.model
+    for i in [0...@wireframeMeshes.length]
+      @_updateBounds @wireframeMeshes[i], @options.model
     for i in [0...@isosurfaceMeshes.length]
       @_updateBounds @isosurfaceMeshes[i], @options.model
 
@@ -149,10 +168,10 @@ class TopViewer.Volume
   showFrame: () ->
     # We can only draw the mesh when it's been added and we have the rendering controls.
     unless @renderingControls
-      @wireframeMesh.visible = false
+      @wireframeMeshes[i].visible = false for i in [0...@wireframeMeshes.length]
       @isosurfaceMeshes[i].visible = false for i in [0...@isosurfaceMeshes.length]
       return
 
-    @wireframeMesh.visible = @renderingControls.showWireframeControl.value()
+    @wireframeMeshes[i].visible = @renderingControls.showWireframeControl.value()  for i in [0...@wireframeMeshes.length]
     @isosurfaceMeshes[i].visible = @renderingControls.showIsosurfacesControl.value() for i in [0...@isosurfaceMeshes.length]
 

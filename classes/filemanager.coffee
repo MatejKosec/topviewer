@@ -162,7 +162,6 @@ class TopViewer.FileManager extends TopViewer.UIArea
 
   _processObjects: ->
     # Create all the models from nodes.
-    log "Creating models"
     for nodesName, nodesInstance of @objects.nodes
       @models[nodesName] = new TopViewer.Model
         engine: @options.engine

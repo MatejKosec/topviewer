@@ -99,7 +99,6 @@ void main()	{
   vertexIndexCorner4.y = tetraY.a;
 
 
-
   // Isosurfaces only exists if we have a scalar.
   if (scalarsRange > 0.0) {
       #{TopViewer.ShaderChunks.isovalueMaterialVertexSetup 4}

@@ -189,7 +189,6 @@
 
     FileManager.prototype._processObjects = function() {
       var elements, elementsInstance, elementsName, elementsType, nodesInstance, nodesName, ref, ref1, ref2, ref3, ref4, results, scalar, scalarName, scalarNodesName, scalars, vector, vectorName, vectorNodesName, vectors;
-      log("Creating models");
       ref = this.objects.nodes;
       for (nodesName in ref) {
         nodesInstance = ref[nodesName];

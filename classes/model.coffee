@@ -96,7 +96,6 @@ class TopViewer.Model extends THREE.Object3D
     @volumeWireframeMaterial = new TopViewer.WireframeMaterial @
     #There will be an array of isosurface materials (one for each element group)
     @isosurfaceMaterials = []
-    #log 'Created isosurfaces material'
     @fieldMaterial = new TopViewer.FieldMaterial @
 
     @colorScalar = null
