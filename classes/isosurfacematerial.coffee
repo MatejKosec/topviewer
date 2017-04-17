@@ -39,16 +39,15 @@ uniform float bufferTextureHeight;
 uniform float bufferTextureWidth;
 uniform float tetraTextureHeight;
 uniform float tetraTextureWidth;
-//The tetraAccess tells us which element to access and cornerIndex tells us how to treat this thread
-attribute vec2 tetraAccess;
-attribute float cornerIndex;
+//The master index is a form of worker index as used in opencl or CUDA
+attribute float masterIndex;
 //The vertexIndexCorner values are now sampled from a texture (no longer attributes)
 vec2 vertexIndexCorner1;
 vec2 vertexIndexCorner2;
 vec2 vertexIndexCorner3;
 vec2 vertexIndexCorner4;
-
-
+float cornerIndex;
+float tetraIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
@@ -76,16 +75,15 @@ void main()	{
   scalar = -1.0;
 
   //The corner index is also just a function of the worker index (mod 6)
-  //cornerIndex = mod(masterIndex,6.0)*0.1;
+  cornerIndex = mod(masterIndex,6.0)*0.1;
 
   //The tetra index repeats for six workers (i.e. there are six triangle edges per each tetrahedron)
-  //tetraIndex =  floor(masterIndex/6.0);
+  tetraIndex =  floor(masterIndex/6.0);
 
-  //This is the tetra that the given worker threa d is to use the data for.
-  //vec2 tetraAccess;
-  //tetraAccess.x = mod(tetraIndex,tetraTextureWidth)/tetraTextureWidth;
-  //tetraAccess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
-
+  //This is the tetra that the given worker thread is to use the data for.
+  vec2 tetraAccess;
+  tetraAccess.x = mod(tetraIndex,tetraTextureWidth)/tetraTextureWidth;
+  tetraAccess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
 
   vec4 tetraX = vec4(texture2D(tetraTextureX, tetraAccess).rgba);
   vec4 tetraY = vec4(texture2D(tetraTextureY, tetraAccess).rgba);

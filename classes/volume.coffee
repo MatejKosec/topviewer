@@ -53,7 +53,6 @@ class TopViewer.Volume
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
-
     #There may be more isosurface meshes for a single set of tetrahedra if the number of tetrahedra exceeds 20mio
     # Create a new isosurface material for the current element group. This is necessary as there are multiple
     # groups of elements with different tetraTextures
@@ -65,26 +64,14 @@ class TopViewer.Volume
 
     tetraCount = @options.elements.length / 4
 
-    #Create a 2 textures for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value for x coordinate in
-    # the basePositions texture and 1 RGBA value for the y coordinate in the basePositions texture)
-    debugger
-    tetraHeight= 1
-    tetraWidth =  @options.model.maxTextureWidth
-    while @options.elements.length / 4 > tetraWidth  * tetraHeight
-      tetraHeight *= 2
-    if tetraHeight>tetraWidth then throw 'Too many elements to render. Failed in volume.coffee'
-    #The first texture will contain x-coordinates
-    tetraTextureArray_X = new Float32Array tetraWidth*tetraHeight*4
-    tetraTextureArray_X[i] = (@options.elements[i]%width)/width for i in [0...@options.elements.length]
-    #The second texture will contain y-coordinates
-    tetraTextureArray_Y = new Float32Array tetraWidth*tetraHeight*4
-    tetraTextureArray_Y[i] = Math.floor(@options.elements[i]/width)/height for i in [0...@options.elements.length]
 
     #Also, we cannot have attributes of more than 1GB, so the indexes need to be split about every 20mio tetrahadera
-    tetraSplits = Math.ceil(tetraCount/20000000)
-    log 'ts', tetraSplits
+    splitAt = 20000000
+    tetraSplits = Math.ceil(tetraCount/splitAt)
     for ks in [0...tetraSplits]
-      log 'ks',ks
+      # Define a variable which states how many tetrahedra we are processing
+      if ks == tetraSplits-1 then localTetraCount = tetraCount-ks*splitAt else localTetraCount=splitAt
+      log localTetraCount
       # Create  a new isosurfaces material and add it to database
       isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
       @options.model.isosurfaceMaterials.push isosurfaceMaterial
@@ -95,24 +82,27 @@ class TopViewer.Volume
       isosurfacesMesh.receiveShadows = true
       @isosurfaceMeshes.push isosurfacesMesh
 
-      #Define an attribute used to access the tetraTexture
-      if ks == tetraSplits-1 then localTetraCount = tetraCount-ks*20000000 else localTetraCount=20000000
-      log localTetraCount
-      tetraAccessArray = new Float32Array localTetraCount * 12
-      tetraAccessAttribute = new THREE.BufferAttribute tetraAccessArray, 2
-      #We also need to know which in triangle (and which vertex of that triangle) a particular thread belongs to
-      #within a given tetra element. This property is called the corner index
-      cornerIndexArray = new Float32Array localTetraCount * 6
-      cornerIndexAttribute = new THREE.BufferAttribute cornerIndexArray, 1
+      #Create a 2 textures for the tetrahedra (each tetrahedron is 4 vertexes, so 1 RGBA texture value for x coordinate in
+      # the basePositions texture and 1 RGBA value for the y coordinate in the basePositions texture)
       debugger
-      for i in [0...tetraAccessArray.length/2]
-        index =  Math.floor((i+ks*20000000)/6.0)
-        setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight)
-        cornerIndexArray[i] = (i%6.0)*0.1
+      tetraHeight= 1
+      tetraWidth =  @options.model.maxTextureWidth
+      while localTetraCount  > tetraWidth  * tetraHeight
+        tetraHeight *= 2
+      #The first texture will contain x-coordinates
+      tetraTextureArray_X = new Float32Array tetraWidth*tetraHeight*4
+      tetraTextureArray_X[i] = (@options.elements[i+ks*splitAt*4]%width)/width for i in [0...localTetraCount*4]
+      #The second texture will contain y-coordinates
+      tetraTextureArray_Y = new Float32Array tetraWidth*tetraHeight*4
+      tetraTextureArray_Y[i] = Math.floor(@options.elements[i+ks*splitAt*4]/width)/height for i in [0...localTetraCount*4]
+
+      #Define an attribute used to access the tetraTexture
+      masterIndexArray = new Float32Array localTetraCount * 6
+      masterIndexArray[i] = i for i in [0...localTetraCount*6]
+      masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
 
       #Store the tetraAccess and corner indexes into an attribute buffer
-      isosurfacesGeometry.addAttribute "tetraAccess", tetraAccessAttribute
-      isosurfacesGeometry.addAttribute "cornerIndex", cornerIndexAttribute
+      isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
 
       #Update values in the shader and add the new texture
       #Record the tetrahedron height and vertexbuffer height
