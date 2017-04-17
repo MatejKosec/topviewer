@@ -31,7 +31,7 @@ class TopViewer.Volume
 
     #Split the wireframe geometry in 50mio lines per geometry
     @wireframeMeshes = []
-    splitAt = 5000000
+    splitAt = 500000000
     globalLineVertexIndex= 0
     wireSplits = Math.ceil(linesCount/splitAt)
     a_old = 0 #save connectivity iteration index
@@ -66,7 +66,7 @@ class TopViewer.Volume
       wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
       wireframeMesh.material.uniforms.bufferTextureHeight.value = height
       wireframeMesh.material.uniforms.bufferTextureWidth.value = width
-      wireframeGeometry.setDrawRange(0, localLinesCount*2)
+      wireframeGeometry.setDrawRange(0, localLineVertexIndex)
       debugger
 
 
@@ -84,7 +84,7 @@ class TopViewer.Volume
 
 
     #Also, we cannot have attributes of more than 1GB, so the indexes need to be split about every 20mio tetrahadera
-    splitAt = 5000000
+    splitAt = 20000000
     tetraSplits = Math.ceil(tetraCount/splitAt)
     for ks in [0...tetraSplits]
       # Define a variable which states how many tetrahedra we are processing
@@ -114,13 +114,26 @@ class TopViewer.Volume
       tetraTextureArray_Y = new Float32Array tetraWidth*tetraHeight*4
       tetraTextureArray_Y[i] = Math.floor(@options.elements[i+ks*splitAt*4]/width)/height for i in [0...localTetraCount*4]
 
-      #Define an attribute used to access the tetraTexture
-      masterIndexArray = new Float32Array localTetraCount * 6
-      masterIndexArray[i] = i for i in [0...localTetraCount*6]
-      masterIndexAttribute = new THREE.BufferAttribute masterIndexArray, 1
+      #Setup the attributes
+      #The master index records which thread this is out of a global 6*tetraCount threads
+      #6 sequential threads collaborate on the isosurface for the same triangle. But since
+      #webgl1.0 does not support  integer attributes and we are using integers too large to
+      #represent with float32 (over 60 million), we need to compute the values needed to access the
+      #tetraTexture (these are float indexes) <- this bug happens for real
+      tetraAccessArray = new Float32Array localTetraCount * 12
+      tetraAccessAttribute = new THREE.BufferAttribute tetraAccessArray, 2
+      #We also need to know which in triangle (and which vertex of that triangle) a particular thread belongs to
+      #within a given tetra element. This property is called the corner index
+      cornerIndexArray = new Float32Array localTetraCount * 6
+      cornerIndexAttribute = new THREE.BufferAttribute cornerIndexArray, 1
+      for i in [0...tetraAccessArray.length/2]
+        index =  Math.floor(i/6.0)
+        setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight)
+        cornerIndexArray[i] = (i%6.0)*0.1
 
       #Store the tetraAccess and corner indexes into an attribute buffer
-      isosurfacesGeometry.addAttribute "masterIndex", masterIndexAttribute
+      isosurfacesGeometry.addAttribute "tetraAccess", tetraAccessAttribute
+      isosurfacesGeometry.addAttribute "cornerIndex", cornerIndexAttribute
 
       #Update values in the shader and add the new texture
       #Record the tetrahedron height and vertexbuffer height

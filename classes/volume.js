@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, a_old, addLine, connectivity, globalLineVertexIndex, height, i, isosurfaceMaterial, isosurfacesGeometry, isosurfacesMesh, j, k, ks, l, linesCount, localLineVertexIndex, localLinesCount, localTetraCount, loopVertexIndex, m, masterIndexArray, masterIndexAttribute, n, o, p, q, r, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, s, setVertexIndexCoordinates, splitAt, tetraCount, tetraHeight, tetraSplits, tetraTextureArray_X, tetraTextureArray_Y, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireSplits, wireframeGeometry, wireframeMesh, ws;
+      var a, a_old, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, globalLineVertexIndex, height, i, index, isosurfaceMaterial, isosurfacesGeometry, isosurfacesMesh, j, k, ks, l, linesCount, localLineVertexIndex, localLinesCount, localTetraCount, loopVertexIndex, m, n, o, p, q, r, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, s, setVertexIndexCoordinates, splitAt, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraSplits, tetraTextureArray_X, tetraTextureArray_Y, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireSplits, wireframeGeometry, wireframeMesh, ws;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
@@ -36,7 +36,7 @@
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3]);
       }
       this.wireframeMeshes = [];
-      splitAt = 5000000;
+      splitAt = 500000000;
       globalLineVertexIndex = 0;
       wireSplits = Math.ceil(linesCount / splitAt);
       a_old = 0;
@@ -74,12 +74,12 @@
         wireframeGeometry.addAttribute("vertexIndex", vertexIndexAttribute);
         wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
         wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
-        wireframeGeometry.setDrawRange(0, localLinesCount * 2);
+        wireframeGeometry.setDrawRange(0, localLineVertexIndex);
         debugger;
       }
       this.isosurfaceMeshes = [];
       tetraCount = this.options.elements.length / 4;
-      splitAt = 5000000;
+      splitAt = 20000000;
       tetraSplits = Math.ceil(tetraCount / splitAt);
       for (ks = n = 0, ref5 = tetraSplits; 0 <= ref5 ? n < ref5 : n > ref5; ks = 0 <= ref5 ? ++n : --n) {
         if (ks === tetraSplits - 1) {
@@ -108,12 +108,17 @@
         for (i = p = 0, ref7 = localTetraCount * 4; 0 <= ref7 ? p < ref7 : p > ref7; i = 0 <= ref7 ? ++p : --p) {
           tetraTextureArray_Y[i] = Math.floor(this.options.elements[i + ks * splitAt * 4] / width) / height;
         }
-        masterIndexArray = new Float32Array(localTetraCount * 6);
-        for (i = q = 0, ref8 = localTetraCount * 6; 0 <= ref8 ? q < ref8 : q > ref8; i = 0 <= ref8 ? ++q : --q) {
-          masterIndexArray[i] = i;
+        tetraAccessArray = new Float32Array(localTetraCount * 12);
+        tetraAccessAttribute = new THREE.BufferAttribute(tetraAccessArray, 2);
+        cornerIndexArray = new Float32Array(localTetraCount * 6);
+        cornerIndexAttribute = new THREE.BufferAttribute(cornerIndexArray, 1);
+        for (i = q = 0, ref8 = tetraAccessArray.length / 2; 0 <= ref8 ? q < ref8 : q > ref8; i = 0 <= ref8 ? ++q : --q) {
+          index = Math.floor(i / 6.0);
+          setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight);
+          cornerIndexArray[i] = (i % 6.0) * 0.1;
         }
-        masterIndexAttribute = new THREE.BufferAttribute(masterIndexArray, 1);
-        isosurfacesGeometry.addAttribute("masterIndex", masterIndexAttribute);
+        isosurfacesGeometry.addAttribute("tetraAccess", tetraAccessAttribute);
+        isosurfacesGeometry.addAttribute("cornerIndex", cornerIndexAttribute);
         isosurfacesMesh.material.uniforms.tetraTextureHeight.value = tetraHeight;
         isosurfacesMesh.material.uniforms.tetraTextureWidth.value = tetraWidth;
         isosurfacesMesh.material.uniforms.bufferTextureHeight.value = height;
