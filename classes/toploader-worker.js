@@ -188,6 +188,9 @@
       }
       switch (this.currentMode) {
         case this.constructor.modes.Nodes:
+          if (parseInt(parts[0] === 0)) {
+            alert("All indexes should start from 1 not 0.");
+          }
           this.currentNodeIndex = parseInt(parts[0]);
           if (this.currentNodeIndex * 3 > this.currentNodes.nodes.length) {
             buffer = new Float32Array(this.currentNodes.nodes.length * 2);

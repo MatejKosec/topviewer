@@ -228,6 +228,8 @@ class TopParser
     # No mode switch was detected, continue business as usual.
     switch @currentMode
       when @constructor.modes.Nodes
+        #Must index from 1
+        if parseInt parts[0] == 0 then alert "All indexes should start from 1 not 0."
         #Make sure current index will fit into buffer
         @currentNodeIndex = parseInt parts[0]
         #Allocate more space if not
