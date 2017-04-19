@@ -3,7 +3,7 @@
   'use strict';
   TopViewer.Volume = (function() {
     function Volume(options) {
-      var a, a_old, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, globalLineVertexIndex, height, i, index, isosurfaceMaterial, isosurfacesGeometry, isosurfacesMesh, j, k, ks, l, linesCount, localLineVertexIndex, localLinesCount, localTetraCount, loopVertexIndex, m, n, o, p, q, r, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, s, setVertexIndexCoordinates, splitAt, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraSplits, tetraTextureArray_X, tetraTextureArray_Y, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireSplits, wireframeGeometry, wireframeMesh, ws;
+      var a, addLine, connectivity, cornerIndexArray, cornerIndexAttribute, height, i, index, isosurfaceMaterial, isosurfacesGeometry, isosurfacesMesh, j, k, ks, l, lineVertexIndex, linesCount, localTetraCount, m, n, o, p, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, setVertexIndexCoordinates, splitAt, tetraAccessArray, tetraAccessAttribute, tetraCount, tetraHeight, tetraSplits, tetraTextureArray_X, tetraTextureArray_Y, tetraWidth, vertexIndexArray, vertexIndexAttribute, width, wireframeGeometry, wireframeMesh;
       this.options = options;
       height = this.options.model.basePositionsTexture.image.height;
       width = this.options.model.basePositionsTexture.image.width;
@@ -36,55 +36,33 @@
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3]);
       }
       this.wireframeMeshes = [];
-      splitAt = 5000000;
-      globalLineVertexIndex = 0;
-      wireSplits = Math.ceil(linesCount / splitAt);
-      a_old = 0;
-      for (ws = k = 0, ref1 = wireSplits; 0 <= ref1 ? k < ref1 : k > ref1; ws = 0 <= ref1 ? ++k : --k) {
-        if (ws === wireSplits - 1) {
-          localLinesCount = linesCount - ws * splitAt;
-        } else {
-          localLinesCount = splitAt;
+      wireframeGeometry = new THREE.BufferGeometry();
+      wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
+      this.wireframeMeshes.push(wireframeMesh);
+      debugger;
+      vertexIndexArray = new Float32Array(linesCount * 4);
+      vertexIndexAttribute = new THREE.BufferAttribute(vertexIndexArray, 2);
+      lineVertexIndex = 0;
+      for (a in connectivity) {
+        if (!connectivity[a]) {
+          continue;
         }
-        wireframeGeometry = new THREE.BufferGeometry();
-        wireframeMesh = new THREE.LineSegments(wireframeGeometry, this.options.model.volumeWireframeMaterial);
-        this.wireframeMeshes.push(wireframeMesh);
-        debugger;
-        vertexIndexArray = new Float32Array(localLinesCount * 4);
-        vertexIndexAttribute = new THREE.BufferAttribute(vertexIndexArray, 2);
-        localLineVertexIndex = 0;
-        loopVertexIndex = 0;
-        a_old = 0;
-        for (a = l = ref2 = a_old, ref3 = connectivity.length; ref2 <= ref3 ? l < ref3 : l > ref3; a = ref2 <= ref3 ? ++l : --l) {
-          if (!connectivity[a]) {
-            continue;
-          }
-          for (i = m = 0, ref4 = connectivity[a].length; 0 <= ref4 ? m < ref4 : m > ref4; i = 0 <= ref4 ? ++m : --m) {
-            if ((loopVertexIndex >= globalLineVertexIndex - 1) && (localLineVertexIndex < localLinesCount * 2)) {
-              log('here');
-              setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex, parseInt(a), width, height);
-              setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex + 1, connectivity[a][i], width, height);
-              globalLineVertexIndex += 2;
-              localLineVertexIndex += 2;
-              loopVertexIndex += 2;
-            } else {
-              loopVertexIndex += 2;
-            }
-          }
+        for (i = k = 0, ref1 = connectivity[a].length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+          setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex, parseInt(a), width, height);
+          setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex + 1, connectivity[a][i], width, height);
+          lineVertexIndex += 2;
         }
-        log(localLinesCount, localLineVertexIndex);
-        wireframeGeometry.addAttribute("vertexIndex", vertexIndexAttribute);
-        wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
-        wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
-        debugger;
-        wireframeGeometry.setDrawRange(0, localLineVertexIndex);
-        debugger;
       }
+      wireframeGeometry.addAttribute("vertexIndex", vertexIndexAttribute);
+      wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
+      wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
+      debugger;
+      wireframeGeometry.setDrawRange(0, lineVertexIndex);
       this.isosurfaceMeshes = [];
       tetraCount = this.options.elements.length / 4;
       splitAt = 20000000;
       tetraSplits = Math.ceil(tetraCount / splitAt);
-      for (ks = n = 0, ref5 = tetraSplits; 0 <= ref5 ? n < ref5 : n > ref5; ks = 0 <= ref5 ? ++n : --n) {
+      for (ks = l = 0, ref2 = tetraSplits; 0 <= ref2 ? l < ref2 : l > ref2; ks = 0 <= ref2 ? ++l : --l) {
         if (ks === tetraSplits - 1) {
           localTetraCount = tetraCount - ks * splitAt;
         } else {
@@ -104,18 +82,18 @@
           tetraHeight *= 2;
         }
         tetraTextureArray_X = new Float32Array(tetraWidth * tetraHeight * 4);
-        for (i = o = 0, ref6 = localTetraCount * 4; 0 <= ref6 ? o < ref6 : o > ref6; i = 0 <= ref6 ? ++o : --o) {
+        for (i = m = 0, ref3 = localTetraCount * 4; 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
           tetraTextureArray_X[i] = (this.options.elements[i + ks * splitAt * 4] % width) / width;
         }
         tetraTextureArray_Y = new Float32Array(tetraWidth * tetraHeight * 4);
-        for (i = p = 0, ref7 = localTetraCount * 4; 0 <= ref7 ? p < ref7 : p > ref7; i = 0 <= ref7 ? ++p : --p) {
+        for (i = n = 0, ref4 = localTetraCount * 4; 0 <= ref4 ? n < ref4 : n > ref4; i = 0 <= ref4 ? ++n : --n) {
           tetraTextureArray_Y[i] = Math.floor(this.options.elements[i + ks * splitAt * 4] / width) / height;
         }
         tetraAccessArray = new Float32Array(localTetraCount * 12);
         tetraAccessAttribute = new THREE.BufferAttribute(tetraAccessArray, 2);
         cornerIndexArray = new Float32Array(localTetraCount * 6);
         cornerIndexAttribute = new THREE.BufferAttribute(cornerIndexArray, 1);
-        for (i = q = 0, ref8 = tetraAccessArray.length / 2; 0 <= ref8 ? q < ref8 : q > ref8; i = 0 <= ref8 ? ++q : --q) {
+        for (i = o = 0, ref5 = tetraAccessArray.length / 2; 0 <= ref5 ? o < ref5 : o > ref5; i = 0 <= ref5 ? ++o : --o) {
           index = Math.floor(i / 6.0);
           setVertexIndexCoordinates(tetraAccessAttribute, i, index, tetraWidth, tetraHeight);
           cornerIndexArray[i] = (i % 6.0) * 0.1;
@@ -135,10 +113,10 @@
       }
       debugger;
       this._updateGeometry();
-      for (i = r = 0, ref9 = this.isosurfaceMeshes.length; 0 <= ref9 ? r < ref9 : r > ref9; i = 0 <= ref9 ? ++r : --r) {
+      for (i = p = 0, ref6 = this.isosurfaceMeshes.length; 0 <= ref6 ? p < ref6 : p > ref6; i = 0 <= ref6 ? ++p : --p) {
         this.options.model.add(this.isosurfaceMeshes[i]);
       }
-      for (i = s = 0, ref10 = this.wireframeMeshes.length; 0 <= ref10 ? s < ref10 : s > ref10; i = 0 <= ref10 ? ++s : --s) {
+      for (i = q = 0, ref7 = this.wireframeMeshes.length; 0 <= ref7 ? q < ref7 : q > ref7; i = 0 <= ref7 ? ++q : --q) {
         this.options.model.add(this.wireframeMeshes[i]);
       }
       this.options.engine.renderingControls.addVolume(this.options.name, this);

@@ -28,53 +28,31 @@ class TopViewer.Volume
       addLine(@options.elements[i*4], @options.elements[i*4+3])
       addLine(@options.elements[i*4+1], @options.elements[i*4+3])
       addLine(@options.elements[i*4+2], @options.elements[i*4+3])
-
-    #Split the wireframe geometry in 50mio lines per geometry
     @wireframeMeshes = []
-    splitAt = 5000000 #reduce this number to split
-    globalLineVertexIndex= 0
-    wireSplits = Math.ceil(linesCount/splitAt)
-    a_old = 0 #save connectivity iteration index
-    for ws in [0...wireSplits]
-      # Define a variable which states how many wires we are processing per tetra split
-      if ws == wireSplits-1 then localLinesCount = linesCount-ws*splitAt else localLinesCount=splitAt
+    wireframeGeometry = new THREE.BufferGeometry()
+    #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
+    wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
+    @wireframeMeshes.push wireframeMesh
+    debugger
+    #The master index will directly hold the textureAccess coordinates for the buffer texture (so 2 components per point, 
+    #at 2 points per line = 4 per line)
+    vertexIndexArray = new Float32Array linesCount * 4
+    #Store the vertexindexes into an attribute buffer
+    vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
+    lineVertexIndex = 0
+    for a of connectivity
+      continue unless connectivity[a]
+      for i in [0...connectivity[a].length]
+        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex, parseInt(a), width, height)
+        setVertexIndexCoordinates(vertexIndexAttribute, lineVertexIndex + 1, connectivity[a][i], width, height)
+        lineVertexIndex += 2
+    #Update geometry and material uniforms
+    wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
+    wireframeMesh.material.uniforms.bufferTextureHeight.value = height
+    wireframeMesh.material.uniforms.bufferTextureWidth.value = width
+    debugger
 
-      wireframeGeometry = new THREE.BufferGeometry()
-      #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
-      wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
-      @wireframeMeshes.push wireframeMesh
-      debugger
-      #The master index will directly hold the textureAccess coordinates for the buffer texture (so 2 components per point,
-      #at 2 points per line = 4 per line)
-      vertexIndexArray = new Float32Array localLinesCount * 4
-      #Store the vertexindexes into an attribute buffer
-      vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
-      localLineVertexIndex = 0
-      loopVertexIndex = 0
-      a_old = 0
-      for a in [a_old...connectivity.length]
-        continue unless connectivity[a]
-        for i in [0...connectivity[a].length]
-          if ((loopVertexIndex >= globalLineVertexIndex-1) and (localLineVertexIndex<localLinesCount*2))
-            log 'here'
-            setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex, parseInt(a), width, height)
-            setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex + 1, connectivity[a][i], width, height)
-            globalLineVertexIndex += 2
-            localLineVertexIndex  += 2
-            loopVertexIndex += 2;
-          else
-            loopVertexIndex += 2;
-      log localLinesCount, localLineVertexIndex
-      #a_old = a-1 #Start here on next wireframe construciton
-      #Update geometry and material uniforms
-      wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
-      wireframeMesh.material.uniforms.bufferTextureHeight.value = height
-      wireframeMesh.material.uniforms.bufferTextureWidth.value = width
-      debugger;
-      wireframeGeometry.setDrawRange(0, localLineVertexIndex)
-      debugger
-
-
+    wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
     #There may be more isosurface meshes for a single set of tetrahedra if the number of tetrahedra exceeds 20mio
     # Create a new isosurface material for the current element group. This is necessary as there are multiple
