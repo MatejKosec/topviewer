@@ -31,13 +31,14 @@ class TopViewer.Volume
 
     #Split the wireframe geometry in 50mio lines per geometry
     @wireframeMeshes = []
-    splitAt = 500000000
+    splitAt = 5000000 #reduce this number to split
     globalLineVertexIndex= 0
     wireSplits = Math.ceil(linesCount/splitAt)
     a_old = 0 #save connectivity iteration index
     for ws in [0...wireSplits]
       # Define a variable which states how many wires we are processing per tetra split
       if ws == wireSplits-1 then localLinesCount = linesCount-ws*splitAt else localLinesCount=splitAt
+
       wireframeGeometry = new THREE.BufferGeometry()
       #Line segments will use GL_LINES to connect 2 consecutive indexes in gl_Position (shader code)
       wireframeMesh = new THREE.LineSegments wireframeGeometry, @options.model.volumeWireframeMaterial
@@ -49,11 +50,13 @@ class TopViewer.Volume
       #Store the vertexindexes into an attribute buffer
       vertexIndexAttribute = new THREE.BufferAttribute vertexIndexArray, 2
       localLineVertexIndex = 0
-      loopVertexIndex = 0;
+      loopVertexIndex = 0
+      a_old = 0
       for a in [a_old...connectivity.length]
         continue unless connectivity[a]
         for i in [0...connectivity[a].length]
-          if ((loopVertexIndex >= globalLineVertexIndex-1) and (localLineVertexIndex<=localLinesCount*2))
+          if ((loopVertexIndex >= globalLineVertexIndex-1) and (localLineVertexIndex<localLinesCount*2))
+            log 'here'
             setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex, parseInt(a), width, height)
             setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex + 1, connectivity[a][i], width, height)
             globalLineVertexIndex += 2
@@ -61,11 +64,13 @@ class TopViewer.Volume
             loopVertexIndex += 2;
           else
             loopVertexIndex += 2;
-      a_old = a-1 #Start here on next wireframe construciton
+      log localLinesCount, localLineVertexIndex
+      #a_old = a-1 #Start here on next wireframe construciton
       #Update geometry and material uniforms
       wireframeGeometry.addAttribute "vertexIndex", vertexIndexAttribute
       wireframeMesh.material.uniforms.bufferTextureHeight.value = height
       wireframeMesh.material.uniforms.bufferTextureWidth.value = width
+      debugger;
       wireframeGeometry.setDrawRange(0, localLineVertexIndex)
       debugger
 

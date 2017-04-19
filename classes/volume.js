@@ -36,7 +36,7 @@
         addLine(this.options.elements[i * 4 + 2], this.options.elements[i * 4 + 3]);
       }
       this.wireframeMeshes = [];
-      splitAt = 500000000;
+      splitAt = 5000000;
       globalLineVertexIndex = 0;
       wireSplits = Math.ceil(linesCount / splitAt);
       a_old = 0;
@@ -54,12 +54,14 @@
         vertexIndexAttribute = new THREE.BufferAttribute(vertexIndexArray, 2);
         localLineVertexIndex = 0;
         loopVertexIndex = 0;
+        a_old = 0;
         for (a = l = ref2 = a_old, ref3 = connectivity.length; ref2 <= ref3 ? l < ref3 : l > ref3; a = ref2 <= ref3 ? ++l : --l) {
           if (!connectivity[a]) {
             continue;
           }
           for (i = m = 0, ref4 = connectivity[a].length; 0 <= ref4 ? m < ref4 : m > ref4; i = 0 <= ref4 ? ++m : --m) {
-            if ((loopVertexIndex >= globalLineVertexIndex - 1) && (localLineVertexIndex <= localLinesCount * 2)) {
+            if ((loopVertexIndex >= globalLineVertexIndex - 1) && (localLineVertexIndex < localLinesCount * 2)) {
+              log('here');
               setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex, parseInt(a), width, height);
               setVertexIndexCoordinates(vertexIndexAttribute, localLineVertexIndex + 1, connectivity[a][i], width, height);
               globalLineVertexIndex += 2;
@@ -70,10 +72,11 @@
             }
           }
         }
-        a_old = a - 1;
+        log(localLinesCount, localLineVertexIndex);
         wireframeGeometry.addAttribute("vertexIndex", vertexIndexAttribute);
         wireframeMesh.material.uniforms.bufferTextureHeight.value = height;
         wireframeMesh.material.uniforms.bufferTextureWidth.value = width;
+        debugger;
         wireframeGeometry.setDrawRange(0, localLineVertexIndex);
         debugger;
       }
