@@ -11,10 +11,10 @@ class TopViewer.IsolineMaterial extends TopViewer.IsovalueMaterial
 #{TopViewer.ShaderChunks.vertexMaterialVertex}
 #{TopViewer.ShaderChunks.isovalueMaterialVertex}
 
-attribute vec2 vertexIndexCorner1;
-attribute vec2 vertexIndexCorner2;
-attribute vec2 vertexIndexCorner3;
-attribute float cornerIndex;
+in vec2 vertexIndexCorner1;
+in vec2 vertexIndexCorner2;
+in vec2 vertexIndexCorner3;
+in float cornerIndex;
 
 void main()	{
   if (scalarsRange > 0.0) {

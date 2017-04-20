@@ -15,8 +15,7 @@
       this.camera.rotation.set(cameraState.rotation._x, cameraState.rotation._y, cameraState.rotation._z, cameraState.rotation._order);
       this.camera.scale.set(cameraState.scale.x, cameraState.scale.y, cameraState.scale.z);
       this.renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        canvas: this.options.app.canvas
+        antialias: true
       });
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.renderer.setClearColor(0x444550);

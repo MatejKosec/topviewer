@@ -21,10 +21,10 @@ uniform float displacementFactor;
 
 uniform float time;
 
-attribute vec2 vertexIndexCorner1;
-attribute vec2 vertexIndexCorner2;
-attribute vec2 vertexIndexCorner3;
-attribute float cornerIndex;
+in vec2 vertexIndexCorner1;
+in vec2 vertexIndexCorner2;
+in vec2 vertexIndexCorner3;
+in float cornerIndex;
 
 void main()	{
   vec2 vertexIndices[3];
@@ -36,12 +36,12 @@ void main()	{
   vec3 vertexPositions[3];
 
   for (int i=0; i<3; i++) {
-    vec4 positionData = texture2D(basePositionsTexture, vertexIndices[i]);
+    vec4 positionData = texture(basePositionsTexture, vertexIndices[i]);
     vertexPositions[i] = positionData.xyz;
 
     if (displacementFactor > 0.0) {
-      positionData = texture2D(displacementsTexture, vertexIndices[i]);
-      vec4 positionDataNext = texture2D(displacementsTextureNext, vertexIndices[i]);
+      positionData = texture(displacementsTexture, vertexIndices[i]);
+      vec4 positionDataNext = texture(displacementsTextureNext, vertexIndices[i]);
       positionData = mix(positionData, positionDataNext, frameProgress);
 
       vertexPositions[i] += positionData.xyz * displacementFactor;
@@ -67,8 +67,8 @@ precision highp int;
 uniform float time;
 
 #{THREE.ShaderChunk.packing}
-
+out vec4 FragColor;
 void main()	{
-  gl_FragColor = packDepthToRGBA(gl_FragCoord.z);
+  FragColor = packDepthToRGBA(gl_FragCoord.z);
 }
 """

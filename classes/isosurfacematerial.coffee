@@ -40,8 +40,8 @@ uniform float bufferTextureWidth;
 uniform float tetraTextureHeight;
 uniform float tetraTextureWidth;
 //The tetraAccess tells us which element to access and cornerIndex tells us how to treat this thread
-attribute vec2 tetraAccess;
-attribute float cornerIndex;
+in vec2 tetraAccess;
+in float cornerIndex;
 //The vertexIndexCorner values are now sampled from a texture (no longer attributes)
 vec2 vertexIndexCorner1;
 vec2 vertexIndexCorner2;
@@ -87,8 +87,8 @@ void main()	{
   //tetraAccess.y = floor(tetraIndex/tetraTextureWidth)/tetraTextureHeight;
 
 
-  vec4 tetraX = vec4(texture2D(tetraTextureX, tetraAccess).rgba);
-  vec4 tetraY = vec4(texture2D(tetraTextureY, tetraAccess).rgba);
+  vec4 tetraX = vec4(texture(tetraTextureX, tetraAccess).rgba);
+  vec4 tetraY = vec4(texture(tetraTextureY, tetraAccess).rgba);
 
   //Compute where to access the basePositionstexture for a given tetra
   vertexIndexCorner1.x = tetraX.r;

@@ -2,11 +2,11 @@ class TopViewer.Shaders
   @wireframeFragmentShader: """
 #{TopViewer.ShaderChunks.commonFragment}
 #{TopViewer.ShaderChunks.vertexMaterialFragment}
-
+out vec4 FragColor;
 void main()	{
   #{TopViewer.ShaderChunks.vertexMaterialBaseColor}
 
-  gl_FragColor = vec4(baseColor, opacity);
+  FragColor = vec4(baseColor, opacity);
 }
 """
 
@@ -21,7 +21,7 @@ void main()	{
 #{THREE.ShaderChunk.packing}
 #{THREE.ShaderChunk.lights_pars}
 #{THREE.ShaderChunk.shadowmap_pars_fragment}
-
+out vec4 FragColor;
 void main()	{
   #{TopViewer.ShaderChunks.vertexMaterialBaseColor}
 
@@ -61,6 +61,6 @@ void main()	{
   light = mix(light, vec3(1.0), ambientLightColor);
 
   // Finally apply the light to the base color and output it with desired opacity.
-  gl_FragColor = vec4(baseColor * light, opacity);
+  FragColor = vec4(baseColor * light, opacity);
 }
 """

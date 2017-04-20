@@ -16,7 +16,6 @@ class TopViewer.Engine
 
     @renderer = new THREE.WebGLRenderer
       antialias: true
-      canvas: @options.app.canvas
 
     @renderer.setSize window.innerWidth, window.innerHeight
     @renderer.setClearColor 0x444550

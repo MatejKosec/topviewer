@@ -11,7 +11,7 @@ class TopViewer.WireframeMaterial extends TopViewer.VertexMaterial
 
 uniform float bufferTextureHeight;
 uniform float bufferTextureWidth;
-attribute vec2 vertexIndex;
+in vec2 vertexIndex;
 
 void main()	{
   //The vertex coordinates are stored in a 2D texture. Here compute the x,y texture coordinates
@@ -19,12 +19,12 @@ void main()	{
   //vec2 vertexIndex;
   //vertexIndex.x = mod(masterIndex,bufferTextureWidth)/bufferTextureWidth;
   //vertexIndex.y = floor(masterIndex/bufferTextureWidth)/bufferTextureHeight;
-  vec4 positionData = texture2D(basePositionsTexture, vertexIndex);
+  vec4 positionData = texture(basePositionsTexture, vertexIndex);
   vec3 vertexPosition = positionData.xyz;
 
   if (displacementFactor > 0.0) {
-    positionData = texture2D(displacementsTexture, vertexIndex);
-    vec4 positionDataNext = texture2D(displacementsTextureNext, vertexIndex);
+    positionData = texture(displacementsTexture, vertexIndex);
+    vec4 positionDataNext = texture(displacementsTextureNext, vertexIndex);
     positionData = mix(positionData, positionDataNext, frameProgress);
 
     vertexPosition += positionData.xyz * displacementFactor;
