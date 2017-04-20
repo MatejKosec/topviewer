@@ -33,21 +33,21 @@ uniform sampler2D vertexScalarsTextureNext;
 uniform float vertexScalarsMin;
 uniform float vertexScalarsRange;
 
-out float scalar;
+out float scalar_value;
 """
 
   @vertexMaterialScalar: """
   // Caclulate the scalar value at the vertex, if needed.
   if (vertexScalarsRange > 0.0) {
     // Interpolate scalar value.
-    scalar = texture2D(vertexScalarsTexture, vertexIndex).a;
-    float scalarNext = texture2D(vertexScalarsTextureNext, vertexIndex).a;
-    scalar = mix(scalar, scalarNext, frameProgress);
+    scalar_value = texture(vertexScalarsTexture, vertexIndex).a;
+    float scalarNext = texture(vertexScalarsTextureNext, vertexIndex).a;
+    scalar_value = mix(scalar_value, scalarNext, frameProgress);
 
     // Bring the scalar to the 0-1 range.
-    scalar = clamp((scalar - vertexScalarsMin) / vertexScalarsRange, 0.01, 0.99);
+    scalar_value = clamp((scalar_value - vertexScalarsMin) / vertexScalarsRange, 0.01, 0.99);
   } else {
-    scalar = -1.0;
+    scalar_value = -1.0;
   }
 """
 
@@ -57,16 +57,16 @@ uniform sampler2D vertexScalarsCurveTexture;
 uniform sampler2D vertexScalarsGradientTexture;
 uniform float opacity;
 
-out float scalar;
+in float scalar_value;
 """
 
   @vertexMaterialBaseColor: """
   // Determine the base color, either from the scalar or as a constant.
   vec3 baseColor;
 
-  if (scalar >= 0.0) {
+  if (scalar_value >= 0.0) {
     // Transform the scalar with the curve.
-    float curvedScalar = texture(vertexScalarsCurveTexture, vec2(scalar, 0)).a;
+    float curvedScalar = texture(vertexScalarsCurveTexture, vec2(scalar_value, 0)).a;
 
     // Map the curved scalar to the gradient texture.
     baseColor = texture(vertexScalarsGradientTexture, vec2(curvedScalar, 0)).rgb;
@@ -83,7 +83,7 @@ out vec3 normalEye;
 
   @surfaceMaterialFragment: """
 uniform float lightingBidirectional;
-out vec3 normalEye;
+in vec3 normalEye;
 """
 
   @isovalueMaterialVertex: """
@@ -120,21 +120,21 @@ const int maxIsovalues = 9;
         }
 
         // First calculate the scalar upon which the isolines are positioned.
-        float scalar = clamp((texture(scalarsTexture, vertexIndices[i]).a - scalarsMin) / scalarsRange, 0.01, 0.99);
+        float scalar_value = clamp((texture(scalarsTexture, vertexIndices[i]).a - scalarsMin) / scalarsRange, 0.01, 0.99);
         float scalarNext = clamp((texture(scalarsTextureNext, vertexIndices[i]).a - scalarsMin) / scalarsRange, 0.01, 0.99);
-        scalars[i] = mix(scalar, scalarNext, frameProgress);
+        scalars[i] = mix(scalar_value, scalarNext, frameProgress);
 
         curvedScalars[i] = texture(scalarsCurveTexture, vec2(scalars[i], 0)).a;
 
         // Second, if needed, also calculate the scalar to color the vertices.
         if (vertexScalarsRange > 0.0) {
           // Interpolate scalar value.
-          float scalar = texture(vertexScalarsTexture, vertexIndices[i]).a;
+          float scalar_value = texture(vertexScalarsTexture, vertexIndices[i]).a;
           float scalarNext = texture(vertexScalarsTextureNext, vertexIndices[i]).a;
-          scalar = mix(scalar, scalarNext, frameProgress);
+          scalar_value = mix(scalar_value, scalarNext, frameProgress);
 
           // Bring the scalar to the 0-1 range.
-          vertexColorScalars[i] = clamp((scalar - vertexScalarsMin) / vertexScalarsRange, 0.01, 0.99);
+          vertexColorScalars[i] = clamp((scalar_value - vertexScalarsMin) / vertexScalarsRange, 0.01, 0.99);
         } else {
           vertexColorScalars[i] = -1.0;
         }

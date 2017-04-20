@@ -17,7 +17,7 @@ in vec2 vertexIndexCorner3;
 in float cornerIndex;
 
 void main()	{
-  if (scalarsRange > 0.0) {
+  if (scalar_valuesRange > 0.0) {
     #{TopViewer.ShaderChunks.isovalueMaterialVertexSetup 3}
 
     #{TopViewer.ShaderChunks.isovalueMaterialIsovalueIteration 3}
@@ -76,7 +76,7 @@ void main()	{
         gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
 
         // Interpolate vertex color scalar value.
-        scalar = mix(leftVertexColorScalar, rightVertexColorScalar, percentage);
+        scalar_value = mix(leftVertexColorScalar, rightVertexColorScalar, percentage);
 
         return;
       }
@@ -84,7 +84,7 @@ void main()	{
   }
 
   gl_Position = vec4(0,0,0,1);
-  scalar = -1.0;
+  scalar_value = -1.0;
 }
 """
 

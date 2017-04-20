@@ -73,7 +73,7 @@ void main()	{
     If the isosurface triangle is not needed, it is discarded by degenerating its vertices into a single point.
   */
 
-  scalar = -1.0;
+  scalar_value = -1.0;
 
   //The corner index is also just a function of the worker index (mod 6)
   //cornerIndex = mod(masterIndex,6.0)*0.1;
@@ -234,12 +234,12 @@ void main()	{
         // Determine which corner we're currently on.
         vec3 cornerPosition;
 
-        if (cornerIndex < 0.05) {cornerPosition = cornerPositions[0]; scalar = cornerScalars[0];}
-        else if (cornerIndex < 0.15) {cornerPosition = cornerPositions[1]; scalar = cornerScalars[1];}
-        else if (cornerIndex < 0.25) {cornerPosition = cornerPositions[2]; scalar = cornerScalars[2];}
-        else if (cornerIndex < 0.35) {cornerPosition = cornerPositions[0]; scalar = cornerScalars[0];}
-        else if (cornerIndex < 0.45) {cornerPosition = cornerPositions[1]; scalar = cornerScalars[1];}
-        else {cornerPosition = cornerPositions[2]; scalar = cornerScalars[2];}
+        if (cornerIndex < 0.05) {cornerPosition = cornerPositions[0]; scalar_value = cornerScalars[0];}
+        else if (cornerIndex < 0.15) {cornerPosition = cornerPositions[1]; scalar_value = cornerScalars[1];}
+        else if (cornerIndex < 0.25) {cornerPosition = cornerPositions[2]; scalar_value = cornerScalars[2];}
+        else if (cornerIndex < 0.35) {cornerPosition = cornerPositions[0]; scalar_value = cornerScalars[0];}
+        else if (cornerIndex < 0.45) {cornerPosition = cornerPositions[1]; scalar_value = cornerScalars[1];}
+        else {cornerPosition = cornerPositions[2]; scalar_value = cornerScalars[2];}
 
         vec4 worldPosition = modelMatrix * vec4(cornerPosition, 1.0);
         gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -252,7 +252,7 @@ void main()	{
     }
   }
   gl_Position = vec4(0,0,0,1);
-  scalar = -1.0;
+  scalar_value = -1.0;
 }
 """
 
