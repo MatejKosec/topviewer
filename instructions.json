@@ -8,7 +8,7 @@
   "dependencies": [
     "libraries/jquery-min.js",
     "libraries/underscore-min.js",
-    "libraries/three.min.js",
+    "libraries/three.js",
     "libraries/orbitcontrols.js",
     "libraries/decimaladjust.js",
     "libraries/colorcurve.js",

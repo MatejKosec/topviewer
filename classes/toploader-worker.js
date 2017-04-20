@@ -3,7 +3,7 @@
   'use strict';
   var TopParser;
 
-  importScripts('../libraries/three.min.js');
+  importScripts('../libraries/three.js');
 
   importScripts('../libraries/underscore-min.js');
 

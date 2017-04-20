@@ -1,6 +1,6 @@
 'use strict'
 
-importScripts '../libraries/three.min.js'
+importScripts '../libraries/three.js'
 importScripts '../libraries/underscore-min.js'
 
 self.onmessage = (message) ->
