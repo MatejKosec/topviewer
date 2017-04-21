@@ -4226,6 +4226,7 @@
 			occlusionTexture = gl.createTexture();
 
 			state.bindTexture( gl.TEXTURE_2D, tempTexture );
+			debugger;
 			gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, 16, 16, 0, gl.RGB, gl.UNSIGNED_BYTE, null );
 			gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
 			gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
@@ -4233,6 +4234,7 @@
 			gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
 
 			state.bindTexture( gl.TEXTURE_2D, occlusionTexture );
+			debugger;
 			gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, 16, 16, 0, gl.RGBA, gl.UNSIGNED_BYTE, null );
 			gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
 			gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
@@ -5582,7 +5584,7 @@
 					internalFormat = _gl.DEPTH_STENCIL;
 
 				}
-
+				debugger;
 				state.texImage2D( _gl.TEXTURE_2D, 0, internalFormat, image.width, image.height, 0, glFormat, glType, null );
 
 			} else if ( (texture && texture.isDataTexture) ) {
@@ -5596,6 +5598,7 @@
 					for ( var i = 0, il = mipmaps.length; i < il; i ++ ) {
 
 						mipmap = mipmaps[ i ];
+						debugger;
 						state.texImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
 
 					}
@@ -5603,8 +5606,18 @@
 					texture.generateMipmaps = false;
 
 				} else {
-
-					state.texImage2D( _gl.TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
+					console.log(glFormat,glType)
+					var internalFormat = glFormat;
+					if ((glFormat == _gl.RGBA) && (glType==_gl.FLOAT))
+					{
+					internalFormat = _gl.RGBA32F;
+					}
+					if ((glFormat == _gl.RGB) && (glType==_gl.FLOAT))
+					{
+					internalFormat = _gl.RGB32F;
+					}
+					debugger;
+					state.texImage2D( _gl.TEXTURE_2D, 0, internalFormat, image.width, image.height, 0, glFormat, glType, image.data );
 
 				}
 
@@ -5617,7 +5630,7 @@
 					if ( texture.format !== RGBAFormat && texture.format !== RGBFormat ) {
 
 						if ( state.getCompressedTextureFormats().indexOf( glFormat ) > - 1 ) {
-
+							debugger;
 							state.compressedTexImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, mipmap.data );
 
 						} else {
@@ -5627,7 +5640,7 @@
 						}
 
 					} else {
-
+						debugger;
 						state.texImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
 
 					}
@@ -5647,6 +5660,7 @@
 					for ( var i = 0, il = mipmaps.length; i < il; i ++ ) {
 
 						mipmap = mipmaps[ i ];
+						debugger;
 						state.texImage2D( _gl.TEXTURE_2D, i, glFormat, glFormat, glType, mipmap );
 
 					}
@@ -5654,7 +5668,7 @@
 					texture.generateMipmaps = false;
 
 				} else {
-
+					debugger;
 					state.texImage2D( _gl.TEXTURE_2D, 0, glFormat, glFormat, glType, image );
 
 				}
@@ -5676,10 +5690,9 @@
 
 			var glFormat = paramThreeToGL( renderTarget.texture.format );
 			var glType = paramThreeToGL( renderTarget.texture.type );
-			state.texImage2D( textureTarget, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
-			_gl.getExtension( 'EXT_color_buffer_float')
 			debugger;
-
+			_gl.getExtension( 'EXT_color_buffer_float')
+			state.texImage2D( textureTarget, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 			_gl.bindFramebuffer( _gl.FRAMEBUFFER, framebuffer );
 			_gl.framebufferTexture2D( _gl.FRAMEBUFFER, attachment, textureTarget, properties.get( renderTarget.texture ).__webglTexture, 0 );
 			_gl.bindFramebuffer( _gl.FRAMEBUFFER, null );
@@ -6868,7 +6881,7 @@
 			gl.texParameteri( type, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
 
 			for ( var i = 0; i < count; i ++ ) {
-
+				debugger;
 				gl.texImage2D( target + i, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data );
 
 			}
@@ -7357,7 +7370,7 @@
 		function texImage2D() {
 
 			try {
-
+				debugger;
 				gl.texImage2D.apply( gl, arguments );
 
 			} catch ( error ) {

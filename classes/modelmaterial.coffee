@@ -10,10 +10,10 @@ class TopViewer.ModelMaterial extends TopViewer.SurfaceMaterial
 #{TopViewer.ShaderChunks.vertexMaterialVertex}
 #{TopViewer.ShaderChunks.surfaceMaterialVertex}
 
-attribute vec2 vertexIndexCorner1;
-attribute vec2 vertexIndexCorner2;
-attribute vec2 vertexIndexCorner3;
-attribute float cornerIndex;
+in vec2 vertexIndexCorner1;
+in vec2 vertexIndexCorner2;
+in vec2 vertexIndexCorner3;
+in float cornerIndex;
 
 #{THREE.ShaderChunk.shadowmap_pars_vertex}
 
