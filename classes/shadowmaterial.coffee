@@ -67,7 +67,6 @@ precision highp int;
 uniform float time;
 
 #{THREE.ShaderChunk.packing}
-out vec4 FragColor;
 void main()	{
   FragColor = packDepthToRGBA(gl_FragCoord.z);
 }

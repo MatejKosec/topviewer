@@ -4548,6 +4548,7 @@
 			var vertexShader = gl.createShader( gl.VERTEX_SHADER );
 
 			var prefix = "#version 300 es \n precision " + renderer.getPrecision() + " float;\n";
+			debugger;
 
 			gl.shaderSource( fragmentShader, prefix + shader.fragmentShader );
 			gl.shaderSource( vertexShader, prefix + shader.vertexShader );
@@ -11825,11 +11826,22 @@
 
 			vertexShader = unrollLoops( vertexShader );
 			fragmentShader = unrollLoops( fragmentShader );
-
 		}
 
+		debugger;
 		var vertexGlsl = "#version 300 es \n" + prefixVertex + vertexShader;
-		var fragmentGlsl = "#version 300 es \n"+prefixFragment + fragmentShader;
+
+		if (prefixFragment.search('precision') != -1) {
+			var fragmentGlsl = "#version 300 es \n"+prefixFragment+"out vec4 FragColor; \n" + fragmentShader;
+		} else {
+			var index1 = fragmentShader.search('precision');
+			var index2 = fragmentShader.slice(index1+10,fragmentShader.length).search('precision'); 
+			if (index2 == -1) {index2 = 0;}
+			var index = index1 + index2+10;
+			index += fragmentShader.slice(index,fragmentShader.length).search('\n');
+			fragmentShader = fragmentShader.slice(0, index+1) + "out vec4 FragColor;"+fragmentShader.slice(index+1,fragmentShader.length);
+			var fragmentGlsl = "#version 300 es \n"+prefixFragment+fragmentShader;
+		}
 
 		// console.log( '*VERTEX*', vertexGlsl );
 		// console.log( '*FRAGMENT*', fragmentGlsl );

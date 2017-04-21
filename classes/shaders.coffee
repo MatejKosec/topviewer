@@ -2,7 +2,7 @@ class TopViewer.Shaders
   @wireframeFragmentShader: """
 #{TopViewer.ShaderChunks.commonFragment}
 #{TopViewer.ShaderChunks.vertexMaterialFragment}
-out vec4 FragColor;
+
 void main()	{
   #{TopViewer.ShaderChunks.vertexMaterialBaseColor}
 
@@ -21,7 +21,7 @@ void main()	{
 #{THREE.ShaderChunk.packing}
 #{THREE.ShaderChunk.lights_pars}
 #{THREE.ShaderChunk.shadowmap_pars_fragment}
-out vec4 FragColor;
+
 void main()	{
   #{TopViewer.ShaderChunks.vertexMaterialBaseColor}
 
