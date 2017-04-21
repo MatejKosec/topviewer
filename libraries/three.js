@@ -5616,6 +5616,11 @@
 					{
 					internalFormat = _gl.RGB32F;
 					}
+					if ((glFormat == _gl.ALPHA) && (glType==_gl.FLOAT))
+					{
+					glFormat = _gl.RED;
+					internalFormat = _gl.R32F;
+					}
 					debugger;
 					state.texImage2D( _gl.TEXTURE_2D, 0, internalFormat, image.width, image.height, 0, glFormat, glType, image.data );
 
