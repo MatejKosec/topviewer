@@ -6887,7 +6887,7 @@
 
 			for ( var i = 0; i < count; i ++ ) {
 				debugger;
-				gl.texImage2D( target + i, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data );
+				gl.texImage2D( target + i, 0, gl.RGBA4, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data );
 
 			}
 
@@ -21800,7 +21800,7 @@
 			}
 
 			_usedTextureUnits += 1;
-
+			debugger;
 			return textureUnit;
 
 		}
