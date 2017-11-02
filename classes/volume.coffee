@@ -51,6 +51,7 @@ class TopViewer.Volume
     wireframeMesh.material.uniforms.bufferTextureHeight.value = height
     wireframeMesh.material.uniforms.bufferTextureWidth.value = width
     debugger
+    log "Lines", lineVertexIndex*0.5
 
     wireframeGeometry.setDrawRange(0, lineVertexIndex)
 
@@ -72,7 +73,7 @@ class TopViewer.Volume
     for ks in [0...tetraSplits]
       # Define a variable which states how many tetrahedra we are processing
       if ks == tetraSplits-1 then localTetraCount = tetraCount-ks*splitAt else localTetraCount=splitAt
-      log localTetraCount
+      log "Tets", localTetraCount
       # Create  a new isosurfaces material and add it to database
       isosurfaceMaterial = new TopViewer.IsosurfaceMaterial @
       @options.model.isosurfaceMaterials.push isosurfaceMaterial
