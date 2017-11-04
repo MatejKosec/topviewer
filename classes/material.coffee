@@ -74,7 +74,7 @@ class TopViewer.SurfaceMaterial extends TopViewer.VertexMaterial
       # normal factor can be used to flip the lighting when rendering double-sided surfaces with two single-sided
       # meshes.
       lightingBidirectional:
-        value: 0
+        value: 1
 
       lightingNormalFactor:
         value: 1

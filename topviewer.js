@@ -110,7 +110,7 @@
         this.refresh(date);
       }
       if (eventType === 'pointerScroll') {
-        this.engine.onMouseScroll(3 * data.wheelDelta);
+        this.engine.onMouseScroll(3.0 * data.wheelDelta);
         this.refresh(date);
       }
       if (eventType === 'keyboard') {
@@ -182,3 +182,5 @@
   });
 
 }).call(this);
+
+//# sourceMappingURL=topviewer.js.map
