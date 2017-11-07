@@ -38,7 +38,7 @@
     // Set to true to enable damping (inertia)
     // If damping is enabled, you must call controls.update() in your animation loop
     this.enableDamping = true;
-    this.dampingFactor = 0.025;
+    this.dampingFactor = 0.15;
 
     ////////////
     // internals
