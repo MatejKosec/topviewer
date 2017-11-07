@@ -27,8 +27,8 @@
 
     // How far you can orbit vertically, upper and lower limits.
     // Range is 0 to Math.PI radians.
-    this.minPolarAngle = 0; // radians
-    this.maxPolarAngle = Math.PI; // radians
+    this.minPolarAngle = -Infinity; // radians
+    this.maxPolarAngle = Infinity; // radians
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
@@ -38,7 +38,7 @@
     // Set to true to enable damping (inertia)
     // If damping is enabled, you must call controls.update() in your animation loop
     this.enableDamping = true;
-    this.dampingFactor = 0.25;
+    this.dampingFactor = 0.025;
 
     ////////////
     // internals

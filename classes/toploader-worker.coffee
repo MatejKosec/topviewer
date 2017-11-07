@@ -12,7 +12,7 @@ self.onmessage = (message) ->
   parser = new TopParser url
 
   # We load 100 MB chunks at a time.
-  rangeLength = 100 * 1024 * 1024
+  rangeLength = 200 * 1024 * 1024
 
   requestRangeStart = 0
   requestRangeEnd = rangeLength - 1

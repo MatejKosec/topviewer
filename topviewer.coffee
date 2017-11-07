@@ -114,7 +114,7 @@ window.topviewer = SAGE2_WebGLApp.extend
       @engine.onMouseUp position, data.button
       @refresh date
     if eventType == 'pointerScroll'
-      @engine.onMouseScroll 3.0*data.wheelDelta
+      @engine.onMouseScroll 50.0*data.wheelDelta
       @refresh date
     if eventType == 'keyboard'
       if data.character == ' '
